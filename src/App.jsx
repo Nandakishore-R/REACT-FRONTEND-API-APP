@@ -1,18 +1,22 @@
 import { useState } from 'react'
 import './App.css'
 import {APP_NAME} from './constants'
+import ClauseModel from './components/vendor/ClauseModel'
+import VendorMain from './components/vendor/VendorMain'
+import VendorApp from './components/vendor/VendorApp'
+import Vendor from './Pages/Vendor'
+import { BrowserRouter as Router,  Route, Routes } from 'react-router-dom'
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      
-      <h1>{APP_NAME}</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Vendor/>}/>
+          <Route path='/vendordetail' element={<VendorApp/>}/>
+        </Routes>  
+      </Router>
     </>
   )
 }
