@@ -6,6 +6,7 @@ import VendorMain from './components/vendor/VendorMain'
 import VendorApp from './components/vendor/VendorApp'
 import Vendor from './Pages/Vendor'
 import { BrowserRouter as Router,  Route, Routes } from 'react-router-dom'
+import VendorEntry from './components/vendor/VendorEntry'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -14,7 +15,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Vendor/>}/>
-          <Route path='/vendordetail' element={<VendorApp/>}/>
+          <Route path='/vendordetail' element={<VendorEntry/>}/>
         </Routes>  
       </Router>
     </>

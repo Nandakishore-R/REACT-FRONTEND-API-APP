@@ -269,12 +269,12 @@ function VendorMain(props) {
     getVendorData(newOffset);
     setCurrentPage(e);
   };
-
+   //////////////////////////////////////
     const handleRowClick = (record) => {
       sessionStorage.setItem("vendorType", record.Type);
       navigate(`/vendordetail?id=${record.Id}`);
     };
-
+   /////////////////////////////
   const TableFooter = () => {
     return (
       <div
