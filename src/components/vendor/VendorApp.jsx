@@ -1,118 +1,58 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import VendorDetailsForm from "./VendorDetailsForm";
 import VendorCategorization from "./VendorCategorization";
 import AdditionalDetails from "./AdditionalDetails";
 import VendorRating from "./VendorRating";
 import Review from "./Review";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ClauseModel from "./ClauseModel";
-// import { HistoryButton } from "antd";
+import { selectVendorApp } from "../../slices/VendorSlice";
+import {
+  changeTab,
+  changeVendorName,
+  saveVendorId,
+  updateEditAccess,
+} from "../../slices/VendorSlice";
+import moment from "moment";
+
 function VendorApp(props) {
+  const dispatch = useDispatch();
+  const [isCentrilizedUser, setIsCentrilizedUser] = useState(false);
+  const [viewType, setViewType] = useState("EDIT");
   const [isLoadingFinish, setIsLoadingFinish] = useState(false);
   const navigate = useNavigate();
   //const _vendorDetails = JSON.parse(sessionStorage.getItem("vendorDetails"));
   //let _vendorId = _vendorDetails.VendorId;
-  const [
-    {
-      isCentrilizedUser,
-      viewType,
-      activeTab,
-      vendorId,
-      vendorType,
-      categorizationData,
-      detailsData,
-      additionalDetailsData,
-      ratingData,
-      saveRatingData,
-      reviewData,
-      hasEditAccess,
-      isInViewMode,
-      VrTotalScore,
-      VrEligibleScore,
-      VrConculusion,
-      VrDevaitions,
-      VrFileStream,
-      VrFileName,
-      VrFinancialList,
-      VrvendorRatingFinancialInfoReadModel,
-      VrFinacialFormBillingMaxLimit,
-      VrFinancialFormOnNatureOfServices,
-      VrFinancialFormOnTypes,
-      VrvendorDetails,
-      CReviewers,
-      CReviewerRemarks,
-      VdVendorName,
-    },
-    setState,
-  ] = useState({
-    isCentrilizedUser: "true",
-    activeTab: sessionStorage.getItem("activeTabId") || "VendorDetails",
-    vendorId: "3ae603b5-6d6d-4b47-88d1-010ebf671ffb",
-    vendorType: sessionStorage.getItem("vendorType") || "DSA",
-    categorizationData: [],
-    detailsData: {
-      FormData: [],
-      URN: "",
-      IsActive: true,
-      InActivationDate: "",
-      ReasonOfInactivation: "",
-      InActivationEvidence: "",
-    },
-    additionalDetailsData: {
-      FilledFormJson: [],
-    },
-    ratingData: [],
-    reviewData: {
-      StageJson: [],
-    },
-    viewType: "NEW",
-    hasEditAccess: true,
-    isInViewMode: true,
-    saveRatingData: [],
-    VrTotalScore: 0,
-    VrEligibleScore: 0,
-    VrConculusion: "",
-    VrDevaitions: "",
-    VrFileStream: "",
-    VrFileName: "",
-    VrFinancialList: [],
-    VrvendorRatingFinancialInfoReadModel: {},
-    VrFinacialFormBillingMaxLimit: 0,
-    VrFinancialFormOnNatureOfServices: [],
-    VrFinancialFormOnTypes: "",
-    VrvendorDetails: {
-      Id: "3ae603b5-6d6d-4b47-88d1-010ebf671ffb",
-      URN: "V0260",
-      VendorName: "VN001",
-      VendorCode: "VC002",
-      Type: "DSA",
-      Department: "Test Dept",
-      NatureOfService: "Cash handling",
-      State: "Andra Pradesh",
-      MaterialityDate: "2024-10-29T00:00:00",
-      Status: "Inactive",
-      FilledFormId: "00000000-0000-0000-0000-000000000000",
-      TemplateId: "00000000-0000-0000-0000-000000000000",
-      TaskId: "00000000-0000-0000-0000-000000000000",
-      FilledForm: null,
-      TotalNumberOfRecords: 291,
-      InActivationEvidence: "",
-      InActivationDate: null,
-      ReasonOfInactivation: "",
-      Version: "Live",
-      CreatedBy: "Surya narayanan",
-      ModifiedBy: "Surya narayanan",
-      ModifiedDate: "2024-11-21T13:07:21.037",
-      CreatedDate: "0001-01-01T00:00:00",
-      Materiality: "2024-10-29T00:00:00",
-      id: "653a",
-    },
-    CReviewers: [],
-    CReviewerRemarks: "",
-    VdVendorName: "VN001",
-  });
-
+  const {
+    activeTab,
+    vendorId,
+    vendorType,
+    categorizationData,
+    detailsData,
+    additionalDetailsData,
+    ratingData,
+    saveRatingData,
+    reviewData,
+    hasEditAccess,
+    isInViewMode,
+    VrTotalScore,
+    VrEligibleScore,
+    VrConculusion,
+    VrDevaitions,
+    VrFileStream,
+    VrFileName,
+    VrFinancialList,
+    VrvendorRatingFinancialInfoReadModel,
+    VrFinacialFormBillingMaxLimit,
+    VrFinancialFormOnNatureOfServices,
+    VrFinancialFormOnTypes,
+    VrvendorDetails,
+    CReviewers,
+    CReviewerRemarks,
+    VdVendorName,
+  } = useSelector(selectVendorApp);
   // TAB IDS
   const tabIds = {
     details: "VendorDetails",
@@ -125,17 +65,17 @@ function VendorApp(props) {
   const tabData = [
     {
       id: "VendorDetails",
-      // saveURL: "/Vendor/UpdateVendor?Id=" + vendorId,
+      saveURL: "https://rcapi.gieom.com/Vendor/UpdateVendor?Id=" + vendorId,
       title: "Vendor Details",
     },
     {
       id: "VendorCategorizationScoring",
-      // saveURL: "/Vendor/SaveScoring",
+      saveURL: "https://rcapi.gieom.com/Vendor/SaveScoring",
       title: "Vendor Categorization",
     },
     {
       id: "VendorAdditionlaDetails",
-      // saveURL: "/Vendor/UpdateVendorAdditionalDetails?Id=" + vendorId,
+      saveURL: "https://rcapi.gieom.com/Vendor/UpdateVendorAdditionalDetails?Id=" + vendorId,
       title: "Additional Details",
     },
     {
@@ -166,7 +106,7 @@ function VendorApp(props) {
 
   const saveTabChange = (tabId, tabName) => {
     if (tabId !== null && tabId !== activeTab) {
-      setState((prev) => ({ ...prev, activeTab: tabId }));
+      dispatch(changeTab(tabId));
       sessionStorage.setItem("activeTabId", tabId);
     }
     if (tabName) {
@@ -174,9 +114,9 @@ function VendorApp(props) {
     }
   };
   const handleClick = (e) => {
-    // if (!isInViewMode) {
-    //   handleSaveBtnClick(e.target.id);
-    // } else 
+    if (!isInViewMode) {
+      handleSaveBtnClick(e.target.id);
+    } else
     saveTabChange(e.target.id, e.target.title);
   };
   // VALIDATE CATEGORIZATION DATA
@@ -204,7 +144,7 @@ function VendorApp(props) {
   const _ids = [];
   reviewerIds.forEach((r) => _ids.push(r.Id));
   const handleSaveReviewers = () => {
-    fetch("/Vendor/SaveVendorReviewers", {
+    fetch("https://rcapi.gieom.com/Vendor/SaveVendorReviewers", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -222,12 +162,16 @@ function VendorApp(props) {
       .then((data) => {
         //console.log(data)
         if (data.Status == "success") {
-          //console.success(data.message);
+          //toastr.success(data.message);
         } else {
-          // console.error(data.Message);
+          // toastr.error(data.Message);
         }
-      });
-    // .catch((err) => console.error(err.message));
+      })
+      .catch(
+        (
+          err //toastr.error(err.message)
+        ) => {}
+      );
   };
 
   //SAVE CATEGORIZATION DATA
@@ -275,13 +219,13 @@ function VendorApp(props) {
     });
     if (arr.length > 0) {
       if (_ids.length < 1) {
-        // console.error("Please select reviewers!");
+        //toastr.error("Please select reviewers!");
         return;
       }
       saveData(JSON.stringify(arr), saveURL, nextTabId, isFinish);
       handleSaveReviewers();
     } else {
-      // console.error("Please select the values!");
+      //toastr.error("Please select the values!");
       setIsLoadingFinish(false);
       return;
     }
@@ -289,33 +233,7 @@ function VendorApp(props) {
 
   // CHECK WHETHER TO CALL FINANCIAL FORM SAVE API
   const useCheckFinancialFormConditions = () => {
-    let _v_Details = {
-      Id: "3ae603b5-6d6d-4b47-88d1-010ebf671ffb",
-      URN: "V0260",
-      VendorName: "VN001",
-      VendorCode: "VC002",
-      Type: "DSA",
-      Department: "Test Dept",
-      NatureOfService: "Cash handling",
-      State: "Andra Pradesh",
-      MaterialityDate: "2024-10-29T00:00:00",
-      Status: "Inactive",
-      FilledFormId: "00000000-0000-0000-0000-000000000000",
-      TemplateId: "00000000-0000-0000-0000-000000000000",
-      TaskId: "00000000-0000-0000-0000-000000000000",
-      FilledForm: null,
-      TotalNumberOfRecords: 291,
-      InActivationEvidence: "",
-      InActivationDate: null,
-      ReasonOfInactivation: "",
-      Version: "Live",
-      CreatedBy: "Surya narayanan",
-      ModifiedBy: "Surya narayanan",
-      ModifiedDate: "2024-11-21T13:07:21.037",
-      CreatedDate: "0001-01-01T00:00:00",
-      Materiality: "2024-10-29T00:00:00",
-      id: "653a",
-    };
+    let _v_Details = JSON.parse(sessionStorage.getItem("vendorDetails"));
     if (_v_Details === null) return false;
     const { Type, AnnualBilling, NatureOfServices } = _v_Details;
     // console.log({ VrFinancialFormOnTypes, VrFinacialFormBillingMaxLimit, VrFinancialFormOnNatureOfServices, NatureOfServices })
@@ -413,12 +331,12 @@ function VendorApp(props) {
 
   // SAVE_VENDOR_NAME
   const saveVendorName = (name) => {
-    setState((prev) => ({ ...prev, VdVendorName: name }));
+    dispatch(changeVendorName(name));
   };
   const DataMessage = (data, tabId, isFinish) => {
     if (data.Status == "success" || data.StatusCode == 201) {
       if (data.data) {
-        setState((prev) => ({ ...prev, vendorId: data.data.VendorId }));
+        dispatch(saveVendorId(data.data.VendorId));
         saveVendorName(data.data.VendorName);
         sessionStorage.setItem(
           "vendorDetails",
@@ -443,10 +361,11 @@ function VendorApp(props) {
 
       if (isFinish) {
         handleFinishBtnClick();
-      } //console.success(data.message);
+      }
+      //toastr.success(data.message);
       else return;
     } else {
-      // console.error(data.message);
+      // toastr.error(data.message);
     }
   };
   // SAVE_FINANCIAL_FORM
@@ -501,14 +420,14 @@ function VendorApp(props) {
     }
     financialDataObj.append("model", JSON.stringify(saveDataObj));
 
-    fetch("/Vendor/SaveVendorFinancials", {
+    fetch("https://rcapi.gieom.com/Vendor/SaveVendorFinancials", {
       method: "POST",
       body: financialDataObj,
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.data.Status == "success" || data.StatusCode == 201) {
-          //console.success(data.data.message)
+          //toastr.success(data.data.message)
           saveDataWithoutContent(
             vrRatingFormDataObj,
             saveURL,
@@ -516,12 +435,12 @@ function VendorApp(props) {
             isFinish
           );
         } else {
-          //console.error(data.data.message);
+          //toastr.error(data.data.message);
         }
       })
       .catch((err) => {
         //console.log(err)
-        // console.error("Unable To Save Data");
+        //toastr.error("Unable To Save Data");
       });
   };
 
@@ -540,7 +459,9 @@ function VendorApp(props) {
         //console.log(response)
         DataMessage(response, nextTabId, isFinish);
       })
-      .catch((err) => console.error(err.message));
+      .catch(
+        (err) => {} //toastr.error(err.message)
+      );
   };
   // SAVE DATA -- rating also calles same function
   const saveDataWithoutContent = (data, api, nextTabId, isFinish) => {
@@ -552,28 +473,31 @@ function VendorApp(props) {
       .then((response) => {
         DataMessage(response, nextTabId, isFinish);
       })
-      .catch((err) => console.error(err.message));
+      .catch(
+        (err) => {}
+        // toastr.error(err.message)
+      );
   };
 
   const handleFinishBtnClick = () => {
     if (vendorId) {
-      fetch("/Vendor/FinishVendor?VendorId=" + vendorId, {
+      fetch("https://rcapi.gieom.com/Vendor/FinishVendor?VendorId=" + vendorId, {
         method: "POST",
       })
         .then((res) => res.json())
         .then((data) => {
           if (data.Status == "success") {
-            console.success(data.message);
+            // toastr.success(data.message);
             window.location = "/Vendor/Vendor";
             setIsLoadingFinish(false);
           } else {
-            console.error(data.message);
+            // toastr.error(data.message);
             setIsLoadingFinish(false);
           }
         })
-        .catch((err) => console.error(err.message));
+        .catch((err) => toastr.error(err.message));
     } else {
-      console.error("Unable To Finish, Save First");
+      // toastr.error("Unable To Finish, Save First");
     }
   };
   const vendorDetailsErrorHandling = (detailsData) => {
@@ -700,7 +624,7 @@ function VendorApp(props) {
         errorMessage += await vendorDetailsErrorHandling(detailsData);
         errorMessage += await dynamicFormErrorHandling(detailsData);
         if (errorMessage !== "") {
-          console.error(errorMessage);
+          // toastr.error(errorMessage);
         } else {
           var formDataObj = new FormData();
           if (detailsData.InActivationEvidence[0]) {
@@ -737,7 +661,7 @@ function VendorApp(props) {
         let errorMessage = "";
         errorMessage += await dynamicFormErrorHandling(additionalDetailsData);
         if (errorMessage !== "") {
-          console.error(errorMessage);
+          // toastr.error(errorMessage);
         } else {
           var formJSon = await handleCircularObject(
             additionalDetailsData.FilledFormJson
@@ -768,7 +692,7 @@ function VendorApp(props) {
       let errorMessage = "";
       errorMessage += await reviewErrorHandling(reviewData);
       if (errorMessage !== "") {
-        console.error(errorMessage);
+        //toastr.error(errorMessage);
       } else {
         if (hasCentrilizedAccess)
           saveData(
@@ -833,24 +757,18 @@ function VendorApp(props) {
       } else handleSaveBtnClick(prevTab);
     }
   };
-  // useEffect(() => {
-  //   if (vendorId) {
-  //     dispatch({
-  //       type: "SAVE_VENDOR_ID",
-  //       payload: vendorId,
-  //     });
-  //   } else {
-  //     //console.log("else part called")
-  //     dispatch({
-  //       type: "CHANGE_TAB",
-  //       payload: "VendorDetails",
-  //     });
-  //   }
-  // }, [activeTab]);
+  useEffect(() => {
+    if (vendorId) {
+      dispatch(saveVendorId(vendorId));
+    } else {
+      //console.log("else part called")
+      // dispatch(changeTab("VendorDetails"));
+    }
+  }, [activeTab]);
 
   const handleEditAccess = () => {
     localStorage.setItem("isViewMode", JSON.stringify(false));
-    setState((prev) => ({ ...prev, isInViewMode: false }));
+    dispatch(updateEditAccess({ isInViewMode: false }));
   };
 
   useEffect(() => {
@@ -912,10 +830,7 @@ function VendorApp(props) {
               );
             })}
             <div style={{ position: "relative" }}>
-              <div
-                className="control-panel"
-
-              >
+              <div className="control-panel">
                 <div className="vd-action-btn ">
                   <button
                     onClick={() => navigate("/")}
@@ -955,7 +870,7 @@ function VendorApp(props) {
                   </button>
                 </div> */}
                 {hasCentrilizedAccess && (
-                  <React.Fragment>
+                  <Fragment>
                     {
                       //(hasEditAccess || viewType === "NEW") && --Change Condition Dar if (hasCentrilizedAccess)
                       !isInViewMode || viewType === "NEW" ? (
@@ -998,18 +913,21 @@ function VendorApp(props) {
                         </div>
                       )
                     }
-                  </React.Fragment>
+                  </Fragment>
                 )}
               </div>
             </div>
           </ul>
         </div>
-        {/* <div className="historyBtn-wrapper"> */}
-        {/* <HistoryButton
-          api={
-            "/Vendor/GetHistory?vendorId=" + vendorId + "&tabName=" + activeTab
-          }
-        /> */}
+        {/* <div className="historyBtn-wrapper">
+          <HistoryButton
+            api={
+              "/Vendor/GetHistory?vendorId=" +
+              vendorId +
+              "&tabName=" +
+              activeTab
+            }
+          /> */}
         {activeTab === "VendorCategorizationScoring" && <ClauseModel />}
         {/* </div> */}
         <div>{renderSections[activeTab]}</div>

@@ -1,17 +1,17 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom';
 import VendorApp from './VendorApp';
-import { Provider } from 'react-redux';
+import { Provider } from "react-redux";
+import store from "../../store/Store";
 
 function VendorEntry() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const vendorId = queryParams.get('id');
-    var viewType = "VIEW";
-    var vendorDetailsId = ""; // Id , in case of existing Vendor
-    var vendorName = "";
-    var isCentrilizedUser = "false";
-
+    // var viewType = "VIEW";
+    // var vendorDetailsId = ""; // Id , in case of existing Vendor
+    // var vendorName = "";
+    // var isCentrilizedUser = "false";
     const vendorType = sessionStorage.getItem("vendorType");
     return (
     //   <div>
@@ -19,9 +19,9 @@ function VendorEntry() {
     //     <p>Vendor Id : {vendorId}</p>
     //     <p>Vendor Type : {vendorType}</p>
     //   </div>
-    // <Provider>
+    
         <VendorApp/>
-    // </Provider>
+    //  </Provider>
     
     )
   }

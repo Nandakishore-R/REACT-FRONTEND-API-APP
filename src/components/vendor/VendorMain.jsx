@@ -3,45 +3,22 @@ import { Pagination } from "antd";
 import { Tooltip } from "antd";
 import { Tag } from "antd";
 import { useState, useEffect } from "react";
+import { saveVendorId } from "../../slices/VendorSlice";
+import { useDispatch } from "react-redux";
 import { useNavigate, useNavigation } from "react-router-dom";
 
 function VendorMain(props) {
-  const [loading, setLoading] = useState(false);
-  const [vendorData, setVendorData] = useState([
-    {
-      "Id": "e86b2a42-19d1-4b12-9d69-02f05bd3495e",
-      "URN": "V0314",
-      "VendorName": "34213213",
-      "VendorCode": "vc001",
-      "Type": "DSA",
-      "Department": "Test Dept",
-      "NatureOfService": "Repossession Agency,Document processing (Including KYC)",
-      "State": "Andra Pradesh",
-      "MaterialityDate": "2024-12-03T00:00:00",
-      "Status": "Active",
-      "FilledFormId": "00000000-0000-0000-0000-000000000000",
-      "TemplateId": "00000000-0000-0000-0000-000000000000",
-      "TaskId": "00000000-0000-0000-0000-000000000000",
-      "FilledForm": null,
-      "TotalNumberOfRecords": 291,
-      "InActivationEvidence": "",
-      "InActivationDate": null,
-      "ReasonOfInactivation": "",
-      "Version": "Under Review",
-      "CreatedBy": "Surya narayanan",
-      "ModifiedBy": "Surya narayanan",
-      "ModifiedDate": "2024-12-18T11:28:12.393",
-      "CreatedDate": "0001-01-01T00:00:00",
-      "Materiality": "2024-12-03T00:00:00"
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [vendorData, setVendorData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const recordsLimit = 10;
   const pageSize = 10;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  // const searchValue=10;
   // SEARCH NEEDS MORE OPTIMIZATION, currently it is done this way because input field change does not reflct while typing
-  // let searchInput = document.getElementById("HeaderFilterSearch")
+  let searchInput = document.getElementById("HeaderFilterSearch")
   // searchInput.addEventListener("change", (e) => {
   //     setCurrentPage(1);
   //     //console.log(e.target.value)
@@ -62,20 +39,21 @@ function VendorMain(props) {
       getVendorData(0, "", 0);
       setCurrentPage(1);
     }
+    console.log("handleTableChange");
   };
   const columnsUserTable = [
     {
-      title: <b className="table-col-heading">{"URN".toUpperCase()}</b>,
-      dataIndex: "URN",
-      key: "Urn",
+      title: <b className="table-col-heading">{"urn".toUpperCase()}</b>,
+      dataIndex: "urn",
+      key: "urn",
       responsive: ["lg"],
       width: "1vw",
       sorter: true,
     },
     {
       title: <b className="table-col-heading">{"Vendor Name".toUpperCase()}</b>,
-      dataIndex: "VendorName",
-      key: "VendorName",
+      dataIndex: "vendorName",
+      key: "vendorName",
       responsive: ["lg"],
       width: "10vw",
       //   render: (text, data) => {
@@ -93,30 +71,30 @@ function VendorMain(props) {
     },
     {
       title: <b className="table-col-heading">{"Vendor code".toUpperCase()}</b>,
-      dataIndex: "VendorCode",
-      key: "VendorCode",
+      dataIndex: "vendorCode",
+      key: "vendorCode",
       responsive: ["lg"],
       width: "10vw",
     },
     {
       title: <b className="table-col-heading">{"Type".toUpperCase()}</b>,
-      dataIndex: "Type",
-      key: "Type",
+      dataIndex: "type",
+      key: "type",
       responsive: ["lg"],
       sorter: true,
       widtth: ".2vw",
-      render: (tag) => {
-        return (
-          <Tag color="#9397A5" key={tag}>
-            {tag}
-          </Tag>
-        );
-      },
+      // render: (tag) => {
+      //   return (
+      //     <Tag color="#9397A5" key={tag}>
+      //       {tag}
+      //     </Tag>
+      //   );
+      // },
     },
     {
       title: <b className="table-col-heading">{"Department".toUpperCase()}</b>,
-      dataIndex: "Department",
-      key: "Department",
+      dataIndex: "department",
+      key: "department",
       responsive: ["lg"],
       sorter: true,
       width: "10vw",
@@ -134,8 +112,8 @@ function VendorMain(props) {
       title: (
         <b className="table-col-heading">{"Nature of service".toUpperCase()}</b>
       ),
-      dataIndex: "NatureOfService",
-      key: "NatureOfService",
+      dataIndex: "natureOfService",
+      key: "natureOfService",
       responsive: ["lg"],
       sorter: true,
       width: "13.5vw",
@@ -150,8 +128,8 @@ function VendorMain(props) {
     },
     {
       title: <b className="table-col-heading">{"State".toUpperCase()}</b>,
-      dataIndex: "State",
-      key: "State",
+      dataIndex: "state",
+      key: "state",
       responsive: ["lg"],
       sorter: true,
       width: "9vw",
@@ -166,8 +144,8 @@ function VendorMain(props) {
     },
     {
       title: <b className="table-col-heading">{"Materiality".toUpperCase()}</b>,
-      dataIndex: "Materiality",
-      key: "Materiality",
+      dataIndex: "materiality",
+      key: "materiality",
       responsive: ["lg"],
       //   render: function (data) {
       //     if (data != null) {
@@ -178,23 +156,23 @@ function VendorMain(props) {
     },
     {
       title: <b className="table-col-heading">{"Status".toUpperCase()}</b>,
-      dataIndex: "Status",
-      key: "Status",
+      dataIndex: "status",
+      key: "status",
       responsive: ["lg"],
       sorter: true,
       width: "5vw",
     },
     {
       title: <b className="table-col-heading">{"Version".toUpperCase()}</b>,
-      dataIndex: "Version",
-      key: "Version",
+      dataIndex: "version",
+      key: "version",
       responsive: ["lg"],
       width: "6.5vw",
     },
     {
       title: <b className="table-col-heading">{"Created by".toUpperCase()}</b>,
-      dataIndex: "CreatedBy",
-      key: "Created",
+      dataIndex: "createdBy",
+      key: "createdBy",
       responsive: ["lg"],
       width: "8vw",
     },
@@ -211,45 +189,50 @@ function VendorMain(props) {
 
     return transformedData;
   };
-  function getVendorData(offset, columnName = "", sortDirection = 0)  {
+  function getVendorData(offset, columnName = "", sortDirection = 0) {
+    console.log('sending request');
     setLoading(true);
-    let filterData = [];
+    let filterData = {};
     if (props.FilterOptions)
       filterData = filterDataFormat(JSON.parse(props.FilterOptions));
-    fetch(`http://localhost:5000/vendors?_start=${offset}&_limit=${recordsLimit}`, {
-      method: "GET",
+    fetch(`https://rcapi.gieom.com/Vendor/GetAllVendorsDynamicPOC`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      //   body: JSON.stringify({
-      //     Draw: 0,
-      //     Start: offset,
-      //     Length: 10,
-      //     Columns: [
-      //       {
-      //         Data: columnName,
-      //         Name: "",
-      //         Searchable: true,
-      //         Orderable: true,
-      //         Search: {
-      //           Value: "",
-      //           IsRegexValue: true,
-      //         },
-      //         IsOrdered: true,
-      //         OrderNumber: 0,
-      //         SortDirection: sortDirection,
-      //       },
-      //     ],
-      //     FilterParams: JSON.stringify(filterData),
-      //   }),
+      body: JSON.stringify({
+        Draw: 0,
+        Start: offset,
+        Length: 10,
+        Search: {
+                    Value: "",
+                    IsRegexValue: true
+                },
+        Columns: [
+          {
+            Data: columnName,
+            Name: "",
+            Searchable: true,
+            Orderable: true,
+            Search: {
+              Value: "",
+              IsRegexValue: true,
+            },
+            IsOrdered: true,
+            OrderNumber: 0,
+            SortDirection: sortDirection,
+          },
+        ],
+        FilterParams: JSON.stringify(filterData),
+      }),
     })
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
-        setVendorData(data.results || data);
-        setTotalRecords(data.totalRecords || 271); //hardcoded
+        console.log(data.data);
+        setVendorData(data.data);
+        setTotalRecords(data.recordsTotal); 
       })
       .finally(() => setLoading(false));
   };
@@ -258,10 +241,10 @@ function VendorMain(props) {
     sessionStorage.removeItem("vendorDetails");
   }, []);
 
-    // useEffect(() => {
-    //   getVendorData((currentPage - 1) * recordsLimit, "", 0);
-    // }, [props.FilterOptions]);
-
+  useEffect(() => {
+    getVendorData((currentPage - 1) * recordsLimit, "", 0);
+  }, []);
+  // props.FilterOptions
   sessionStorage.setItem("activeTabId", "VendorDetails");
   // CHANGE_PAGE
   const handlePageChange = (e) => {
@@ -269,12 +252,13 @@ function VendorMain(props) {
     getVendorData(newOffset);
     setCurrentPage(e);
   };
-   //////////////////////////////////////
-    const handleRowClick = (record) => {
-      sessionStorage.setItem("vendorType", record.Type);
-      navigate(`/vendordetail?id=${record.Id}`);
-    };
-   /////////////////////////////
+  //////////////////////////////////////
+  const handleRowClick = (record) => {
+    sessionStorage.setItem("vendorType", record.type);
+    dispatch(saveVendorId(record.id));
+    navigate(`/vendordetail?id=${record.id}`);
+  };
+  /////////////////////////////
   const TableFooter = () => {
     return (
       <div
@@ -318,7 +302,7 @@ function VendorMain(props) {
           locale={locale}
           rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
           loading={loading}
-          rowKey={(record) => record.URN}
+          rowKey={(record) => record.urn}
           onRow={(record) => {
             return {
               onClick: (event) => {
