@@ -15,7 +15,7 @@ function AdditionalDetails(props) {
 
   useEffect(() => {
     //Fetch Form
-    fetch("https://rcapi.gieom.com/Vendor/GetVendorAdditionalDetailsByVendorIdPOC?VendorId=" + vendorId)
+    fetch("https://rcapi.gieom.com/Vendor/GetVendorAdditionalDetailsByVendorIdPOC/" + vendorId)
       .then((response) => response.json())
       .then((val) => {
         if (val.status == "success") {
@@ -39,7 +39,10 @@ function AdditionalDetails(props) {
           toastr.error(val.message);
         }
       })
-      .catch((err) => toastr.error("Form Fetch Failure"))
+      .catch((err) => {
+        // toastr.error("Form Fetch Failure")
+        }
+      )
       .finally(() => setIsLoading(false));
   }, []);
 
