@@ -93,15 +93,19 @@ function VendorDetailsForm(props) {
             fetchLatestURN();
           }
           if (res.data.isActive == false) {
-            if (res.data.inActivationDate)
-              IDate = moment(res.data.inActivationDate).format("YYYY-MM-DD");
-            dispatch(
-              setInactivation({
-                InActivationDate: IDate,
-                ReasonOfInactivation: res.data.reasonOfInactivation,
-                InActivationEvidence: [res.data.reasonOfInactivationFiles],
-              })
-            );
+            if (res.data.inActivationDate){
+              let IDate = moment(res.data.inActivationDate).format("YYYY-MM-DD");
+              console.log("Idate",IDate);
+              dispatch(
+                setInactivation({
+                  InActivationDate: IDate,
+                  ReasonOfInactivation: res.data.reasonOfInactivation,
+                  InActivationEvidence: res.data.reasonOfInactivationFiles,
+                })
+              );
+              console.log("disatched");
+            }
+           
           }
           if (res.data.isTemplateChanged)
             InfoPopup({ title: "Template", msg: "Template has changed" });
@@ -189,7 +193,7 @@ function VendorDetailsForm(props) {
             </Fragment>
           )}
         </Form>
-        {/* <div id="formDesignerArea">
+        <div id="formDesignerArea">
           {!isInViewMode &&
             isCentrilized &&
             FormData &&
@@ -210,7 +214,7 @@ function VendorDetailsForm(props) {
                 isComponentUpdate={true}
               />
             )}
-        </div> */}
+        </div>
       </div>
     </Fragment>
   );
