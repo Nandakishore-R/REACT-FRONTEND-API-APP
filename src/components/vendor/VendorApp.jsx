@@ -801,38 +801,29 @@ function VendorApp(props) {
   };
   // crate separate component here
   return (
-    <div
-    className="action-centre-nav"
-    style={{
-      width: "94.45vw",
-      marginTop: "4vh",
-      marginLeft: ".5vw",
-      marginBottom: "3vh",
-    }}
-  >
+    <div className="action-centre-nav">
+      <div style={{ position: "relative" }}>
           <ul
             className="vd-actionTabs"
-            style={{ position: "sticky", top: "0px", zIndex: "1000" }}
-          >
+            style={{ position: "sticky", top: "0px", zIndex: "1000" }}>
             {tabData.map((tab) => {
               return (
                 <li
                   className={activeTab === tab.id ? "active-tab" : ""}
                   key={tab.id}
-                  style={{ width: "14vw" }}
-                >
+                  style={{ width: "14vw" }}>
                   <button onClick={handleClick} id={tab.id} title={tab.title}>
                     {tab.title}
                   </button>
                 </li>
               );
             })}
-              <div className="control-panel">
+            <div style={{ position: "absolute", right: "1px" }}>
+              <div className="control-panel" style={{ marginLeft: "1.1vw", marginRight: "1.1vw" }}>
                 <div className="vd-action-btn ">
                   <button
                     onClick={() => navigate("/")}
-                    style={{ backgroundColor: "#4E4E4E" }}
-                  >
+                    style={{ backgroundColor: "#4E4E4E" }}>
                     Close
                   </button>
                 </div>
@@ -913,7 +904,9 @@ function VendorApp(props) {
                   </Fragment>
                 )}
               </div>
+             </div> 
           </ul>
+      </div>
         {/* <div className="historyBtn-wrapper">
           <HistoryButton
             api={
@@ -925,7 +918,9 @@ function VendorApp(props) {
           /> */}
         {activeTab === "VendorCategorizationScoring" && <ClauseModel />}
         {/* </div> */}
+        <div>
       {renderSections[activeTab]}
+      </div>
       </div>
   );
 }

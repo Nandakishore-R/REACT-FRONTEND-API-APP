@@ -7,6 +7,7 @@ import { saveVendorId } from "../../slices/VendorSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useNavigation } from "react-router-dom";
 import { API_URL } from "../../constants";
+import moment from "moment";
 
 function VendorMain(props) {
   const [loading, setLoading] = useState(true);
@@ -57,18 +58,18 @@ function VendorMain(props) {
       key: "vendorName",
       responsive: ["lg"],
       width: "10vw",
-      //   render: (text, data) => {
-      //     return (
-      //       <Tooltip title={text}>
-      //         {text !== null
-      //           ? text.length > 13
-      //             ? text.slice(0, 13)
-      //             : text
-      //           : text}
-      //         {text !== null && text.length > 14 ? ".." : ""}
-      //       </Tooltip>
-      //     );
-      //   },
+        render: (text, data) => {
+          return (
+            <Tooltip title={text}>
+              {text !== null
+                ? text.length > 13
+                  ? text.slice(0, 13)
+                  : text
+                : text}
+              {text !== null && text.length > 14 ? ".." : ""}
+            </Tooltip>
+          );
+        },
     },
     {
       title: <b className="table-col-heading">{"Vendor code".toUpperCase()}</b>,
@@ -84,13 +85,13 @@ function VendorMain(props) {
       responsive: ["lg"],
       sorter: true,
       widtth: ".2vw",
-      // render: (tag) => {
-      //   return (
-      //     <Tag color="#9397A5" key={tag}>
-      //       {tag}
-      //     </Tag>
-      //   );
-      // },
+      render: (tag) => {
+        return (
+          <Tag color="#9397A5" key={tag}>
+            {tag}
+          </Tag>
+        );
+      },
     },
     {
       title: <b className="table-col-heading">{"Department".toUpperCase()}</b>,
@@ -99,15 +100,15 @@ function VendorMain(props) {
       responsive: ["lg"],
       sorter: true,
       width: "10vw",
-      //   render: (text, data) => {
-      //     return (
-      //       <Tooltip title={text}>
-      //         {text !== null ? text.slice(0, 12) : text}
-      //         {text !== null && text.length > 12 ? ".." : ""}
-      //       </Tooltip>
-      //     );
-      //     // return <Tooltip title={text}>{text}</Tooltip>
-      //   },
+        render: (text, data) => {
+          return (
+            <Tooltip title={text}>
+              {text !== null ? text.slice(0, 12) : text}
+              {text !== null && text.length > 12 ? ".." : ""}
+            </Tooltip>
+          );
+          // return <Tooltip title={text}>{text}</Tooltip>
+        },
     },
     {
       title: (
@@ -118,14 +119,14 @@ function VendorMain(props) {
       responsive: ["lg"],
       sorter: true,
       width: "13.5vw",
-      //   render: (text, data) => {
-      //     return (
-      //       <Tooltip title={text}>
-      //         {text !== null ? text.slice(0, 18) : text}
-      //         {text !== null && text.length > 18 ? ".." : ""}
-      //       </Tooltip>
-      //     );
-      //   },
+        render: (text, data) => {
+          return (
+            <Tooltip title={text}>
+              {text !== null ? text.slice(0, 18) : text}
+              {text !== null && text.length > 18 ? ".." : ""}
+            </Tooltip>
+          );
+        },
     },
     {
       title: <b className="table-col-heading">{"State".toUpperCase()}</b>,
@@ -134,25 +135,25 @@ function VendorMain(props) {
       responsive: ["lg"],
       sorter: true,
       width: "9vw",
-      //   render: (text) => {
-      //     return (
-      //       <Tooltip title={text}>
-      //         {text != null ? text.slice(0, 10) : text}
-      //         {text !== null && text.length > 10 ? ".." : ""}
-      //       </Tooltip>
-      //     );
-      //   },
+        render: (text) => {
+          return (
+            <Tooltip title={text}>
+              {text != null ? text.slice(0, 10) : text}
+              {text !== null && text.length > 10 ? ".." : ""}
+            </Tooltip>
+          );
+        },
     },
     {
       title: <b className="table-col-heading">{"Materiality".toUpperCase()}</b>,
       dataIndex: "materiality",
       key: "materiality",
       responsive: ["lg"],
-      //   render: function (data) {
-      //     if (data != null) {
-      //       return moment(data).format("DD-MM-YYYY");
-      //     }
-      //   },
+        render: function (data) {
+          if (data != null) {
+            return moment(data).format("DD-MM-YYYY");
+          }
+        },
       width: "9vw",
     },
     {
