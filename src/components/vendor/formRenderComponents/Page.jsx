@@ -4,7 +4,6 @@ export default class Page extends Component {
         super(props);
         this.pageThumbnailsRef = createRef(null);
         this.pageLayoutRef = createRef(null);
-        console.log("Page constructor called");
     }
     shouldComponentUpdate(nextProps, nextState) {
        return true;

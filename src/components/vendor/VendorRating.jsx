@@ -246,7 +246,7 @@ function VendorRating(props) {
   const handleSelectChange2 = (e, paramId) => {
     const _data = ratingData;
     _data.forEach((p) => {
-      if (p.Id === paramId) {
+      if (p.id === paramId) {
         p.scoreModel.forEach((s) => {
           if (s.value === e) {
             s.isSelected = true;
@@ -300,9 +300,9 @@ function VendorRating(props) {
   const handleSelectChange = (e, paramId, subParamId) => {
     const _data = ratingData;
     _data.forEach((p) => {
-      if (p.Id === paramId) {
+      if (p.id === paramId) {
         p.subParams.forEach((sp) => {
-          if (sp.Id === subParamId) {
+          if (sp.id === subParamId) {
             sp.scoreModel.forEach((s) => {
               if (s.value === e) {
                 s.isSelected = true;
@@ -358,18 +358,18 @@ function VendorRating(props) {
   const handleRemarksChange = (e, paramId, subParamId, hasSubparams) => {
     const _data = ratingData;
     _data.forEach((dataItem) => {
-      if (dataItem.Id !== paramId) return;
+      if (dataItem.id !== paramId) return;
       const updateRemarks = (scoreModels) => {
         scoreModels.forEach((scoreModel) => {
           if (scoreModel.isSelected) {
-            scoreModel.Remarks = e.target.value;
+            scoreModel.remarks = e.target.value;
           }
         });
       };
 
       if (hasSubparams) {
         dataItem.subParams.forEach((subParam) => {
-          if (subParam.Id === subParamId) {
+          if (subParam.id === subParamId) {
             updateRemarks(subParam.scoreModel);
           }
         });
@@ -712,7 +712,7 @@ function VendorRating(props) {
                       ).map((v) => v.value)}
                       style={{ width: 250 }}
                       options={param.scoreModel}
-                      onChange={(e) => handleSelectChange2(e, param.Id)}
+                      onChange={(e) => handleSelectChange2(e, param.id)}
                     />
                   )}
                 </Col>
@@ -729,7 +729,7 @@ function VendorRating(props) {
                       onChange={(e) =>
                         handleRemarksChange(
                           e,
-                          param.Id,
+                          param.id,
                           null,
                           (hasSubparams = false)
                         )
@@ -813,7 +813,7 @@ function VendorRating(props) {
                         span="6"
                         style={{ marginTop: ".5rem", marginBottom: ".5rem" }}
                       >
-                        <p className="vendor-sub-parameter-name">{sp.Title}</p>
+                        <p className="vendor-sub-parameter-name">{sp.title}</p>
                       </Col>
                       <Col
                         span="8"
@@ -829,7 +829,7 @@ function VendorRating(props) {
                             (s) => s.isSelected
                           ).map((v) => v.value)}
                           onChange={(e) =>
-                            handleSelectChange(e, param.Id, sp.Id)
+                            handleSelectChange(e, param.id, sp.id)
                           }
                           options={sp.scoreModel}
                         />
@@ -846,13 +846,13 @@ function VendorRating(props) {
                           onChange={(e) =>
                             handleRemarksChange(
                               e,
-                              param.Id,
-                              sp.Id,
+                              param.id,
+                              sp.id,
                               (hasSubparams = true)
                             )
                           }
                           value={sp.scoreModel.filter((s) => s.isSelected).map(
-                            (v) => v.Remarks
+                            (v) => v.remarks
                           )}
                         />
                       </Col>

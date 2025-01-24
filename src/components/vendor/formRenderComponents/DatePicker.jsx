@@ -293,7 +293,7 @@ export default class DatePicker extends Component {
         const { minDateInclude, maxDateInclude } = this.props;
         // this.props.value  = this.props.value.replace("-","/");
         var id = $('#' + this.myRef.current.id);
-        console.log("ID",this.myRef.current);
+        // console.log("ID",this.myRef.current);
         //let valueDate = this.props.value ? new Date(this.props.value) :  commented for template hub review date fix
         let valueDate = this.props.value && new Date(moment(this.props.value, this.props.format));//added for template hub next  review date fix
 
@@ -363,7 +363,7 @@ export default class DatePicker extends Component {
             }
 
         }
-        console.log("ID ",id);
+        // console.log("ID ",id);
         // id.datetimepicker(options).on("dp.change", (e) => {
         //     this.props.handleInput(this.myRef.current.value, this.props.index);
         // });

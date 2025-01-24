@@ -60,10 +60,10 @@ function VendorDetailsForm(props) {
     fetch(`${API_URL}/Vendor/GetVendorById/${vendorId}`) //POC
       .then((response) => response.json())
       .then((res) => {
+        console.log(`Reposnse of /Vendor/GetVendorById/${vendorId}`);
         if (res.status == "success") {
-          console.log("res", res);
           let data = JSON.parse(res.data.formData || res.data.jsonForm);
-          console.log(res.data.name);
+          console.log("Formdata", data);
           // updateTitle(`VENDOR MASTER: ${res.data.name}`); look later
           if (data.action) {
             dataCopy = props.getData(data.action);
@@ -95,7 +95,6 @@ function VendorDetailsForm(props) {
           if (res.data.isActive == false) {
             if (res.data.inActivationDate){
               let IDate = moment(res.data.inActivationDate).format("YYYY-MM-DD");
-              console.log("Idate",IDate);
               dispatch(
                 setInactivation({
                   InActivationDate: IDate,
@@ -103,7 +102,6 @@ function VendorDetailsForm(props) {
                   InActivationEvidence: res.data.reasonOfInactivationFiles,
                 })
               );
-              console.log("disatched");
             }
            
           }

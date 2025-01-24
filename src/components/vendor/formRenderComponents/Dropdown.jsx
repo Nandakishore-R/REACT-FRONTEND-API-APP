@@ -2,6 +2,7 @@
 import Select from 'react-select';
 // import AsyncComponent from 'react-select';
 import AsyncSelect, {useAsync} from "react-select/async";
+import { API_URL } from "../../../constants";
 export default class DropDown extends Component {
     constructor(props) {
         super(props);
@@ -17,12 +18,17 @@ export default class DropDown extends Component {
         return null;
     }
     loadOptions(url) {
+        console.log(url);
         // const item = ["OPTION A", "OPTION B"];
         // return item.map(option => ({ name: option }));
-        return [];
-        if (url.trim() !== "") {
-            url = "https://rcapi.gieom.com/api/User"+url;
+        if(url === "/User/AllActiveUsersList"){
             console.log(url);
+            return [];
+        }
+        if (url.trim() !== "") {
+            url = `${API_URL}${url}`;
+            console.log(url);
+            // return [];
             try {
                 return fetch(url,
                     {
@@ -42,11 +48,11 @@ export default class DropDown extends Component {
                         })
                     .then((json) => {
                         console.log(json);
-                        return { options: json };
-                        // return json.map((item) => ({
-                        //     label: item.name || item.title || item.label || "Unknown",
-                        //     value: item.id || item.value || item.key
-                        // }));
+                        // return { options: json }; changed
+                        return json.map((item) => ({
+                            label: item.name || item.title || item.label || "Unknown",
+                            value: item.id || item.value || item.key
+                        }));
                     });
             } catch (error) {
                 console.log('error' + error);
@@ -66,8 +72,8 @@ export default class DropDown extends Component {
         // const AsyncComponent = (this.props.url && this.props.url.trim() !== "")
         //     ? Select.Async
         //     : Select;
-        // (this.props.url && this.props.url.trim() !== "") ?
-        //   console.log(this.props.values) : console.log(false);
+        (this.props.url && this.props.url.trim() !== "") ?
+          console.log(this.props.url) : console.log(false);
         const AsyncComponent = (this.props.url && this.props.url.trim() !== "")
             ? AsyncSelect
             : Select;
