@@ -1,4 +1,4 @@
-﻿@font-face {
+@font-face {
     font-family: 'Montserrat';
     src: url("/assets/Montserrat-Bold.ttf") format("opentype");
     font-weight: bold;
@@ -15,7 +15,6 @@
 * {
     font-family: Montserrat;
 }
-
 html, body {
     height: 100%;
     font-size: calc(16*(50vh + 23.5vw)/910);
@@ -39,7 +38,7 @@ h4 {
     overflow:hidden !important;
 }
 
-    .new-design-theme .panel-header {
+    .panel-header {
         padding-top: 0;
         background: #fff;
         font-weight: bold;
@@ -52,7 +51,7 @@ h4 {
         min-height: calc(70 * 100vh / 910);*/
     }
 
-    .new-design-theme .main-container {
+    .main-container {
         position: relative;
         flex: 1 1 auto;
         display: flex;
@@ -60,7 +59,7 @@ h4 {
         overflow-y:auto;
     }
 
-    .new-design-theme .panel-header .navbar {
+    .panel-header .navbar {
         height: calc(70 * 100vh / 910);
         min-height: calc(70 * 100vh / 910);
         position: relative;
@@ -70,7 +69,7 @@ h4 {
         margin: 0 !important;
     }
 
-        .new-design-theme .panel-header .navbar > div.container-fluid {
+        .panel-header .navbar > div.container-fluid {
             width: 100%;
             margin: 0;
             position: absolute;
@@ -83,7 +82,7 @@ h4 {
             height: 100%;
         }
 
-            .new-design-theme .panel-header .navbar > div.container-fluid .navbar-header {
+            .panel-header .navbar > div.container-fluid .navbar-header {
                 padding-left: calc(28 * 100vw / 1920);
                 height: unset;
                 width: 85% !important;
@@ -91,7 +90,7 @@ h4 {
                 align-items: center;
             }
 
-            .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse {
+            .panel-header .navbar > div.container-fluid .collapse.navbar-collapse {
                 padding-right: calc(25 * 100vw / 1920);
                 height: unset !important;
                 width: unset !important;
@@ -99,7 +98,7 @@ h4 {
                 margin-left: 0;
             }
 
-                .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right {
+                .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right {
                     margin-right: 0;
                     margin: 0;
                     font-size: calc(14*(50vh + 23.5vw)/910);
@@ -109,7 +108,7 @@ h4 {
                     height: 100%;
                 }
 
-                    .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right .user {
+                    .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right .user {
                         position: relative;
                         display: flex;
                         flex-direction: row;
@@ -117,18 +116,18 @@ h4 {
                         justify-content: center;
                     }
 
-        .new-design-theme .panel-header .navbar .navbar-nav > li > a:not(.btn) .material-icons {
+        .panel-header .navbar .navbar-nav > li > a:not(.btn) .material-icons {
             color: #4E4E4E;
         }
 
-        .new-design-theme .panel-header .navbar > div.container-fluid a.navbar-brand.edashboard-nav-caption {
+        .panel-header .navbar > div.container-fluid a.navbar-brand.edashboard-nav-caption {
             font-size: calc(20*(50vh + 23.5vw)/910);
             color: #4E4E4E !important;
             padding: 0;
             height: auto;
         }
 
-        .new-design-theme .panel-header .navbar .user .photo {
+        .panel-header .navbar .user .photo {
             width: calc(40 * 100vh / 910);
             height: calc(40 * 100vh / 910);
             margin-left: calc(10 * 100vw / 1920);
@@ -136,17 +135,17 @@ h4 {
             border-radius: 50%;
         }
 
-    .new-design-theme .navbar .user .photo img {
+    .navbar .user .photo img {
         width: 100%;
     }
 
-    .new-design-theme .panel-header .navbar .user .user-name {
+    .panel-header .navbar .user .user-name {
         margin-right: calc(2rem / 16);
         padding-top: 0;
     }
 
-    .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li > button,
-    .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li > a {
+    .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li > button,
+    .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li > a {
         padding: 0 !important;
         display: flex;
         position: relative;
@@ -155,13 +154,13 @@ h4 {
         background-color: #FFF;
     }
 
-    .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li {
+    .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li {
         display: flex;
         margin-left: calc(26 * 100vw / 1920);
         align-items: center;
     }
 
-    .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse i.material-icons {
+    .panel-header .navbar > div.container-fluid .collapse.navbar-collapse i.material-icons {
         margin-top: auto;
         margin-bottom: auto;
         font-size: calc(25*(50vh + 23.5vw)/910);
@@ -182,7 +181,7 @@ h4 {
         font-feature-settings: 'liga';
     }
 
-    .new-design-theme .navbar .notification {
+    .navbar .notification {
         position: absolute;
         top: -5px !important;
         right: unset;
@@ -202,21 +201,21 @@ h4 {
         text-align: center;
     }
 
-    .new-design-theme .navbar .hidden-lg {
+    .navbar .hidden-lg {
         display: none;
     }
 
-    .new-design-theme .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li > div.form-group {
+    .panel-header .navbar > div.container-fluid .collapse.navbar-collapse ul.nav.navbar-nav.navbar-right li > div.form-group {
         padding-bottom: 0;
         margin: 0;
     }
 
-    .new-design-theme .panel-header .navbar .navbar-header .header-buttons {
+    .panel-header .navbar .navbar-header .header-buttons {
         margin-left: calc(18 * 100vw / 1920);
         height: calc(40 * 100vh / 910);
     }
 
-        .new-design-theme .panel-header .navbar .navbar-header .header-buttons .btn {
+        .panel-header .navbar .navbar-header .header-buttons .btn {
             height: calc(40 * 100vh / 910);
             border-radius: calc(5*(50vh + 23.5vw)/910) !important;
             padding: calc(10 * 100vh / 910) calc(18*(50vh + 23.5vw)/910);
@@ -228,12 +227,12 @@ h4 {
             font-weight: bold;
         }
 
-    .new-design-theme .sidebar {
+    .sidebar {
         display: block;
         font-weight: 200;
         z-index: 9999;
         height: 100%;
-        max-height: 100%;
+        min-height: 100svh;
         -webkit-transition-property: top, bottom, width;
         transition-property: top, bottom, width;
         -webkit-transition-duration: .2s, .2s, .35s;
@@ -249,43 +248,43 @@ h4 {
         box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.42), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
     }
 
-        .new-design-theme .sidebar[data-active-color="blue"] li.active > a {
+        .sidebar[data-active-color="blue"] li.active > a {
             background-color: transparent;
             box-shadow: none;
         }
 
-        .new-design-theme .sidebar > .logo {
-            height: calc(70 * 100vh / 910);
-            line-height: calc(70 * 100vh / 910);
-            padding: 0;
+        .sidebar > .logo {
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background-color: #FF9129;
             text-align: center;
             margin: 0;
-            display: block;
             position: relative;
             z-index: 4;
         }
 
-            .new-design-theme .sidebar > .logo > a {
-                line-height: calc(70 * 100vh / 910);
+            .sidebar > .logo > a {
+                /* line-height: calc(70 * 100vh / 910); */
                 float: none;
                 margin-left: auto;
                 margin-right: auto;
-                margin-top: 1vh;
+                /* margin-top: 1vh; */
             }
 
-                .new-design-theme .sidebar > .logo > a > img {
+                .sidebar > .logo > a > img {
                     height: calc(44 * 100vh / 910) !important;
                     width: calc(50 * 100vh / 910);
                     vertical-align: middle;
                 }
 
-    .new-design-theme div.sidebar {
+    div.sidebar {
         background: #0A4975;
         width: calc(85 * 100vw / 1920) !important;
     }
 
-    .new-design-theme div.sidebar-wrapper.ps-container.ps-theme-default {
+    div.sidebar-wrapper.ps-container.ps-theme-default {
         width: calc(85 * 100vw / 1920) !important;
         height: 100%;
         padding-bottom: 0;
@@ -309,14 +308,14 @@ h4 {
     position:relative;
 }
 
-.new-design-theme div.main-panel {
+div.main-panel {
     width: calc(100vw - 85 * 100vw / 1920);
     float: right;
     height: 100%;
     overflow: hidden;
 }
 
-    .new-design-theme ul.leftside-nav {
+    ul.leftside-nav {
         margin: 0;
         padding: 0;
         background-color: #0A4975;
@@ -326,7 +325,7 @@ h4 {
         overflow-y:hidden;
     }
 
-        .new-design-theme ul.leftside-nav > li p {
+        ul.leftside-nav > li p {
             line-height: calc(12 * 100vh / 910);
             font-size: calc(10*(50vh + 23.5vw)/910);
             padding: 0 calc(10 * 100vw / 1920) 0 calc(10 * 100vw / 1920);
@@ -334,12 +333,12 @@ h4 {
             margin: 0;
         }
 
-    .new-design-theme .leftside-nav > li.active p,
+    .leftside-nav > li.active p,
     .sidebar[data-active-color="blue"] li.active > a {
         color: #FF9129;
     }
 
-    .new-design-theme ul.leftside-nav > li > a > svg {
+    ul.leftside-nav > li > a > svg {
         width: calc(25 * 100vw / 1920);
         height: calc(25 * 100vh / 910);
         margin-top: 0;
@@ -347,18 +346,18 @@ h4 {
         fill: white;
     }
 
-    .new-design-theme .leftside-nav > li.active > a > svg {
+    .leftside-nav > li.active > a > svg {
         fill: #FF9129;
     }
 
-    .new-design-theme div.sidebar-wrapper div ul.leftside-nav > li {
+    div.sidebar-wrapper div ul.leftside-nav > li {
         text-align: center;
         margin-bottom: 0;
         max-height: unset;
         margin-top: calc(28 * 100vh / 910);
     }
 
-    .new-design-theme div.panel-header div.navigate-tabs-panel {
+    div.panel-header div.navigate-tabs-panel {
         padding: 0;
         height: calc(74 * 100vh / 910);
         align-items: flex-end;
@@ -366,12 +365,9 @@ h4 {
         padding: 0 calc(16 * 100vw / 1920);
     }
 
-    .new-design-theme .navigate-tabs-panel .tabs-list {
-      
-        
-    }
+   
 
-    /* .new-design-theme  */
+    /*  */
     .control-panel {
         display: flex;
         flex-direction: row;
@@ -379,35 +375,35 @@ h4 {
         flex: inherit;
     }
 
-    .new-design-theme .navigate-tabs-panel .action-tabs {
+    .navigate-tabs-panel .action-tabs {
         margin-top: 0;
         padding: 0
     }
 
-        .new-design-theme .navigate-tabs-panel .action-tabs > li.active > a,
-        .new-design-theme .navigate-tabs-panel .action-tabs > li.active > a:hover,
-        .new-design-theme .navigate-tabs-panel .action-tabs > li.active > a:focus {
+        .navigate-tabs-panel .action-tabs > li.active > a,
+        .navigate-tabs-panel .action-tabs > li.active > a:hover,
+        .navigate-tabs-panel .action-tabs > li.active > a:focus {
             border-width: calc(4*(50vh + 23.5vw)/910) !important;
             font-size: calc(17*(50vh + 23.5vw)/910);
             color: #4e4e4e !important;
             text-decoration: none !important;
         }
 
-        .new-design-theme .navigate-tabs-panel .action-tabs > li > a {
+        .navigate-tabs-panel .action-tabs > li > a {
             color: #B9B9B9 !important;
             font-size: calc(17*(50vh + 23.5vw)/910);
             font-weight: bold !important;
             padding-bottom: calc(29 * 100vh / 910);
         }
 
-    .new-design-theme .navigate-tabs-panel .nav > li > a {
+    .navigate-tabs-panel .nav > li > a {
         position: relative;
         display: block;
         padding: 0 calc(12 * 100vw / 1920);
         height: calc(43 * 100vh / 910);
     }
 
-    .new-design-theme .navigate-tabs-panel div.control-panel a.btn {
+    .navigate-tabs-panel div.control-panel a.btn {
         border-radius: calc(5*(50vh + 23.5vw)/910);
         height: calc(40 * 100vh / 910);
         line-height: calc(40 * 100vh / 910);
@@ -417,39 +413,39 @@ h4 {
         background-color: #4e4e4e;
     }
 
-    .new-design-theme .nav-tabs > li > a {
+    .nav-tabs > li > a {
         border-bottom: inherit !important;
         border-width: 0 !important;
     }
 
-    .new-design-theme .nav-tabs > li > a.nav-tabs-action {
+    .nav-tabs > li > a.nav-tabs-action {
         cursor: pointer;
     }
 
-    .new-design-theme footer {
+    footer {
         background-color: unset !important;
         padding: 0 calc(25 * 100vw / 1920) !important;
         margin-top: calc(7 * 100vh / 910);
         font-size: calc(11*(50vh + 23.5vw)/910) !important;
     }
 
-        .new-design-theme footer div.container-fluid {
+        footer div.container-fluid {
             padding: 0;
             float: right;
             margin-bottom: calc(21 * 100vh / 910);
             margin-right: calc(24 * 100vw / 1920)
         }
 
-            .new-design-theme footer div.container-fluid p {
+            footer div.container-fluid p {
                 display: inline-block;
                 margin: 0;
             }
 
-        .new-design-theme footer .copyright {
+        footer .copyright {
             padding: 0 calc(16 * 100vw / 1920);
         }
 
-    .new-design-theme .quickview-wrapper {
+    .quickview-wrapper {
         position: fixed;
         right: -900px;
         top: 0;
@@ -461,12 +457,10 @@ h4 {
         border-left: 1px solid rgba(222, 227, 231, 0.56);
         -webkit-transition: -webkit-transform 400ms cubic-bezier(0.05, 0.74, 0.27, 0.99);
         transition: transform 400ms cubic-bezier(0.05, 0.74, 0.27, 0.99);
-        -webkit-backface-visibility: hidden;
-        -ms-backface-visibility: hidden;
-        -webkit-perspective: 1000;
+       
     }
 
-    .new-design-theme .quickview-wrapper.fullWidth {
+    .quickview-wrapper.fullWidth {
         position: fixed;
         -webkit-transform: none;
         transform: none;
@@ -482,7 +476,7 @@ h4 {
     }
 
 
-        .new-design-theme .quickview-wrapper.open.fullWidth {
+        .quickview-wrapper.open.fullWidth {
             -webkit-transform: none;
             transform: none;
             -ms-transform: none;
@@ -493,12 +487,12 @@ h4 {
             height: 100%;
         }
 
-    .new-design-theme .radio {
+    .radio {
         margin-top: 0;
         margin-bottom: 0;
     }
 
-    .new-design-theme .form-group div.radio label {
+    .form-group div.radio label {
         font-size: calc(16 * (50vh + 23.5vw) / 910);
         color: #4E4E4E;
         font-weight: normal;
@@ -506,8 +500,8 @@ h4 {
         line-height: calc(28 * (50vh + 23.5vw) / 910);
     }
 
-    .new-design-theme .radio input[type=radio]:checked ~ .circle,
-    .new-design-theme .radio label span.circle {
+    .radio input[type=radio]:checked ~ .circle,
+    .radio label span.circle {
         border: calc(2 * (50vh + 23.5vw) / 910) solid #4E4E4E;
         height: calc(28 * (50vh + 23.5vw) / 910);
         width: calc(28 * (50vh + 23.5vw) / 910);
@@ -515,8 +509,8 @@ h4 {
         left: calc(20 * (50vh + 23.5vw) / 910);
     }
 
-.new-design-theme .radio input[type=radio]:checked ~ .check,
-.new-design-theme .radio label span.check {
+.radio input[type=radio]:checked ~ .check,
+.radio label span.check {
     background-color: #4D94FF;
     transform: none !important;
     height: calc(16 * (50vh + 23.5vw) / 910) !important;
@@ -525,30 +519,26 @@ h4 {
     left: calc(26 * (50vh + 23.5vw) / 910) !important;
 }
 
-    .new-design-theme .radio label span.check {
+    .radio label span.check {
         background-color: transparent;
     }
 
-    .new-design-theme .radio label .check:after {
+    .radio label .check:after {
         display: none;
     }
 
-    .new-design-theme .nav.navbar-nav.navbar-right .searchContainer,
-    .new-design-theme .nav.navbar-nav.navbar-right .searchContainer input {
+    .nav.navbar-nav.navbar-right .searchContainer,
+    .nav.navbar-nav.navbar-right .searchContainer input {
         width: calc(300 * 100vw / 1920);
     }
 
-    .new-design-theme .nav.navbar-nav.navbar-right .form-group.is-focused .form-control {
+    .nav.navbar-nav.navbar-right .form-group.is-focused .form-control {
         background-image: linear-gradient(#D2D2D2, #D2D2D2), linear-gradient(#D2D2D2, #D2D2D2);
     }
 
-.navbar-general-header-title {
-   /* min-width: 300px*/
-}
+
 @media(min-width: 400px)and (max-width:995px) {
-    .new-design-theme .sidebar{
-         /*left: -260px !important; */  
-    }
+    
     .logo_ops_top{
         width:3.7rem;
 
@@ -556,7 +546,7 @@ h4 {
     .sidebar {
         width: 5.3vw !important;
     }
-    .new-design-theme .sidebar > .logo {
+    .sidebar > .logo {
         margin-left: -6px !important;
        /* width: 44px !important;*/
     }
@@ -566,13 +556,13 @@ h4 {
     #classification_container_row {
         margin-left: 2.5vw !important;
     }
-        .new-design-theme .panel-header .navbar > div.container-fluid .navbar-header {
+        .panel-header .navbar > div.container-fluid .navbar-header {
         padding-left: calc(86 * 100vw / 1920) !important;
     }
-    .new-design-theme div.sidebar {
+    div.sidebar {
         width: calc(113 * 100vw / 1920) !important;
     }
-    .new-design-theme div.sidebar-wrapper.ps-container.ps-theme-default{
+    div.sidebar-wrapper.ps-container.ps-theme-default{
         width:100% !important;
     }
     .sidebar, .off-canvas-sidebar nav .navbar-collapse {

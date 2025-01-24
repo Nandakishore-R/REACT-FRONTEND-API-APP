@@ -93,6 +93,9 @@ const vendorSlice = createSlice({
     saveVendorId: (state, action) => {
       state.vendorId = action.payload;
     },
+    saveVendorType: (state, action) => {
+      state.vendorType = action.payload;
+    },
     changeVendorDetails: (state, action) => {
       const { vendorType, vendorDepartment } = action.payload;
       state.vendorType = vendorType;
@@ -201,6 +204,7 @@ const vendorSlice = createSlice({
 export const {
   changeTab,
   saveVendorId,
+  saveVendorType,
   changeVendorDetails,
   updateRatingData,
   updateCategorizationData,

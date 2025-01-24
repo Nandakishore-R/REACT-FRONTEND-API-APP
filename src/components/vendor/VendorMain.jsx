@@ -3,7 +3,7 @@ import { Pagination } from "antd";
 import { Tooltip } from "antd";
 import { Tag } from "antd";
 import { useState, useEffect } from "react";
-import { saveVendorId } from "../../slices/VendorSlice";
+import { saveVendorId, saveVendorType } from "../../slices/VendorSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useNavigation } from "react-router-dom";
 import { API_URL } from "../../constants";
@@ -258,6 +258,7 @@ function VendorMain(props) {
   const handleRowClick = (record) => {
     sessionStorage.setItem("vendorType", record.type);
     dispatch(saveVendorId(record.id));
+    dispatch(saveVendorType(record.type));
     navigate(`/vendordetail?id=${record.id}`);
   };
   /////////////////////////////
