@@ -95,13 +95,14 @@ function VendorRating(props) {
         return response.json();
       })
       .then((data) => {
+        console.log("Financial Data",data);
         let vendorRatingFinancialInfoReadModel = data.vendorRatingFinancialInfoReadModel;
         vendorRatingFinancialInfoReadModel["FileStream"] =
-          data.vendorRatingFinancialInfoReadModel.FinancialFile !== "" &&
-            data.vendorRatingFinancialInfoReadModel.FinancialFile !== null
-            ? [data.vendorRatingFinancialInfoReadModel.FinancialFile]
-            : "";
-
+          data.vendorRatingFinancialInfoReadModel.financialFile !== "" &&
+            data.vendorRatingFinancialInfoReadModel.financialFile !== null
+            ? [data.vendorRatingFinancialInfoReadModel.financialFile]
+            : [];
+          console.log("Needed Value",vendorRatingFinancialInfoReadModel["FileStream"]);
         dispatch(
           updateRatingFinancialForm({
             FinancialList: data.financialList,
@@ -156,13 +157,11 @@ function VendorRating(props) {
     let _data = JSON.parse(JSON.stringify(data));
     _data.forEach((d) => {
       if (d.subParams !== null) {
-        console.log("Here if")
         d.averageScore = 0;
         d.subParams.forEach((sp) => {
           sp.scoreModel.forEach((sm) => {
             if (sm.isSelected) {
               avg += 1;
-              console.log("sed");
               arr.push({
                 score: sm.score,
               });
@@ -178,10 +177,8 @@ function VendorRating(props) {
             : d.averageScore;
         totalAvgScoreArr.push(d.averageScore);
         avg = 0;
-        console.log("Alooo");
       }
       if (d.subParams === null) {
-        console.log("Here");
         d.averageScore = 0;
         d.scoreModel.forEach((sm) => {
           if (sm.isSelected) {
@@ -202,7 +199,6 @@ function VendorRating(props) {
         avg = 0;
       }
     });
-    console.log("Chekckpoint 1.5");
     dispatch(setVendorRating({ ratingData: _data }));
     calculateTotalAverageScore(arr, avg, totalAvgScoreArr);
   };
@@ -214,11 +210,6 @@ function VendorRating(props) {
     );
   };
   const saveRatingModel = (averageRatingodel) => {
-    console.log("avg model",averageRatingodel);
-    console.log("check",averageRatingodel.ratingFile !== "" &&
-      averageRatingodel.ratingFile !== null
-      ? [averageRatingodel.ratingFile]
-      : "nothing")
     dispatch(
       updateVendorRatingModel({
         Devaitions: averageRatingodel.devaitions,
@@ -1004,7 +995,6 @@ function VendorRating(props) {
                 maxCount={1}
                 accept={allowedFileTypes.join(",")}
               >
-                {console.log("upload",VrFileStream)}
                 <Button className="upload-btn" disabled={isInViewMode}>
                   <span>Attach file</span>
                   <svg
@@ -1031,15 +1021,18 @@ function VendorRating(props) {
       {toRenderFinancialForm && (
         <Fragment>
           <h2 style={{ textAlign: "center" }}>Financial Form</h2>
+          
           {VrFinancialList.length > 0 &&
             VrFinancialList.map((f, i) => {
+              {console.log(f.parameterId)}
               return (
+                
                 <div key={f.parameterId} className="vd-f-fields-wrapper">
                   <p className="field-heading">{f.parameterTitle}</p>
                   {f.subParams.length > 0 &&
                     f.subParams.map((sp, key) => {
                       return (
-                        <div className="f-field-wrapper" id={sp.parameterId}>
+                        <div className="f-field-wrapper" id={sp.parameterId} key={key}>
                           <p className="f-label">{sp.parameterTitle}</p>
                           <div className="f-fields">
                             <div>
@@ -1131,7 +1124,9 @@ function VendorRating(props) {
               <Upload
                 disabled={isInViewMode}
                 beforeUpload={() => false}
-                fileList={VrvendorRatingFinancialInfoReadModel["FileStream"]}
+                fileList={
+                  VrvendorRatingFinancialInfoReadModel["FileStream"]
+                }
                 onChange={handleFinancialFileUpload}
                 maxCount={1}
                 accept={allowedFileTypes.join(",")}
@@ -1141,7 +1136,7 @@ function VendorRating(props) {
                   <svg
                     stroke="currentColor"
                     fill="currentColor"
-                    stroke-width="0"
+                    strokeWidth="0"
                     viewBox="0 0 24 24"
                     height="20px"
                     width="20px"
