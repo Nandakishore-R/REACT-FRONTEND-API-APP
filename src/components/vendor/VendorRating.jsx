@@ -10,6 +10,7 @@ import {
   updateVendorRatingModel,
 } from "../../slices/VendorSlice";
 import { setVendorRating } from "../../slices/VendorSlice";
+import { API_URL } from "../../constants";
 
 function VendorRating(props) {
   const { Option } = Select;
@@ -49,7 +50,7 @@ function VendorRating(props) {
     : "";
   // FETCH RATING
   const fetchRating = () => {
-    fetch(`https://rcapi.gieom.com/Vendor/GetRatingPOC?vendorId=${vendorId}`)
+    fetch(`${API_URL}/Vendor/GetRatingPOC?vendorId=${vendorId}`)
       .then((response) => {
         setLoading(true);
         return response.json();
@@ -90,19 +91,17 @@ function VendorRating(props) {
   };
   //FETCH FINANCIAL FORM
   const fetchFinancialForm = () => {
-    fetch(`https://rcapi.gieom.com/Vendor/GetVendorFinancials/${vendorId}`)
+    fetch(`${API_URL}/Vendor/GetVendorFinancials/${vendorId}`)
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        console.log("Financial Data",data);
         let vendorRatingFinancialInfoReadModel = data.vendorRatingFinancialInfoReadModel;
         vendorRatingFinancialInfoReadModel["FileStream"] =
           data.vendorRatingFinancialInfoReadModel.financialFile !== "" &&
             data.vendorRatingFinancialInfoReadModel.financialFile !== null
             ? [data.vendorRatingFinancialInfoReadModel.financialFile]
             : [];
-          console.log("Needed Value",vendorRatingFinancialInfoReadModel["FileStream"]);
         dispatch(
           updateRatingFinancialForm({
             FinancialList: data.financialList,
@@ -116,7 +115,7 @@ function VendorRating(props) {
   //console.log(VrvendorRatingFinancialInfoReadModel["FileStream"])
   // FETCH_ELLIGIBLE_SCORE
   const fetchElligibleScore = () => {
-    fetch("https://rcapi.gieom.com/Vendor/GetVendorRatingScoringGroup")
+    fetch(`${API_URL}/Vendor/GetVendorRatingScoringGroup`)
       .then((response) => {
         return response.json();
       })
@@ -629,7 +628,7 @@ function VendorRating(props) {
     }
     financialDataObj.append("model", JSON.stringify(saveDataObj));
 
-    fetch("https://rcapi.gieom.com/Vendor/SaveVendorFinancials", {
+    fetch(`${API_URL}/Vendor/SaveVendorFinancials`, {
       method: "POST",
       body: financialDataObj,
     })
@@ -1024,7 +1023,6 @@ function VendorRating(props) {
           
           {VrFinancialList.length > 0 &&
             VrFinancialList.map((f, i) => {
-              {console.log(f.parameterId)}
               return (
                 
                 <div key={f.parameterId} className="vd-f-fields-wrapper">

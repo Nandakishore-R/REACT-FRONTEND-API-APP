@@ -2,6 +2,7 @@
 import { Input, Row, Col, Select, Button } from "antd";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
+import { API_URL } from "../../constants";
 import {
   selectVendorCategorization,
   changeCategorizationReviewers,
@@ -35,7 +36,7 @@ function VendorCategorization(props) {
 
   // fetch data
   const fetchVendorCategorizationData = () => {
-    fetch(`https://rcapi.gieom.com/Vendor/GetScoring/${vendorId}`)
+    fetch(`${API_URL}/Vendor/GetScoring/${vendorId}`)
       .then((response) => {
         setLoading(true);
         return response.json();
@@ -53,7 +54,7 @@ function VendorCategorization(props) {
 
   const fetchScoringGroups = () => {
     setLoading(true);
-    fetch(`/Vendor/GetScoringGroups`)
+    fetch(`${API_URL}/Vendor/GetScoringGroups`)
       .then((response) => {
         setLoadingScores(true);
         return response.json();
@@ -299,7 +300,7 @@ function VendorCategorization(props) {
       //toastr.error("Please select reviewers!");
       return;
     }
-    fetch("https://rcapi.gieom.com/Vendor/SaveVendorReviewers", {
+    fetch(`${API_URL}/Vendor/SaveVendorReviewers`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

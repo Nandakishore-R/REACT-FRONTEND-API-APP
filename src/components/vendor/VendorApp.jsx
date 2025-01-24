@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ClauseModel from "./ClauseModel";
 import { selectVendorApp } from "../../slices/VendorSlice";
+import { API_URL } from "../../constants";
 import {
   changeTab,
   changeVendorName,
@@ -144,7 +145,7 @@ function VendorApp(props) {
   const _ids = [];
   reviewerIds.forEach((r) => _ids.push(r.Id));
   const handleSaveReviewers = () => {
-    fetch("https://rcapi.gieom.com/Vendor/SaveVendorReviewers", {
+    fetch(`${API_URL}/Vendor/SaveVendorReviewers`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -420,7 +421,7 @@ function VendorApp(props) {
     }
     financialDataObj.append("model", JSON.stringify(saveDataObj));
 
-    fetch("https://rcapi.gieom.com/Vendor/SaveVendorFinancials", {
+    fetch(`${API_URL}/Vendor/SaveVendorFinancials`, {
       method: "POST",
       body: financialDataObj,
     })
@@ -481,7 +482,7 @@ function VendorApp(props) {
 
   const handleFinishBtnClick = () => {
     if (vendorId) {
-      fetch("https://rcapi.gieom.com/Vendor/FinishVendor?VendorId=" + vendorId, {
+      fetch(`${API_URL}/Vendor/FinishVendor?VendorId=${vendorId}`, {
         method: "POST",
       })
         .then((res) => res.json())

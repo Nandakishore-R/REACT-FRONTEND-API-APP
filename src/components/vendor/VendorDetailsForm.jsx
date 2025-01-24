@@ -6,6 +6,7 @@ import {
   setInactivation,
   selectVendorDetailsForm,
 } from "../../slices/VendorSlice";
+import { API_URL } from "../../constants";
 import FormRender from "./FormRender";
 import { changeVendorDetailsForm, setURN } from "../../slices/VendorSlice";
 import moment from "moment";
@@ -15,7 +16,6 @@ function VendorDetailsForm(props) {
   const { TextArea } = Input;
   const [issuanceDate, setIssuanceDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   //Redux
   const dispatch = useDispatch();
   const {
@@ -43,7 +43,7 @@ function VendorDetailsForm(props) {
   //To Fetch the URN , when selected Vendor Type is one of the DD types
   const fetchLatestURN = () => {
     //Fetch URN
-    fetch("https://rcapi.gieom.com/Vendor/GetLatestURN")
+    fetch(`${API_URL}/Vendor/GetLatestURN`)
       .then((response) => response.json())
       .then((res) => {
         if (res.status == "success") {
@@ -57,7 +57,7 @@ function VendorDetailsForm(props) {
   useEffect(() => {
     // console.log("id ",vendorId);
     //Fetch Filled Data
-    fetch("https://rcapi.gieom.com/Vendor/GetVendorById/" + vendorId) //POC
+    fetch(`${API_URL}/Vendor/GetVendorById/${vendorId}`) //POC
       .then((response) => response.json())
       .then((res) => {
         if (res.status == "success") {

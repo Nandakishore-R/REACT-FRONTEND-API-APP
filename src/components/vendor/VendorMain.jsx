@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { saveVendorId } from "../../slices/VendorSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useNavigation } from "react-router-dom";
+import { API_URL } from "../../constants";
 
 function VendorMain(props) {
   const [loading, setLoading] = useState(true);
@@ -195,7 +196,7 @@ function VendorMain(props) {
     let filterData = {};
     if (props.FilterOptions)
       filterData = filterDataFormat(JSON.parse(props.FilterOptions));
-    fetch(`https://rcapi.gieom.com/Vendor/GetAllVendorsDynamicPOC`, {
+    fetch(`${API_URL}/Vendor/GetAllVendorsDynamicPOC`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
