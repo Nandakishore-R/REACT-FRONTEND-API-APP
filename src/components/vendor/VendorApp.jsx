@@ -802,17 +802,14 @@ function VendorApp(props) {
   // crate separate component here
   return (
     <div
-      style={{
-        position: "relative",
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingTop: "1.5rem",
-      }}
-    >
-      <div className="action-centre-nav">
-        <div style={{ position: "relative" }}>
+    className="action-centre-nav"
+    style={{
+      width: "94.45vw",
+      marginTop: "4vh",
+      marginLeft: ".5vw",
+      marginBottom: "3vh",
+    }}
+  >
           <ul
             className="vd-actionTabs"
             style={{ position: "sticky", top: "0px", zIndex: "1000" }}
@@ -830,7 +827,6 @@ function VendorApp(props) {
                 </li>
               );
             })}
-            <div style={{ position: "relative" }}>
               <div className="control-panel">
                 <div className="vd-action-btn ">
                   <button
@@ -840,7 +836,7 @@ function VendorApp(props) {
                     Close
                   </button>
                 </div>
-                {/* <div className="vd-action-btn ">
+                <div className="vd-action-btn ">
                   <button
                     onClick={() => handleTabChange("prev")}
                     disabled={activeTab === "VendorDetails"}
@@ -869,7 +865,7 @@ function VendorApp(props) {
                       className="glyphicon glyphicon-chevron-right vd-arrow"
                     ></i>
                   </button>
-                </div> */}
+                </div>
                 {hasCentrilizedAccess && (
                   <Fragment>
                     {
@@ -917,9 +913,7 @@ function VendorApp(props) {
                   </Fragment>
                 )}
               </div>
-            </div>
           </ul>
-        </div>
         {/* <div className="historyBtn-wrapper">
           <HistoryButton
             api={
@@ -931,9 +925,8 @@ function VendorApp(props) {
           /> */}
         {activeTab === "VendorCategorizationScoring" && <ClauseModel />}
         {/* </div> */}
-        <div>{renderSections[activeTab]}</div>
+      {renderSections[activeTab]}
       </div>
-    </div>
   );
 }
 

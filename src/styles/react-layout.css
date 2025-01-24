@@ -1,4 +1,4 @@
-/* @import '//cdn.quilljs.com/1.2.6/quill.snow.css'; */
+@import '//cdn.quilljs.com/1.2.6/quill.snow.css';
 @import "./form-renderer-deps.css";
 @import "./form-renderer-deps.overwrites.css";
 

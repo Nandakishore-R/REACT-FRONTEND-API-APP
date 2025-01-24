@@ -36,9 +36,9 @@ function VendorCategorization(props) {
 
   // fetch data
   const fetchVendorCategorizationData = () => {
+    setLoading(true);
     fetch(`${API_URL}/Vendor/GetScoring/${vendorId}`)
       .then((response) => {
-        setLoading(true);
         return response.json();
       })
       .then((data) => {
@@ -49,7 +49,6 @@ function VendorCategorization(props) {
       .finally(() => {
         setLoading(false);
       });
-    setLoading(false);
   };
 
   const fetchScoringGroups = () => {
