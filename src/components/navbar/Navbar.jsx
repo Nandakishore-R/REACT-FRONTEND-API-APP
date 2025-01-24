@@ -6,7 +6,7 @@ function Navbar() {
     <div className="sidebar" data-active-color="blue" data-background-color="black" style={{ width : '85px'}}>
     
     <div className="logo">
-        <a href="#" className="simple-text logo-mini">
+        <a href="/" className="simple-text logo-mini">
             <p className="new-p">Risk<br />Central</p>
         </a>
     </div>
