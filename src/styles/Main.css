@@ -59,6 +59,7 @@ h4 {
         flex-direction: column;
         overflow-y:auto;
     }
+   
 
     .new-design-theme .panel-header .navbar {
         height: calc(70 * 100vh / 910);
@@ -314,6 +315,8 @@ h4 {
     float: right;
     height: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
     .new-design-theme ul.leftside-nav {

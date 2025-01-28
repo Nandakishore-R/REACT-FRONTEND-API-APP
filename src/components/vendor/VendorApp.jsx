@@ -825,26 +825,6 @@ function VendorApp(props) {
             })}
             <div style={{ position: "absolute", right: "1px" }}>
               <div className="control-panel" style={{ marginLeft: "1.1vw", marginRight: "1.1vw" }}>
-                {/* {tabData.find((tab) => tab.id === activeTab).showHistory &&
-                vendorId && (
-                  <div className="vd-action-btn ">
-                    <HistoryButton
-                      api={
-                        "/Vendor/GetHistory?vendorId=" +
-                        vendorId +
-                        "&tabName=" +
-                        historyTabIds[activeTab]
-                      }
-                      selectedTab={activeTab}
-                      {...{ tabData }}
-                    />
-                  </div>
-                )} */}
-                {tabData.find((tab) => tab.id === activeTab).showInfo && (
-                <div className="vd-action-btn ">
-                  <ClauseModel {...{ activeTab }} />
-                </div>
-                )}
                 <div className="vd-action-btn ">
                   <button
                     onClick={() => navigate("/")}
@@ -891,8 +871,7 @@ function VendorApp(props) {
                           <div className="vd-action-btn">
                             <button
                               onClick={() => handleSaveBtnClick(activeTab)}
-                              style={{ backgroundColor: "#FFB63B" }}
-                            >
+                              style={{ backgroundColor: "#FFB63B" }}>
                               Save
                             </button>
                           </div>
@@ -929,11 +908,11 @@ function VendorApp(props) {
                   </Fragment>
                 )}
               </div>
-             </div> 
+             </div>
           </ul>
       </div>
-        {/* <div className="historyBtn-wrapper">
-          <HistoryButton
+        {/* <div className="historyBtn-wrapper"> */}
+          {/* <HistoryButton
             api={
               "/Vendor/GetHistory?vendorId=" +
               vendorId +
@@ -941,7 +920,7 @@ function VendorApp(props) {
               activeTab
             }
           /> */}
-        {activeTab === "VendorCategorizationScoring" && <ClauseModel />}
+        {/* {activeTab === "VendorCategorizationScoring" && <ClauseModel />} */}
         {/* </div> */}
         <div>
       {renderSections[activeTab]}

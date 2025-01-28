@@ -219,12 +219,11 @@ function ClauseModel(props) {
       <Button
         type="primary"
         onClick={showModal}
-        style={{ backgroundColor: "#4D94FF" }}
-      >
-        Info
+        style={{ backgroundColor: "#4D94FF" }}>
+        Categorization Clauses
       </Button>
       <Modal
-        title="Info"
+        title="Categorization Clauses"
         open={isModalOpen}
         onOk={handleOk}
         footer={false}
@@ -233,11 +232,8 @@ function ClauseModel(props) {
           marginLeft: "5.2%",
           marginTop: "-5%",
         }}
-        width="94%"
-      >
-        {props.activeTab == "VendorCategorizationScoring" && (
+        width="85vw">
           <div className="vd-clause-table-wrapper">
-            <div id="clauseModal">
               <Table
                 size="middle"
                 pagination={false}
@@ -251,68 +247,6 @@ function ClauseModel(props) {
                 rowKey={(record) => record.key}
               />
             </div>
-            <div id="ratingScoreModal">
-              <Table
-                size="middle"
-                pagination={false}
-                columns={ratingScoreColumns}
-                dataSource={ratingScoreDataSource}
-                locale={locale}
-                rowClassName={(record, index) =>
-                  index % 2 === 0 ? "even" : "odd"
-                }
-                loading={loading}
-                rowKey={(record) => record.key}
-              />
-              <Table
-                size="middle"
-                pagination={false}
-                columns={ratingScoreColumns2}
-                dataSource={ratingScoreDataSource2}
-                locale={locale}
-                rowClassName={(record, index) =>
-                  index % 2 === 0 ? "even" : "odd"
-                }
-                loading={loading}
-                rowKey={(record) => record.key}
-              />
-            </div>
-          </div>
-        )}
-        {props.activeTab == "VendorRating" && (
-          <div className="annualReviewContainer">
-            <div id="serviceTable">
-              <Table
-                title={() => "Vendor Services Renewal Criteria"}
-                size="middle"
-                pagination={false}
-                columns={renewalColumns}
-                dataSource={renewalDataSource}
-                locale={locale}
-                rowClassName={(record, index) =>
-                  index % 2 === 0 ? "even" : "odd"
-                }
-                loading={loading}
-                rowKey={(record) => record.key}
-              />
-            </div>
-            <div id="scoringTable">
-              <Table
-                title={() => "Scoring Criteria"}
-                size="middle"
-                pagination={false}
-                columns={scoringColumns}
-                dataSource={scoringeDataSource}
-                locale={locale}
-                rowClassName={(record, index) =>
-                  index % 2 === 0 ? "even" : "odd"
-                }
-                loading={loading}
-                rowKey={(record) => record.key}
-              />
-            </div>
-          </div>
-        )}
       </Modal>
     </div>
   );

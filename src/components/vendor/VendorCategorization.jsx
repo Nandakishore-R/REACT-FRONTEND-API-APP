@@ -356,13 +356,13 @@ function VendorCategorization(props) {
 
   return (
     <div className="categorization-wrapper vd-access-outer">
-      {vendorType === "DSA" && (
+      {vendorType === "DSA" && 
         <div className="categorization-overlay">
           <p className="c-overlay-text">
             Your are not allowed to make changes in this Tab
           </p>
-        </div>
-      )}
+        </div>  
+      }
       <Row className="vendor-header">
         <Col span="7">Scoring Parameter</Col>
         <Col span="5">Scoring Rule</Col>

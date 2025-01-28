@@ -293,8 +293,7 @@ function VendorMain(props) {
           marginLeft: ".5vw",
           marginBottom: "3vh",
         }}
-        id="vendorTableWrapper"
-      >
+        id="vendorTableWrapper">
         <Table
           className="vendor-grid-table"
           onChange={handleTableChnge}
