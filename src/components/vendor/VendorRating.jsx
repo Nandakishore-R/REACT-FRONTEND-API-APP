@@ -15,7 +15,7 @@ import { API_URL } from "../../constants";
 function VendorRating(props) {
   const { Option } = Select;
   const { TextArea } = Input;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [_saveData, set_SaveData] = useState([]);
   const [deviationValue, setDeviationValue] = useState("");
 

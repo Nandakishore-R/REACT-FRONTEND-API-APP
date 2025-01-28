@@ -811,7 +811,12 @@ function VendorApp(props) {
                 <li
                   className={activeTab === tab.id ? "active-tab" : ""}
                   key={tab.id}
-                  style={{ width: "14vw" }}>
+                  style={{  width:
+                    tab.title.length <= 14
+                      ? "9vw"
+                      : tab.title.length >= 25
+                      ? "20vw"
+                      : "12vw", }}>
                   <button onClick={handleClick} id={tab.id} title={tab.title}>
                     {tab.title}
                   </button>
@@ -820,6 +825,26 @@ function VendorApp(props) {
             })}
             <div style={{ position: "absolute", right: "1px" }}>
               <div className="control-panel" style={{ marginLeft: "1.1vw", marginRight: "1.1vw" }}>
+                {/* {tabData.find((tab) => tab.id === activeTab).showHistory &&
+                vendorId && (
+                  <div className="vd-action-btn ">
+                    <HistoryButton
+                      api={
+                        "/Vendor/GetHistory?vendorId=" +
+                        vendorId +
+                        "&tabName=" +
+                        historyTabIds[activeTab]
+                      }
+                      selectedTab={activeTab}
+                      {...{ tabData }}
+                    />
+                  </div>
+                )} */}
+                {tabData.find((tab) => tab.id === activeTab).showInfo && (
+                <div className="vd-action-btn ">
+                  <ClauseModel {...{ activeTab }} />
+                </div>
+                )}
                 <div className="vd-action-btn ">
                   <button
                     onClick={() => navigate("/")}

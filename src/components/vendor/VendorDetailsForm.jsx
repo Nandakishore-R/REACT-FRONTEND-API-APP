@@ -66,11 +66,11 @@ function VendorDetailsForm(props) {
           console.log("Formdata", data);
           // updateTitle(`VENDOR MASTER: ${res.data.name}`); look later
           if (data.action) {
-            dataCopy = props.getData(data.action);
+            let dataCopy = props.getData(data.action);
             dispatch(
               changeVendorDetailsForm({
                 FormData: dataCopy,
-                IsActive: res.Data.IsActive,
+                IsActive: res.data.isActive,
               })
             );
           } else {
