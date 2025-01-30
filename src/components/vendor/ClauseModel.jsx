@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Table, Pagination } from "antd";
 // import { API_URL } from "../../constants";
 
@@ -103,14 +103,13 @@ function ClauseModel(props) {
     },
   ];
   const getClauseData = () => {
-    // fetch(`${API_URL}/MasterData/GetAllDropdownValues/vcc`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     //console.log(data)
-    //     setClauseData(data);
-    //   })
-    //   .catch((err) => toastr.error(err.message));
-  };
+    // fetch("/MasterData/GetAllDropdownValues/vcc").then((res) => res.json())
+    //     .then((data) => {
+    //         //console.log(data)
+    //         setClauseData(data);
+    //     })
+    //     .catch((err) => toastr.error(err.message))
+  }
   useEffect(() => {
     getClauseData();
   }, []);
@@ -214,41 +213,87 @@ function ClauseModel(props) {
     },
   ];
 
-  return (
-    <div className="vd-clause-model">
-      <Button
-        type="primary"
-        onClick={showModal}
-        style={{ backgroundColor: "#4D94FF" }}>
-        Categorization Clauses
-      </Button>
-      <Modal
-        title="Categorization Clauses"
-        open={isModalOpen}
-        onOk={handleOk}
-        footer={false}
-        onCancel={handleCancel}
-        style={{
-          marginLeft: "5.2%",
-          marginTop: "-5%",
-        }}
-        width="85vw">
-          <div className="vd-clause-table-wrapper">
-              <Table
-                size="middle"
-                pagination={false}
-                columns={columns}
-                dataSource={clauseData}
-                locale={locale}
-                rowClassName={(record, index) =>
-                  index % 2 === 0 ? "even" : "odd"
-                }
-                loading={loading}
-                rowKey={(record) => record.key}
-              />
-            </div>
-      </Modal>
-    </div>
+  return (<div className="vd-clause-model">
+    <Button type="primary" onClick={showModal} style={{ backgroundColor: "#4D94FF" }}>Info</Button>
+    <Modal title="Info" open={isModalOpen} onOk={handleOk} footer={false} onCancel={handleCancel} style={{
+      marginLeft: "5.2%",
+      marginTop: "-5%"
+    }}
+      width="94%">
+      {props.activeTab == "VendorCategorizationScoring" && <div className="vd-clause-table-wrapper">
+        <div id="clauseModal">
+          <Table
+            size="middle"
+            pagination={false}
+            columns={columns}
+            dataSource={clauseData}
+            locale={locale}
+            rowClassName={(record, index) => index % 2 === 0 ? 'even' : 'odd'}
+            loading={loading}
+            rowKey={record => record.key}
+
+          />
+        </div>
+        <div id="ratingScoreModal">
+          <Table
+            size="middle"
+            pagination={false}
+            columns={ratingScoreColumns}
+            dataSource={ratingScoreDataSource}
+            locale={locale}
+            rowClassName={(record, index) => index % 2 === 0 ? 'even' : 'odd'}
+            loading={loading}
+            rowKey={record => record.key}
+
+          />
+          <Table
+            size="middle"
+            pagination={false}
+            columns={ratingScoreColumns2}
+            dataSource={ratingScoreDataSource2}
+            locale={locale}
+            rowClassName={(record, index) => index % 2 === 0 ? 'even' : 'odd'}
+            loading={loading}
+            rowKey={record => record.key}
+
+          />
+        </div>
+      </div>
+      }
+      {props.activeTab == "VendorRating" &&
+        <div className="annualReviewContainer">
+          <div id="serviceTable">
+            <Table
+              title={() => 'Vendor Services Renewal Criteria'}
+              size="middle"
+              pagination={false}
+              columns={renewalColumns}
+              dataSource={renewalDataSource}
+              locale={locale}
+              rowClassName={(record, index) => index % 2 === 0 ? 'even' : 'odd'}
+              loading={loading}
+              rowKey={record => record.key}
+
+            />
+          </div>
+          <div id="scoringTable">
+            <Table
+              title={() => 'Scoring Criteria'}
+              size="middle"
+              pagination={false}
+              columns={scoringColumns}
+              dataSource={scoringeDataSource}
+              locale={locale}
+              rowClassName={(record, index) => index % 2 === 0 ? 'even' : 'odd'}
+              loading={loading}
+              rowKey={record => record.key}
+
+            />
+          </div>
+        </div>
+      }
+    </Modal>
+  </div>
   );
 }
 

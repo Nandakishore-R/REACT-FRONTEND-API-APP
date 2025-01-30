@@ -25,7 +25,7 @@ function VendorApp(props) {
   const [isLoadingFinish, setIsLoadingFinish] = useState(false);
   const navigate = useNavigate();
   //const _vendorDetails = JSON.parse(sessionStorage.getItem("vendorDetails"));
-  //let _vendorId = _vendorDetails.VendorId;
+  //let _vendorId = _vendorDetails.vendorId;
   const {
     activeTab,
     vendorId,
@@ -45,6 +45,7 @@ function VendorApp(props) {
     VrFileStream,
     VrFileName,
     VrFinancialList,
+    // VrInitialFinancialList,
     VrvendorRatingFinancialInfoReadModel,
     VrFinacialFormBillingMaxLimit,
     VrFinancialFormOnNatureOfServices,
@@ -53,7 +54,12 @@ function VendorApp(props) {
     CReviewers,
     CReviewerRemarks,
     VdVendorName,
+    VrInitialData,
   } = useSelector(selectVendorApp);
+
+  const [initialData, setInitialData] = useState({ score: [], reviewers: [] });
+  const [loading, setLoading] = useState(true);
+
   // TAB IDS
   const tabIds = {
     details: "VendorDetails",
@@ -68,28 +74,58 @@ function VendorApp(props) {
       id: "VendorDetails",
       saveURL: "https://rcapi.gieom.com/Vendor/UpdateVendor?Id=" + vendorId,
       title: "Vendor Details",
+      showHistory: true,
+      showSave: true,
+      showInfo: false,
+      showEdit: true,
     },
     {
       id: "VendorCategorizationScoring",
       saveURL: "https://rcapi.gieom.com/Vendor/SaveScoring",
-      title: "Vendor Categorization",
+      title: "Vendor Rating",
+      showHistory: true,
+      showSave: true,
+      showInfo: true,
+      showEdit: true,
     },
     {
       id: "VendorAdditionlaDetails",
       saveURL: "https://rcapi.gieom.com/Vendor/UpdateVendorAdditionalDetails?Id=" + vendorId,
       title: "Additional Details",
+      showHistory: true,
+      showSave: true,
+      showInfo: false,
+      showEdit: true,
     },
     {
       id: "VendorRating",
-      // saveURL: "/Vendor/SaveVendorRating",
-      title: "Vendor Rating",
+      // saveURL: "/Vendor/SaveVendorRating", //IMPORTANT
+      title: "Annual Performance Evaluation",
+      showHistory: true,
+      showSave: true,
+      showInfo: true,
+      showEdit: true,
     },
     {
       id: "reviewId",
       // saveURL: "/Stages/AddVendorStages",
       title: "Vendor Review",
+      showHistory: true,
+      showSave: true,
+      showInfo: true,
+      showEdit: true,
     },
   ];
+  // history TAB IDS for fetching history, it has no other use other than fetching history based on these tabId's
+
+  const historyTabIds = {
+    VendorDetails: "VendorDetails",
+    VendorCategorizationScoring: "VendorRating",
+    VendorAdditionlaDetails: "VendorAdditionlaDetails",
+    VendorRating: "AnnualPerformanceEvaluation",
+    reviewId: "reviewId"
+
+  }
   // HAS_CENTRALIZED_ACCES
   const useCheckHasCentrilizedAccess = () => {
     const setBooleanForCentrilizedUser =
@@ -118,33 +154,33 @@ function VendorApp(props) {
     if (!isInViewMode) {
       handleSaveBtnClick(e.target.id);
     } else
-    saveTabChange(e.target.id, e.target.title);
+      saveTabChange(e.target.id, e.target.title);
   };
   // VALIDATE CATEGORIZATION DATA
   const validateScoringData = () => {
     let isValidated = true;
     categorizationData.forEach((d) => {
-      if (d.SubParams !== null) {
-        d.SubParams.forEach((sp) => {
-          let notSelectedModels = sp.ScoreModels.filter((sm) => {
-            return !sm.IsSelected;
+      if (d.subParams !== null) {
+        d.subParams.forEach((sp) => {
+          let notSelectedModels = sp.scoreModels.filter((sm) => {
+            return !sm.isSelected;
           });
           //console.log({ notSelectedModels })
         });
       }
-      if (d.SubParams === null) {
-        d.ScoreModels.forEach((sm) => {
-          if (!sm.IsSelected) isValidated = false;
+      if (d.subParams === null) {
+        d.scoreModels.forEach((sm) => {
+          if (!sm.isSelected) isValidated = false;
         });
       }
     });
   };
 
   // SAVE_REVIEWERS
-  const reviewerIds = CReviewers.filter((r) => r.IsSelected);
+  const reviewerIds = CReviewers.filter((r) => r.isSelected);
   const _ids = [];
-  reviewerIds.forEach((r) => _ids.push(r.Id));
-  const handleSaveReviewers = () => {
+  reviewerIds.forEach((r) => _ids.push(r.id));
+  const handleSaveReviewers = (response, nextTabId, isFinish) => {
     fetch(`${API_URL}/Vendor/SaveVendorReviewers`, {
       method: "POST",
       headers: {
@@ -162,75 +198,65 @@ function VendorApp(props) {
       .then((res) => res.json())
       .then((data) => {
         //console.log(data)
-        if (data.Status == "success") {
+        setLoading(false);
+        if (data.status == "success") {
+          isRatingDisabled = true;
+          DataMessage(response, nextTabId, isFinish)
           //toastr.success(data.message);
         } else {
           // toastr.error(data.Message);
+          setIsLoadingFinish(false)
         }
       })
       .catch(
-        (
-          err //toastr.error(err.message)
-        ) => {}
+        (err) => {
+          //toastr.error(err.message)
+          setLoading(false);
+        }
       );
   };
 
-  //SAVE CATEGORIZATION DATA
-  const saveCategorizationData = (saveURL, nextTabId, isFinish) => {
-    const arr = [];
-    categorizationData.forEach((d) => {
-      if (d.SubParams !== null) {
-        d.SubParams.forEach((sp) => {
-          sp.ScoreModels.forEach((sm) => {
-            if (sm.IsSelected) {
-              arr.push({
-                VendorId: vendorId,
-                ScoringRuleId: sm.Id,
-                ParameterId: sp.Id,
-                ParameterName: sp.ScoringTitle,
-                ScoringTitle: sm.Title,
-                Score: sm.Score,
-                Weights: sm.Weights,
-                Rating: sm.Rating,
-                CreatedBy: "",
-                Data: sm.Data,
-              });
-            }
-          });
-        });
-      }
-      if (d.SubParams === null) {
-        d.ScoreModels.forEach((sm) => {
-          if (sm.IsSelected) {
-            arr.push({
-              VendorId: vendorId,
-              ScoringRuleId: sm.Id,
-              ParameterId: d.Id,
-              ParameterName: d.ScoringTitle,
-              ScoringTitle: sm.Title,
-              Score: sm.Score,
-              Weights: sm.Weights,
-              Rating: sm.Rating,
-              CreatedBy: "",
-              Data: sm.Data,
-            });
-          }
-        });
-      }
-    });
+  const jsonComparison = (initArr, arr) => {
+    if (JSON.stringify(initArr) == JSON.stringify(arr))
+      return false;
+    return true; //json is updated
+  }
+  const handleSaveCat = (arr, saveURL, nextTabId, isFinish, isReviewCall) => {
     if (arr.length > 0) {
       if (_ids.length < 1) {
-        //toastr.error("Please select reviewers!");
-        return;
+        setIsLoadingFinish(false);
+        // toastr.error("Please select reviewers!");
+        return
       }
-      saveData(JSON.stringify(arr), saveURL, nextTabId, isFinish);
-      handleSaveReviewers();
+      setLoading(true)
+      saveData(JSON.stringify(arr), saveURL, nextTabId, isFinish, isReviewCall);
     } else {
-      //toastr.error("Please select the values!");
+      // toastr.error("Please select the values!");
       setIsLoadingFinish(false);
       return;
     }
-  };
+  }
+
+
+  //SAVE CATEGORIZATION DATA
+  const saveCategorizationData = async (saveURL, nextTabId, isFinish) => {
+    const initArr = await jsonFormat(initialData.score);
+    const arr = await jsonFormat(categorizationData)
+    const isJsonUpdated = await jsonComparison(initArr, arr) || jsonComparison(initialData.reviewers, _ids)
+    if (isJsonUpdated && noStageFound == false) {
+      ConfirmationPopup({
+        title: "Please Confirm",
+        msg: "By clicking on 'OK' vendor rating will be sent for a review and no further changes will be allowed. Do you want to proceed?",
+        okHandlefx: () => {
+          handleSaveCat(arr, saveURL, nextTabId, isFinish, true)
+        },
+        cancelHandlefx: () => { setIsLoadingFinish(false); }
+      });
+    }
+    else {
+      handleSaveCat(arr, saveURL, nextTabId, isFinish, false)
+    }
+  }
 
   // CHECK WHETHER TO CALL FINANCIAL FORM SAVE API
   const useCheckFinancialFormConditions = () => {
@@ -252,9 +278,56 @@ function VendorApp(props) {
   const toSaveFinancialForm = useCheckFinancialFormConditions();
   //console.log({ toSaveFinancialForm })
   // SAVE RATING DATA
-  const saveRating = (saveURL, nextTabId, isFinish) => {
+  const formatRaingData = (data) => {
     let arr = [];
-    const _data = ratingData;
+    const _data = data;
+    // const _data = ratingData;
+    _data.forEach((d) => {
+      if (d.subParams !== null) {
+        d.subParams.forEach((sp) => {
+          sp.scoreModel.forEach((sm) => {
+            if (sm.isSelected) {
+              arr.push({
+                VendorId: vendorId,
+                RatingParameterId: sp.id,
+                ScoringRuleId: sm.id,
+                Score: sm.score,
+                ScoreLevel: sm.scoreLevel,
+                ScoreLevelColor: sm.scoreColorLevel,
+                IsDelete: false,
+                RatingParameter: sp.title,
+                RatingRule: sm.label,
+                Remarks: sm.remarks,
+              });
+            }
+          });
+        });
+      }
+      if (d.subParams === null) {
+        d.scoreModel.forEach((sm) => {
+          if (sm.isSelected) {
+            arr.push({
+              VendorId: vendorId,
+              RatingParameterId: d.id,
+              ScoringRuleId: sm.id,
+              Score: sm.score,
+              ScoreLevel: sm.scoreLevel,
+              ScoreLevelColor: sm.scoreColorLevel,
+              IsDelete: false,
+              RatingParameter: d.parameterName,
+              RatingRule: sm.label,
+              Remarks: sm.remarks,
+            });
+          }
+        });
+      }
+    });
+    return arr;
+  }
+
+  const saveRating = (saveURL, nextTabId, isFinish) => {
+    const formattdRatingData = formatRatingData(ratingData);
+
     let saveDataObj = {
       vendorRatingModels: [],
       averageVendorRatingModel: {
@@ -266,48 +339,9 @@ function VendorApp(props) {
         Devaitions: VrDevaitions,
         FileStream: VrFileStream,
         FileName: VrFileName,
-      },
-    };
-
-    _data.forEach((d) => {
-      if (d.SubParams !== null) {
-        d.SubParams.forEach((sp) => {
-          sp.ScoreModel.forEach((sm) => {
-            if (sm.IsSelected) {
-              arr.push({
-                VendorId: vendorId,
-                RatingParameterId: sp.Id,
-                ScoringRuleId: sm.Id,
-                Score: sm.Score,
-                ScoreLevel: sm.ScoreLevel,
-                ScoreLevelColor: sm.ScoreColorLevel,
-                IsDelete: false,
-                RatingParameter: sp.Title,
-                RatingRule: sm.label,
-              });
-            }
-          });
-        });
       }
-      if (d.SubParams === null) {
-        d.ScoreModel.forEach((sm) => {
-          if (sm.IsSelected) {
-            arr.push({
-              VendorId: vendorId,
-              RatingParameterId: d.Id,
-              ScoringRuleId: sm.Id,
-              Score: sm.Score,
-              ScoreLevel: sm.ScoreLevel,
-              ScoreLevelColor: sm.ScoreColorLevel,
-              IsDelete: false,
-              RatingParameter: d.ParameterName,
-              RatingRule: sm.label,
-            });
-          }
-        });
-      }
-    });
-    saveDataObj.vendorRatingModels = arr;
+    }
+    saveDataObj.vendorRatingModels = formattdRatingData;
     saveDataObj.averageVendorRatingModel = {
       VendorId: vendorId,
       TotalScore: VrTotalScore,
@@ -321,53 +355,91 @@ function VendorApp(props) {
       vrRatingFormDataObj.append(`file${0}`, VrFileStream[0].originFileObj);
       vrRatingFormDataObj.append(`Files[${0}].uid`, VrFileStream[0].uid);
     }
-    vrRatingFormDataObj.append("model", JSON.stringify(saveDataObj));
+    vrRatingFormDataObj.append('model', JSON.stringify(saveDataObj));
+    const showPopupBeforeSave = () => {
+      ConfirmationPopup({
+        title: "Please Confirm",
+        msg: "You have done changes in Annual Performance Evaluation tab, by clicking on 'OK' Reviewers will be notified, Do you want to proceed?",
+        okHandlefx: () => {
+          saveFinancialForm(vrRatingFormDataObj, saveURL, nextTabId, isFinish);
+        },
+        cancelHandlefx: () => { setIsLoadingFinish(false); }
+      });
+    }
+    const initialData = formatRatingData(JSON.parse(VrInitialData));
+    const initialFinancialListData = JSON.parse(VrInitialFinancialList);
+    //debugger;
+    const hasRatingDataUpdated = jsonComparison(initialData, formattdRatingData);
+    const hasFinancialListUpdated = jsonComparison(initialFinancialListData, VrFinancialList);
     if (hasCentrilizedAccess && toSaveFinancialForm) {
+      // compare json for change here
+      console.log({ initialFinancialListData, VrFinancialList })
+      if (hasRatingDataUpdated || hasFinancialListUpdated) {
+        console.log("Data updated")
+        showPopupBeforeSave();
+      } else {
+        console.log("Data not Updated")
+      }
+      return
       saveFinancialForm(vrRatingFormDataObj, saveURL, nextTabId, isFinish);
     }
     if (hasCentrilizedAccess && !toSaveFinancialForm) {
+      if (hasRatingDataUpdated || hasFinancialListUpdated) {
+        console.log("Data updated")
+        showPopupBeforeSave();
+      } else {
+        console.log("Data not Updated")
+      }
+      return
+      // compare json for change here also           
       saveDataWithoutContent(vrRatingFormDataObj, saveURL, nextTabId, isFinish);
     }
-  };
+  }
 
   // SAVE_VENDOR_NAME
   const saveVendorName = (name) => {
     dispatch(changeVendorName(name));
   };
   const DataMessage = (data, tabId, isFinish) => {
-    if (data.Status == "success" || data.StatusCode == 201) {
+    if (data.status == "success" || data.statusCode == 201) {
       if (data.data) {
-        dispatch(saveVendorId(data.data.VendorId));
-        saveVendorName(data.data.VendorName);
+        dispatch(saveVendorId(data.data.vendorId));
+        saveVendorName(data.data.vendorName);
         sessionStorage.setItem(
           "vendorDetails",
           JSON.stringify({
-            VendorId: data.data.VendorId,
-            Type: data.data.VendorType,
-            AnnualBilling: data.data.AnnualBillingAmount,
+            VendorId: data.data.vendorId,
+            Type: data.data.vendorType,
+            AnnualBilling: data.data.annualBillingAmount,
             //"NatureOfServices": data.data.NatureOfService[0].NatureOfService,
             NatureOfServices:
-              data.data.NatureOfService !== null
-                ? data.data.NatureOfService.map((n) => n.NatureOfService)
+              data.data.natureOfService !== null
+                ? data.data.natureOfService.map((n) => n.natureOfService)
                 : [],
-            VendorName: data.data.VendorName,
+            VendorName: data.data.vendorName,
           })
         );
       }
       if (tabId) {
         let tab = tabData.find((tab) => tab.id == tabId);
         let title = tab ? tab.title : "";
-        saveTabChange(tabId, `VENDOR MASTER: ${data.data.VendorName}`);
+        saveTabChange(tabId, `VENDOR MASTER: ${data.data.vendorName}`);
       }
 
       if (isFinish) {
-        handleFinishBtnClick();
+        if (data.data.vendorId && !vendorId)
+          handleFinishBtnClick(data.data.VendorId)
+        else
+          handleFinishBtnClick();
       }
-      //toastr.success(data.message);
-      else return;
+      else {
+        //toastr.success(data.message);
+      }
     } else {
-      // toastr.error(data.message);
+      setIsLoadingFinish(false)
+      //toastr.error(data.message)
     }
+    setLoading(false);
   };
   // SAVE_FINANCIAL_FORM
   const saveFinancialForm = (
@@ -394,12 +466,12 @@ function VendorApp(props) {
       },
     };
     VrFinancialList.forEach((f) => {
-      f.SubParams.forEach((sp) => {
+      f.subParams.forEach((sp) => {
         saveDataObj.vendorFinancialSaveModels.push({
           VendorId: vendorId,
-          VendorFinancialParameterId: sp.ParameterId,
-          CurrentFinancialYear: sp.CurrentFinancialYear,
-          LastFinancialYear: sp.LastFinancialYear,
+          VendorFinancialParameterId: sp.parameterId,
+          CurrentFinancialYear: sp.currentFinancialYear,
+          LastFinancialYear: sp.lastFinancialYear,
           IsDelete: false,
         });
       });
@@ -427,7 +499,7 @@ function VendorApp(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.data.Status == "success" || data.StatusCode == 201) {
+        if (data.status == "success" || data.statusCode == 201) {
           //toastr.success(data.data.message)
           saveDataWithoutContent(
             vrRatingFormDataObj,
@@ -436,18 +508,19 @@ function VendorApp(props) {
             isFinish
           );
         } else {
+          setIsLoadingFinish(false);
           //toastr.error(data.data.message);
         }
       })
       .catch((err) => {
-        //console.log(err)
+        setIsLoadingFinish(false);
         //toastr.error("Unable To Save Data");
       });
   };
 
   // -----------------------
   // SAVE DATA
-  const saveData = (data, api, nextTabId, isFinish) => {
+  const saveData = (data, api, nextTabId, isFinish, isReviewCall = false) => {
     fetch(api, {
       headers: {
         "Content-type": "application/json",
@@ -458,10 +531,26 @@ function VendorApp(props) {
       .then((res) => res.json())
       .then((response) => {
         //console.log(response)
-        DataMessage(response, nextTabId, isFinish);
+        if (response.status == "success" || response.statusCode == 201) {
+          if (isReviewCall == true) {
+            handleSaveReviewers(response, nextTabId, isFinish);
+          }
+          else {
+            DataMessage(response, nextTabId, isFinish);
+          }
+        }
+        else {
+          // toastr.error(response.message)
+          setIsLoadingFinish(false)
+          setLoading(false)
+        }
+
       })
       .catch(
-        (err) => {} //toastr.error(err.message)
+        (err) => {
+          // toastr.error(err.message);
+          setLoading(false);
+        }
       );
   };
   // SAVE DATA -- rating also calles same function
@@ -475,42 +564,40 @@ function VendorApp(props) {
         DataMessage(response, nextTabId, isFinish);
       })
       .catch(
-        (err) => {}
-        // toastr.error(err.message)
-      );
+        (err) => {
+          // toastr.error(err.message)
+          setLoading(false);
+        });
   };
 
-  const handleFinishBtnClick = () => {
-    if (vendorId) {
-      fetch(`${API_URL}/Vendor/FinishVendor?VendorId=${vendorId}`, {
-        method: "POST",
+  const handleFinishBtnClick = (vId = vendorId) => {
+    fetch("/Vendor/FinishVendor?VendorId=" + vId, {
+      method: "POST",
+    }).then((res) => res.json())
+      .then((data) => {
+        if (data.status == "success") {
+          // toastr.success(data.message);
+          window.location = "/Vendor/Vendor"
+          setIsLoadingFinish(false);
+        }
+        else {
+          // toastr.error(data.message);
+          setIsLoadingFinish(false);
+        }
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.Status == "success") {
-            // toastr.success(data.message);
-            window.location = "/Vendor/Vendor";
-            setIsLoadingFinish(false);
-          } else {
-            // toastr.error(data.message);
-            setIsLoadingFinish(false);
-          }
-        })
-        .catch((err) => toastr.error(err.message));
-    } else {
-      // toastr.error("Unable To Finish, Save First");
-    }
-  };
+      .catch((err) => toastr.error(err.message))
+  }
+
   const vendorDetailsErrorHandling = (detailsData) => {
     let msg = "";
-    if (detailsData.IsActive == false) {
-      if (detailsData.InActivationEvidence == "") {
-        msg = "Please Submit Inactivation Evidence \n";
-      }
-      if (detailsData.ReasonOfInactivation == "") {
+    if (detailsData.isActive == false) {
+      // if (detailsData.inActivationEvidence == "") {
+      //   msg = "Please Submit Inactivation Evidence \n";
+      // }
+      if (detailsData.reasonOfInactivation == "") {
         msg = msg + "Please Add Reason For Inactivation  \n";
       }
-      if (detailsData.InActivationDate == "") {
+      if (detailsData.inActivationDate == "") {
         msg = msg + "Please Add Inactivation Date \n";
       }
     }
@@ -518,17 +605,16 @@ function VendorApp(props) {
   };
   const dynamicFormErrorHandling = (data) => {
     let errMsg = "";
-    let fData = data.FormData || data.FilledFormJson;
+    let fData = data.formData || data.filledFormJson;
     if (fData) {
       // -1 as last is layout
       for (let i = 0; i < fData.length - 1; i++) {
         const field = fData[i];
         // Check if the field is required and does not have a value
-        if (
-          field.required &&
-          (!field.value ||
-            (Array.isArray(field.value) && field.value.length === 0))
-        ) {
+        //check conditional spelling
+        if (field.required &&
+          ((!field.value || (Array.isArray(field.value) && field.value.length === 0)) &&
+            ((field.conditioanalValue && !($("#" + field.name + "Div").is(':hidden'))) || !field.conditioanalValue))) {
           errMsg = errMsg + `${field.label} is mandatory \n`;
           break;
         }
@@ -539,16 +625,16 @@ function VendorApp(props) {
 
   const reviewErrorHandling = () => {
     let errorMessage = "";
-    if (reviewData.StageJson.length != 0) {
-      reviewData.StageJson.map((value) => {
-        if (value.StageName == "") {
+    if (reviewData.stageJson.length != 0) {
+      reviewData.stageJson.map((value) => {
+        if (value.stageName == "") {
           errorMessage = "Please enter Stage Name \n";
         }
-        if (value.FormGroup.length == 0) {
+        if (value.formGroup.length == 0) {
           errorMessage = errorMessage + "Please Select Stage User \n";
         } else {
-          value.FormGroup.map((tempgroup) => {
-            if (tempgroup.Approvers.length == 0) {
+          value.formGroup.map((tempgroup) => {
+            if (tempgroup.approvers.length == 0) {
               errorMessage = errorMessage + "Please Select Stage User \n";
             }
           });
@@ -580,13 +666,12 @@ function VendorApp(props) {
   };
   const getDateTimeValue = (dataCopy) => {
     if (dataCopy.value) {
+      let valueFormat = dataCopy.format ? dataCopy.format : "YYYY-MM-DD";
       //Need to Revisit FormRender - It's not optimised way to do
       if (dataCopy.value.split("-")[0].length == 4) {
-        dataCopy.value = moment(dataCopy.value).format("YYYY-MM-DD");
+        dataCopy.value = moment(dataCopy.value).format(valueFormat);
       } else {
-        dataCopy.value = moment(dataCopy.value, dataCopy.format).format(
-          "YYYY-MM-DD"
-        );
+        dataCopy.value = moment(dataCopy.value, dataCopy.format).format(valueFormat);
       }
     }
     return dataCopy;
@@ -609,77 +694,57 @@ function VendorApp(props) {
       return t.id == activeTab;
     });
     if (data.length > 0) {
-      if (activeTab === "VendorCategorizationScoring" && vendorType !== "DSA") {
+      if (activeTab === "VendorCategorizationScoring" && !isRatingDisabled) {
         if (hasCentrilizedAccess && !isInViewMode) {
           saveCategorizationData(data[0].saveURL, nextTabId, isFinish);
         } else {
           saveTabChange(nextTabId, "");
         }
       }
-      if (activeTab === "VendorCategorizationScoring" && vendorType == "DSA") {
+      if (activeTab === "VendorCategorizationScoring" && isRatingDisabled) {
         saveTabChange(nextTabId, "");
         setIsLoadingFinish(false);
       }
       if (activeTab == "VendorDetails") {
         let errorMessage = "";
-        errorMessage += await vendorDetailsErrorHandling(detailsData);
-        errorMessage += await dynamicFormErrorHandling(detailsData);
-        if (errorMessage !== "") {
-          // toastr.error(errorMessage);
-        } else {
-          var formDataObj = new FormData();
-          if (detailsData.InActivationEvidence[0]) {
-            formDataObj.append(
-              `file${0}`,
-              detailsData.InActivationEvidence[0].originFileObj
-            );
-            formDataObj.append(
-              `Files[${0}].uid`,
-              detailsData.InActivationEvidence[0].uid
-            );
-          }
-
-          var formJSon = await handleCircularObject(detailsData.FormData);
-
-          var dataNew = {
-            ...detailsData,
-            Type: vendorType,
-            InActivationEvidence: "",
-            FormData: formJSon,
-          };
-          formDataObj.append("model", JSON.stringify(dataNew));
-          if (hasCentrilizedAccess && !isInViewMode)
-            saveDataWithoutContent(
-              formDataObj,
-              data[0].saveURL,
-              nextTabId,
-              isFinish
-            );
-          else saveTabChange(nextTabId, "");
+        var formDataObj = new FormData();
+        let formName = "";
+        if (detailsData.inActivationEvidence[0]) {
+          formDataObj.append(`file${0}`, detailsData.inActivationEvidence[0].originFileObj);
+          formDataObj.append(`Files[${0}].uid`, detailsData.inActivationEvidence[0].uid);
+          formDataObj.append(`Files[${0}].uid`, detailsData.inActivationEvidence[0].name);
         }
+        var formJSon = await handleCircularObject(detailsData.FormData)
+        var dataNew = { ...detailsData, Type: vendorType, InActivationEvidence: formName, FormData: formJSon };
+        formDataObj.append('model', JSON.stringify(dataNew));
+        if (hasCentrilizedAccess && !isInViewMode) {
+          errorMessage += await vendorDetailsErrorHandling(detailsData)
+          errorMessage += await dynamicFormErrorHandling(detailsData)
+          if (errorMessage !== "") {
+            toastr.error(errorMessage)
+            setIsLoadingFinish(false);
+          }
+          else
+            saveDataWithoutContent(formDataObj, data[0].saveURL, nextTabId, isFinish);
+        }
+        else
+          saveTabChange(nextTabId, "");
       }
       if (activeTab == "VendorAdditionlaDetails") {
         let errorMessage = "";
-        errorMessage += await dynamicFormErrorHandling(additionalDetailsData);
-        if (errorMessage !== "") {
-          // toastr.error(errorMessage);
-        } else {
-          var formJSon = await handleCircularObject(
-            additionalDetailsData.FilledFormJson
-          );
-          if (hasCentrilizedAccess && !isInViewMode)
-            saveData(
-              JSON.stringify({
-                ...additionalDetailsData,
-                VendorId: vendorId,
-                FilledFormJson: formJSon,
-              }),
-              data[0].saveURL,
-              nextTabId,
-              isFinish
-            );
-          else saveTabChange(nextTabId, "");
+        var formJSon = await handleCircularObject(additionalDetailsData.FilledFormJson)
+        if (hasCentrilizedAccess && !isInViewMode) {
+          errorMessage += await dynamicFormErrorHandling(additionalDetailsData)
+          if (errorMessage !== "") {
+            // toastr.error(errorMessage)
+            setIsLoadingFinish(false);
+          }
+          else {
+            saveData(JSON.stringify({ ...additionalDetailsData, VendorId: vendorId, FilledFormJson: formJSon }), data[0].saveURL, nextTabId, isFinish)
+          }
         }
+        else
+          saveTabChange(nextTabId, "");
       }
     }
     if (activeTab === "VendorRating") {
@@ -690,32 +755,25 @@ function VendorApp(props) {
       }
     }
     if (activeTab == "reviewId") {
-      let errorMessage = "";
-      errorMessage += await reviewErrorHandling(reviewData);
-      if (errorMessage !== "") {
-        //toastr.error(errorMessage);
-      } else {
-        if (hasCentrilizedAccess)
-          saveData(
-            JSON.stringify({
-              ...reviewData,
-              StageJson: JSON.stringify(reviewData.StageJson),
-              EntityID: vendorId,
-              IsDefault: false,
-            }),
-            data[0].saveURL,
-            nextTabId,
-            isFinish
-          );
-        else saveTabChange(nextTabId, "");
-      }
+      //let errorMessage = "";
+      //errorMessage += await reviewErrorHandling(reviewData)
+      //if (errorMessage !== "") {
+      //    toastr.error(errorMessage)
+      //}
+      //else {
+      //    if (hasCentrilizedAccess)
+      //        saveData(JSON.stringify({ ...reviewData, StageJson: JSON.stringify(reviewData.StageJson), EntityID: vendorId, IsDefault: false }), data[0].saveURL, nextTabId, isFinish)
+      //    else
+      //       saveTabChange(nextTabId, "");
+      //}
+      saveTabChange(nextTabId, "");
     }
   }
 
   // RENDER DIFFERENT VENDOR SECTIONS
   const renderSections = {
     VendorDetails: <VendorDetailsForm getData={getData} />,
-    VendorCategorizationScoring: <VendorCategorization />,
+    VendorCategorizationScoring: <VendorCategorization {...{ setInitialData, loading, setLoading }} />,
     VendorAdditionlaDetails: <AdditionalDetails getData={getData} />,
     VendorRating: <VendorRating />,
     reviewId: <Review />,
@@ -727,13 +785,13 @@ function VendorApp(props) {
         activeTab === "VendorDetails"
           ? "VendorCategorizationScoring"
           : activeTab === "VendorCategorizationScoring"
-          ? "VendorAdditionlaDetails"
-          : activeTab === "VendorAdditionlaDetails"
-          ? "VendorRating"
-          : "reviewId";
+            ? "VendorAdditionlaDetails"
+            : activeTab === "VendorAdditionlaDetails"
+              ? "VendorRating"
+              : "reviewId";
       if (
         isInViewMode ||
-        (activeTab === "VendorCategorizationScoring" && vendorType == "DSA")
+        (activeTab === "VendorCategorizationScoring" && isRatingDisabled)
       ) {
         let tab = tabData.find((tab) => tab.id == nextTab);
         let title = tab ? tab.title : "";
@@ -744,13 +802,13 @@ function VendorApp(props) {
         activeTab === "reviewId"
           ? "VendorRating"
           : activeTab === "VendorRating"
-          ? "VendorAdditionlaDetails"
-          : activeTab === "VendorAdditionlaDetails"
-          ? "VendorCategorizationScoring"
-          : "VendorDetails";
+            ? "VendorAdditionlaDetails"
+            : activeTab === "VendorAdditionlaDetails"
+              ? "VendorCategorizationScoring"
+              : "VendorDetails";
       if (
         isInViewMode ||
-        (activeTab === "VendorCategorizationScoring" && vendorType == "DSA")
+        (activeTab === "VendorCategorizationScoring" && isRatingDisabled)
       ) {
         let tab = tabData.find((tab) => tab.id == prevTab);
         let title = tab ? tab.title : "";
@@ -769,19 +827,41 @@ function VendorApp(props) {
 
   const handleEditAccess = () => {
     localStorage.setItem("isViewMode", JSON.stringify(false));
+    localStorage.setItem("vendorId", JSON.stringify(
+      // vendorDetailsId
+      vendorId
+    ));
     dispatch(updateEditAccess({ isInViewMode: false }));
   };
+
+  const handleRemoveEditAccess = () => {
+    const comparableVendorId = localStorage.getItem("vendorId") !== null ? JSON.parse(localStorage.getItem("vendorId")) : "";
+    if (comparableVendorId !== 
+      // vendorDetailsId
+      vendorId
+    ) {
+      localStorage.setItem("isViewMode", JSON.stringify(true));
+      localStorage.removeItem("vendorId");
+      dispatch(updateEditAccess({ isInViewMode: true }));
+    }
+  }
+
 
   useEffect(() => {
     if (viewType === "NEW") {
       handleEditAccess();
     }
+    else {
+      handleRemoveEditAccess();
+    }
   }, []);
+
   // useEffect(() => {
   //   updateTitle(
   //     `VENDOR MASTER ${VdVendorName !== "" ? `: ${VdVendorName}` : ""}`
   //   );
   // }, [VdVendorName]);
+  //TO BE CHANGED
 
   const LoadingSvg = () => {
     return (
@@ -802,130 +882,89 @@ function VendorApp(props) {
   // crate separate component here
   return (
     <div className="action-centre-nav">
-      <div>
-          <ul
-            className="vd-actionTabs"
-            style={{ position: "sticky", top: "0px", zIndex: "1000" }}>
-            {tabData.map((tab) => {
-              return (
-                <li
-                  className={activeTab === tab.id ? "active-tab" : ""}
-                  key={tab.id}
-                  style={{  width:
+      <div style={{ position: "relative" }}>
+        <ul
+          className="vd-actionTabs"
+          style={{ position: "sticky", top: "0px", zIndex: "1000" }}>
+          {tabData.map((tab) => {
+            return (
+              <li
+                className={activeTab === tab.id ? "active-tab" : ""}
+                key={tab.id}
+                style={{
+                  width:
                     tab.title.length <= 14
                       ? "9vw"
                       : tab.title.length >= 25
-                      ? "20vw"
-                      : "12vw", }}>
-                  <button onClick={handleClick} id={tab.id} title={tab.title}>
-                    {tab.title}
-                  </button>
-                </li>
-              );
-            })}
-            <div style={{ position: "absolute", right: "1px" }}>
-              <div className="control-panel" style={{ marginLeft: "1.1vw", marginRight: "1.1vw" }}>
-                <div className="vd-action-btn ">
-                  <button
-                    onClick={() => navigate("/")}
-                    style={{ backgroundColor: "#4E4E4E" }}>
-                    Close
-                  </button>
+                        ? "20vw"
+                        : "12vw",
+                }}>
+                <button onClick={handleClick} id={tab.id} title={tab.title}>
+                  {tab.title}
+                </button>
+              </li>
+            );
+          })}
+          <div style={{ position: "absolute", right: "1px" }}>
+            <div className="control-panel" style={{ marginLeft: "1.1vw", marginRight: "1.1vw" }}>
+              {
+                tabData.find(tab => tab.id === activeTab).showHistory && vendorId &&
+                < div className="vd-action-btn ">
+                  {/* <HistoryButton api={"/Vendor/GetHistory?vendorId=" + vendorId + "&tabName=" + historyTabIds[activeTab]} selectedTab={activeTab} {...{ tabData }} /> */}
                 </div>
-                <div className="vd-action-btn ">
-                  <button
-                    onClick={() => handleTabChange("prev")}
-                    disabled={activeTab === "VendorDetails"}
-                    style={{ backgroundColor: "#4E4E4E", width: "3vw" }}
-                    className={
-                      activeTab === "VendorDetails" ? "DcButton disabled" : ""
-                    }
-                  >
-                    <i
-                      id=""
-                      className="glyphicon glyphicon-chevron-left vd-arrow"
-                    ></i>
-                  </button>
-                </div>
-                <div className="vd-action-btn ">
-                  <button
-                    onClick={() => handleTabChange("next")}
-                    disabled={activeTab === "reviewId"}
-                    style={{ backgroundColor: "#4E4E4E", width: "3vw" }}
-                    className={
-                      activeTab === "reviewId" ? "DcButton disabled" : ""
-                    }
-                  >
-                    <i
-                      id=""
-                      className="glyphicon glyphicon-chevron-right vd-arrow"
-                    ></i>
-                  </button>
-                </div>
-                {hasCentrilizedAccess && (
-                  <Fragment>
-                    {
-                      //(hasEditAccess || viewType === "NEW") && --Change Condition Dar if (hasCentrilizedAccess)
-                      !isInViewMode || viewType === "NEW" ? (
-                        <div style={{ display: "flex" }}>
-                          <div className="vd-action-btn">
-                            <button
-                              onClick={() => handleSaveBtnClick(activeTab)}
-                              style={{ backgroundColor: "#FFB63B" }}>
-                              Save
-                            </button>
-                          </div>
-                          <div className="vd-action-btn ">
-                            <button
-                              disabled={isLoadingFinish}
-                              style={{
-                                backgroundColor: "#00C24D",
-                                cursor: !isLoadingFinish
-                                  ? "pointer"
-                                  : "not-allowed",
-                              }}
-                              onClick={() =>
-                                handleSaveBtnClick(activeTab, true)
-                              }
-                            >
-                              {!isLoadingFinish ? "Finish" : <LoadingSvg />}
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="vd-action-btn ">
-                          {viewType == "EDIT" && (
-                            <button
-                              style={{ backgroundColor: "#00C24D" }}
-                              onClick={handleEditAccess}
-                            >
-                              Edit
-                            </button>
-                          )}
-                        </div>
-                      )
-                    }
-                  </Fragment>
-                )}
+              }
+              {tabData.find(tab => tab.id === activeTab).showInfo && <div className="vd-action-btn ">
+                <ClauseModel {...{ activeTab }} />
               </div>
-             </div>
-          </ul>
+              }
+              <div className="vd-action-btn ">
+                <button onClick={() => window.location = "/Vendor/Vendor"} style={{ backgroundColor: "#4E4E4E" }}>
+                  Close
+                </button>
+              </div>
+              <div className="vd-action-btn ">
+                <button onClick={() => handleTabChange("prev")} disabled={activeTab === "VendorDetails"} style={{ backgroundColor: "#4E4E4E", width: "3vw" }} className={activeTab === "VendorDetails" ? "DcButton disabled" : ""}>
+                  <i id="" className="glyphicon glyphicon-chevron-left vd-arrow"></i>
+                </button>
+              </div>
+              <div className="vd-action-btn ">
+                <button onClick={() => handleTabChange("next")} disabled={activeTab === "reviewId"} style={{ backgroundColor: "#4E4E4E", width: "3vw" }} className={activeTab === "reviewId" ? "DcButton disabled" : ""}>
+                  <i id="" className="glyphicon glyphicon-chevron-right vd-arrow"></i>
+                </button>
+              </div>
+              {((hasCentrilizedAccess && activeTab == "VendorCategorizationScoring" 
+              // && isRatingFreezed == false
+            )
+                || (hasCentrilizedAccess && activeTab != "VendorCategorizationScoring"))
+                && activeTab !== "reviewId" && <Fragment>
+                  {
+                    //(hasEditAccess || viewType === "NEW") && --Change Condition Dar if (hasCentrilizedAccess)
+                    (!isInViewMode || viewType === "NEW") ? < div style={{ display: "flex" }}>
+                      {tabData.find(tab => tab.id === activeTab).showSave && <div className="vd-action-btn">
+                        <button onClick={() => handleSaveBtnClick(activeTab)} style={{ backgroundColor: "#FFB63B" }}>
+                          Save
+                        </button>
+                      </div>}
+                      <div className="vd-action-btn ">
+                        <button disabled={isLoadingFinish} style={{ backgroundColor: "#00C24D", cursor: !isLoadingFinish ? "pointer" : "not-allowed" }} onClick={() => handleSaveBtnClick(activeTab, true)}>
+                          {!isLoadingFinish ? "Finish" : <LoadingSvg />}
+                        </button>
+                      </div>
+                    </div> : <div className="vd-action-btn ">
+                      {(viewType == "EDIT") && tabData.find(tab => tab.id === activeTab).showEdit && < button style={{ backgroundColor: "#00C24D" }} onClick={handleEditAccess}>
+                        Edit
+                      </button>}
+                    </div>
+                  }
+                </Fragment>}
+            </div>
+          </div>
+        </ul>
       </div>
-        {/* <div className="historyBtn-wrapper"> */}
-          {/* <HistoryButton
-            api={
-              "/Vendor/GetHistory?vendorId=" +
-              vendorId +
-              "&tabName=" +
-              activeTab
-            }
-          /> */}
-        {/* {activeTab === "VendorCategorizationScoring" && <ClauseModel />} */}
-        {/* </div> */}
-        <div>
-      {renderSections[activeTab]}
-      </div>
-      </div>
+      <Fragment>
+        {renderSections[activeTab]}
+      </Fragment>
+    </div>
   );
 }
 

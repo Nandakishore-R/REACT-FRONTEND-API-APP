@@ -1,6 +1,7 @@
 ﻿import { Component, createRef } from "react";
 export default class Page extends Component {
     constructor(props) {
+        // console.log("Page props",props);
         super(props);
         this.pageThumbnailsRef = createRef(null);
         this.pageLayoutRef = createRef(null);
@@ -113,7 +114,9 @@ export default class Page extends Component {
                         {this.generateThumbnails()}
                     </div>
                 </div>
-                <div>{ this.props.multiple_pages }</div>
+                <div>
+                    { this.props.multiple_pages }
+                </div>
                 <div className="LayoutPages" style={layoutPageBodyStyle} ref={this.pageLayoutRef}>
                     <div>
                         {this.generatePages()}

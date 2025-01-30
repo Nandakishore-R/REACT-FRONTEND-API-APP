@@ -3,7 +3,7 @@ import { createSelector } from "@reduxjs/toolkit";
 
 const initialState = {
   activeTab: sessionStorage.getItem("activeTabId") || "VendorDetails",
-  vendorType:
+  vendorType: //do something
     sessionStorage.getItem("vendorType") !== null
       ? sessionStorage.getItem("vendorType")
       : "DSA",
@@ -19,6 +19,7 @@ const initialState = {
   rating: {
     ratingData: [],
     ratingSaveData: [],
+    ratingInitialData: [],
     averageVendorRatingModel: {
       Id: "",
       VendorId: "",
@@ -32,6 +33,7 @@ const initialState = {
     },
     financialForm: {
       FinancialList: [],
+      finaicialListInitialData: [],
       vendorRatingFinancialInfoReadModel: {},
       conditions: {
         FinancialFormOnTypes: "",
@@ -145,7 +147,11 @@ const vendorSlice = createSlice({
       state.review.StageJson = action.payload.StageJson;
     },
     setVendorRating: (state, action) => {
-      state.rating.ratingData = action.payload.ratingData;
+      const { ratingData, ratingInitialData } = action.payload;
+      state.rating.ratingData = ratingData;
+      if(ratingInitialData){
+        state.rating.ratingInitialData = ratingInitialData;
+      }
     },
     updateEditAccess: (state, action) => {
       state.editAccess.isInViewMode = action.payload.isInViewMode;
@@ -167,11 +173,15 @@ const vendorSlice = createSlice({
       state.rating.averageVendorRatingModel = model;
     },
     updateRatingFinancialForm: (state, action) => {
-      const { FinancialList, vendorRatingFinancialInfoReadModel } =
+      const { FinancialList, vendorRatingFinancialInfoReadModel, financialListInitialData } =
         action.payload;
       state.rating.financialForm.FinancialList = FinancialList;
+      if(financialListInitialData){
+        state.rating.financialForm.financialListInitialData = financialListInitialData
+      }
       state.rating.financialForm.vendorRatingFinancialInfoReadModel =
         vendorRatingFinancialInfoReadModel;
+        
     },
     updateRatingElligibleScore: (state, action) => {
       state.rating.elligibleScore = action.payload.elligibleScore;
@@ -226,6 +236,7 @@ export const {
   changeCategorizationReview,
   changeCategorizationReviewers,
   changeVendorName,
+  VrInitialData
 } = vendorSlice.actions;
 
 const selectVendor = (state) => state.vendor;
@@ -249,6 +260,7 @@ export const selectVendorApp = createSelector([selectVendor], (vendor) => ({
   VrFileStream: vendor.rating.averageVendorRatingModel.FileStream,
   VrFileName: vendor.rating.averageVendorRatingModel.FileName,
   VrFinancialList: vendor.rating.financialForm.FinancialList,
+  VrInitialFinancialList : vendor.rating.financialForm.financialListInitialData,
   VrvendorRatingFinancialInfoReadModel:
     vendor.rating.financialForm.vendorRatingFinancialInfoReadModel,
   VrFinacialFormBillingMaxLimit:
@@ -261,6 +273,7 @@ export const selectVendorApp = createSelector([selectVendor], (vendor) => ({
   CReviewerRemarks: vendor.categorization.notificationData.ReviewerRemarks,
   CReviewers: vendor.categorization.notificationData.Reviewers,
   VdVendorName: vendor.vendorName,
+  VrInitialData : vendor.rating.ratingInitialData
 }));
 
 export const selectVendorDetailsForm = createSelector(

@@ -29,12 +29,29 @@ function VendorDetailsForm(props) {
     vendorId,
     isCentrilized,
   } = useSelector(selectVendorDetailsForm);
-  // console.log("urn 1",URN);
+
+  var allowedFileTypes = 
+  // window.globalConfig ? window.globalConfig.allowedFileTypes : 
+  [];
+  var notAllowedFileError = 
+  // window.globalConfig ? window.globalConfig.notAllowedFileError : 
+  "";
+
   const handleFileChange = ({ fileList }) => {
-    if (fileList.length !== 0) {
+    if (fileList.length != 0) {
       //To upload only 1 file at a time
       file = [fileList[fileList.length - 1]];
+      let uploadedFileType = file[0].type;
+      //Ex- For msg type of file type is null
+      if (uploadedFileType === "") {
+          uploadedFileType = file[0].name.split(".")[file[0].name.split(".").length - 1];
+      }
+      if (allowedFileTypes.length > 0 && !(allowedFileTypes.indexOf(uploadedFileType) >= 0)) {
+          // toastr.error(file[0].name + notAllowedFileError);
+      }
+      else {
       dispatch(setInactivation({ InActivationEvidence: file }));
+      }
     } else {
       //If the current file is deleted
       dispatch(setInactivation({ InActivationEvidence: "" }));
@@ -52,11 +69,14 @@ function VendorDetailsForm(props) {
           ///toastr.error(res.Message);
         }
       })
-      .catch((err) => toastr.error("URN Fetch Failure"));
+      .catch((err) =>{
+        // toastr.error("URN Fetch Failure"));
+      })
   };
   useEffect(() => {
     // console.log("id ",vendorId);
     //Fetch Filled Data
+    setIsLoading(true);
     fetch(`${API_URL}/Vendor/GetVendorById/${vendorId}`) //POC
       .then((response) => response.json())
       .then((res) => {
@@ -84,7 +104,7 @@ function VendorDetailsForm(props) {
           }
           if (res.data.materialityDate != null) {
             setIssuanceDate(
-              moment(res.data.MaterialityDate).format("DD-MM-YYYY")
+              moment(res.data.materialityDate).format("DD-MM-YYYY")
             );
           }
           if (res.data.urn) {
@@ -95,6 +115,7 @@ function VendorDetailsForm(props) {
           if (res.data.isActive == false) {
             if (res.data.inActivationDate){
               let IDate = moment(res.data.inActivationDate).format("YYYY-MM-DD");
+              if (res.data.reasonOfInactivationFiles) {
               dispatch(
                 setInactivation({
                   InActivationDate: IDate,
@@ -102,6 +123,13 @@ function VendorDetailsForm(props) {
                   InActivationEvidence: res.data.reasonOfInactivationFiles,
                 })
               );
+            }
+            else{
+              dispatch(setInactivation({
+                InActivationDate: IDate,
+                ReasonOfInactivation: res.data.reasonOfInactivation,
+              }))
+            }
             }
            
           }
@@ -132,7 +160,6 @@ function VendorDetailsForm(props) {
 
   return (
     <Fragment>
-      <div className="vendorDetails-container">
         <Form className="vd-staticValues-container" layout="vertical">
           <Form.Item label="URN">
             <Input disabled value={URN} className="vd-input vd-w5" />
@@ -168,9 +195,11 @@ function VendorDetailsForm(props) {
               <Form.Item label="Upload Inactivation Evidence">
                 <Upload
                   beforeUpload={() => false}
-                  fileList={InActivationEvidence}
+                  fileList={InActivationEvidence[0] ? InActivationEvidence : []}
                   onChange={handleFileChange}
                   maxCount={1}
+                  disabled={isInViewMode}
+                  accept={allowedFileTypes.join(',')}
                 >
                   <Button disabled={isInViewMode}>Click to Upload</Button>
                 </Upload>
@@ -191,7 +220,7 @@ function VendorDetailsForm(props) {
             </Fragment>
           )}
         </Form>
-        <div id="formDesignerArea">
+        <div id="formDesignerArea" className="vendor_template_form" >
           {!isInViewMode &&
             isCentrilized &&
             FormData &&
@@ -212,7 +241,6 @@ function VendorDetailsForm(props) {
                 isComponentUpdate={true}
               />
             )}
-        </div>
       </div>
     </Fragment>
   );

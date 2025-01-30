@@ -19,8 +19,11 @@ function VendorEntry() {
     //     <p>Vendor Id : {vendorId}</p>
     //     <p>Vendor Type : {vendorType}</p>
     //   </div>
-    
-        <VendorApp/>
+        <>
+        <div id='csroot'>
+          <VendorApp/>
+        </div>
+        </>
     //  </Provider>
     
     )

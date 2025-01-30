@@ -315,8 +315,8 @@ h4 {
     float: right;
     height: 100%;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
 }
 
     .new-design-theme ul.leftside-nav {

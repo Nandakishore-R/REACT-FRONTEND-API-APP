@@ -3,7 +3,7 @@ import { useEffect, useState, Fragment } from "react";
 import { API_URL } from "../../constants";
 import FormRender from "./FormRender";
 import { useDispatch, useSelector } from "react-redux";
-import { selectVendorAdditionalDetails } from "../../slices/VendorSlice";
+import { selectVendorAdditionalDetails, additionalDetailsForm } from "../../slices/VendorSlice";
 
 function AdditionalDetails(props) {
   const [isTemplateUpdated, setIsTemplateUpdated] = useState(false);
@@ -16,28 +16,25 @@ function AdditionalDetails(props) {
 
   useEffect(() => {
     //Fetch Form
-    fetch(`${API_URL}/Vendor/GetVendorAdditionalDetailsByVendorIdPOC/${vendorId}`)
+    fetch(`${API_URL}/Vendor/GetVendorAdditionalDetailsByVendorId/${vendorId}`)
       .then((response) => response.json())
       .then((val) => {
-        if (val.status == "success") {
-          res = val.data;
+        // if (val.status == "success") //change it back later
+        if(val.data)
+          {
+          const res = val.data;
           //setIsTemplateUpdated(res.IsTemplateChanged)
-          let data = JSON.parse(res.FilledFormJson);
-          if (data.action) {
-            dataCopy = props.getData(data.action);
-            dispatch({
-              type: "ADDITIONAL_DETAILS_FORM",
-              payload: { FilledFormJson: dataCopy },
-            });
+          let data = JSON.parse(res.filledFormJson);
+          if(data.action)
+          {
+            let dataCopy = props.getData(data.action);
+            dispatch(additionalDetailsForm({ FilledFormJson: dataCopy }));
           } else {
-            dataCopy = props.getData(data);
-            dispatch({
-              type: "ADDITIONAL_DETAILS_FORM",
-              payload: { FilledFormJson: dataCopy },
-            });
+            let dataCopy = props.getData(data);
+            dispatch(additionalDetailsForm({ FilledFormJson: dataCopy }));
           }
         } else {
-          toastr.error(val.message);
+          // toastr.error(val.message);
         }
       })
       .catch((err) => {
