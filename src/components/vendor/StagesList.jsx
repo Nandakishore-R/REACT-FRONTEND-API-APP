@@ -58,7 +58,7 @@ function StagesList(props) {
                 if (response.length === 0) {
                     console.log("no response in owner api");
                 } else {
-                    console.log("res", response)
+                    // console.log("res", response)
                     setOptions(response)
                 }
             },
@@ -70,7 +70,7 @@ function StagesList(props) {
 
     const columns = [
         {
-            title: () => (<img src="/Images/plusIcon.png" alt="add" onClick={(e) => {
+            title: () => (<img src="/assets/images/plusIcon.png" alt="add" onClick={(e) => {
                 e.preventDefault();
                 const newGroup = {
                     "id": Math.random(),
@@ -156,7 +156,7 @@ function StagesList(props) {
             dataIndex: 'JsonForm',
             width: "10%",
             key: "4",
-            render: (text, record, index) => (<img alt="edit" src="\Views\Risk\icons\Action_Edit.svg" className="stage-form-edit"
+            render: (text, record, index) => (<img alt="edit" src="assets/images/Action_Edit.svg" className="stage-form-edit"
                 style={{ filter: 'invert(100%) sepia(32%) saturate(544%) hue-rotate(222deg) brightness(111%) contrast(100%)' }}
                 onClick={(e) => {
                     setModaldisplayshow(true);
@@ -175,7 +175,7 @@ function StagesList(props) {
             title: 'Delete',
             width: "10%",
             key: "5",
-            render: (text, record, index) => (<img alt="delete" width={20} src="/Images/svg/delete-black.svg"
+            render: (text, record, index) => (<img alt="delete" width={20} src="/assets/images/delete-black.svg"
                 onClick={(e) => {
                     const newList = [...stageList]
                     const formGroupList = newList[nodeIndex].FormGroup;
@@ -307,7 +307,7 @@ function StagesList(props) {
                         <img
                             className="stageHeaderImg"
                             width={20}
-                            src="/Images/svg/delete-black.svg"
+                            src="/assets/images/delete-black.svg"
                             key={stage.index}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -404,7 +404,7 @@ function StagesList(props) {
                 <div>
                     <Row className="navbar-stageform">
                         <Col span={2}>
-                            <img onClick={closeicon} className="r-navbar-crossimgRem" src="\Views\Risk\icons\CloseIcon.svg" />
+                            <img onClick={closeicon} className="r-navbar-crossimgRem" src="/assets/images/CloseIcon.svg" />
                         </Col>
                         <Col span={19}></Col>
                         <Col span={3}>

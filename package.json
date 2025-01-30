@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
-    "antd": "^5.23.0",
+    "antd": "^4.4.1",
     "eventemitter3": "^5.0.1",
     "i18next": "^24.2.2",
     "jquery": "^3.7.1",

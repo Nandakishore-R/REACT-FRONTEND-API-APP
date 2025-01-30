@@ -33,7 +33,7 @@ function Review(props) {
           if (response.data) {
             var stagesData = JSON.parse(response.data.stageJson);
             stagesData.map((tempstage) => {
-              console.log(tempstage);
+              // console.log(tempstage);
               tempstage.IsMaster = tempstage.IsMandatory;
               tempstage.FormGroup.map((tempgroup) => {
                 tempgroup.id = Math.random();
@@ -65,7 +65,7 @@ function Review(props) {
     );
   return (
     <Fragment>
-    <div className={(isInViewMode || !isCentrilized) ? "viewModeOnly" : "enableEdit"} />
+    {/* <div className={(isInViewMode || !isCentrilized) ? "viewModeOnly" : "enableEdit"} /> */}
        <StagesMain
         {...{ props }}
         stages={stages}
