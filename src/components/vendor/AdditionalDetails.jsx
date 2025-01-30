@@ -7,7 +7,7 @@ import { selectVendorAdditionalDetails, additionalDetailsForm } from "../../slic
 
 function AdditionalDetails(props) {
   const [isTemplateUpdated, setIsTemplateUpdated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
   const { FilledFormJson, isInViewMode, vendorId, isCentrilized } = useSelector(

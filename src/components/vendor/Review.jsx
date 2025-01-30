@@ -2,7 +2,8 @@
 import { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectReview, setReview } from "../../slices/VendorSlice";
-
+import { API_URL } from "../../constants";
+import StagesMain from "./StagesMain";
 function Review(props) {
   //Review with Redux
   const dispatch = useDispatch();
@@ -19,34 +20,39 @@ function Review(props) {
     dispatch(setReview({ StageJson: stages }));
   }, [stages]);
 
-  // useEffect(() => {
-  //   fetch(
-  //     "/Stages/FecthStageByEntityId?entityId=" + vendorId + "&moduleName=Vendor"
-  //   )
-  //     .then((res) => res.json())
-  //     .then((response) => {
-  //       if (response.StatusCode == 200) {
-  //         if (response.data) {
-  //           var stagesData = JSON.parse(response.data.StageJson);
-  //           stagesData.map((tempstage) => {
-  //             tempstage.IsMaster = tempstage.IsMandatory;
-  //             tempstage.FormGroup.map((tempgroup) => {
-  //               tempgroup.id = Math.random();
-  //             });
-  //           });
-  //           if (stagesData.length != 0) {
-  //             setNumberOfApprovalStages(stagesData.length);
-  //             setStageRequired(false);
-  //             setStages(stagesData);
-  //           }
-  //         }
-  //       } else {
-  //         toastr.error(response.Message);
-  //       }
-  //     })
-  //     .catch((err) => toastr.error("Unable To Fetch Stages"))
-  //     .finally(() => setIsLoading(false));
-  // }, []);
+  useEffect(() => {
+    fetch(
+      `${API_URL}/FechStagesByEnitityId?entityId=${vendorId}&moduleName=Vendor`,
+      {
+        method: "POST",
+      }
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.statusCode == 200) {
+          if (response.data) {
+            var stagesData = JSON.parse(response.data.stageJson);
+            stagesData.map((tempstage) => {
+              console.log(tempstage);
+              tempstage.IsMaster = tempstage.IsMandatory;
+              tempstage.FormGroup.map((tempgroup) => {
+                tempgroup.id = Math.random();
+              });
+            });
+            if (stagesData.length != 0) {
+              setNumberOfApprovalStages(stagesData.length);
+              setStageRequired(false);
+              setStages(stagesData);
+            }
+          }
+        } else {
+          toastr.error(response.Message);
+        }
+      })
+      .catch((err) => toastr.error("Unable To Fetch Stages"))
+      .finally(() => setIsLoading(false));
+  }, []);
+
   if (isLoading)
     return (
       <div className="loadingOverlayVd">
@@ -59,23 +65,29 @@ function Review(props) {
     );
   return (
     <Fragment>
-      {/*<div className={(isInViewMode || !isCentrilized) ? "viewModeOnly" : "enableEdit"} />*/}
-      {/* <StagesMain
+    <div className={(isInViewMode || !isCentrilized) ? "viewModeOnly" : "enableEdit"} />
+       <StagesMain
         {...{ props }}
         stages={stages}
         setStages={setStages}
         numberOfApprovalStages={numberOfApprovalStages}
         setNumberOfApprovalStages={setNumberOfApprovalStages}
-        currentLanguage={currentLanguage}
-        translatorObject={translatorObject}
+        currentLanguage={
+          // currentLanguage
+          ""
+        }
+        translatorObject={
+          // translatorObject
+          ""
+        }
         stageRequired={stageRequired}
         setStageRequired={setStageRequired}
         setFormBuilderData={setFormBuilderData}
         isReview={true}
         isReviewInViewMode={true}
-      /> */}
-      <h1>The Stage Main Component Comes Here (Not Available)</h1>
+      /> 
     </Fragment>
+    
   );
 }
 

@@ -7,7 +7,7 @@
 
 @font-face {
     font-family: 'Montserrat';
-    src: url("/assets/Montserrat-Regular.ttf") format("opentype");
+    src: url("/assets/font/Montserrat-Regular.ttf") format("opentype");
     font-weight: normal;
     font-style: normal;
 }

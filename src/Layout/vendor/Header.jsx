@@ -7,22 +7,22 @@ function Header() {
         <div className="navbar-header" id="navbarHeaderContainer">
           <a
             className="navbar-brand edashboard-nav-caption"
-            title="@ViewBag.Title"
+            title="VendorMaster"
           >
-            Vendor Master
+            VENDOR MASTER
           </a>
           <div className="header-buttons"></div>
         </div>
         <div className="collapse navbar-collapse">
           <ul className="nav navbar-nav navbar-right">
-            <li className="dropdown searchContainer">
+            {/* <li className="dropdown searchContainer">
               <input
                 id="HeaderFilterSearch"
                 className="form-control"
                 type="search"
                 placeholder="Search"
               />
-            </li>
+            </li> */}
             <li>
               <button
                 id="global-search-btn"
@@ -55,17 +55,20 @@ function Header() {
             </li>
             <li className="dropdown">
               <a href="#" id="unreadNotifications">
-                <i className="material-icons"></i>
+                <i className="material-icons">notifications</i>
+
+                <span className="notification"></span>
 
                 <span className="notification"></span>
                 <p className="hidden-lg hidden-md">
+                  Notifications
                   <b className="caret"></b>
                 </p>
               </a>
             </li>
             <li>
               <a href="#">
-                <i className="material-icons"></i>
+                <i className="material-icons">power_settings_new</i>
               </a>
             </li>
             <li>
@@ -73,7 +76,7 @@ function Header() {
                 <span className="user-name">Poc Team</span>
                 <a href="#">
                   <div className="photo">
-                    <img src="https://www.gieom.com/wp-content/uploads/2021/09/gieom-favicon.png" />
+                    <img src="/assets/default_avatar.jpg" />
                   </div>
                 </a>
               </div>
@@ -82,6 +85,7 @@ function Header() {
           </ul>
         </div>
       </div>
+      <div id="root2"></div>
     </nav>
   );
 }

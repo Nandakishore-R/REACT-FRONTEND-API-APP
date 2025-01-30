@@ -52,7 +52,6 @@ function VendorRating(props) {
   const fetchRating = () => {
     fetch(`${API_URL}/Vendor/GetRatingPOC?vendorId=${vendorId}`)
       .then((response) => {
-        setLoading(true);
         return response.json();
       })
       .then((data) => {
