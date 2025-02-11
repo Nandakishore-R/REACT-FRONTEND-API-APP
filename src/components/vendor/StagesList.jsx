@@ -1,10 +1,23 @@
 ﻿import React, { useState, useEffect, useRef, Fragment } from "react";
-import { Row, Col,Input, Table, Collapse, Space,Tooltip,Select,Button,Modal, Image, Checkbox, InputNumber } from "antd";
+import {
+    Row,
+    Col,
+    Input,
+    Table,
+    Collapse,
+    Space,
+    Tooltip,
+    Select,
+    Button,
+    Modal,
+    Image,
+    Checkbox,
+    InputNumber
+} from "antd";
 import { useTranslation, initReactI18next } from "react-i18next";
 import { API_URL } from "../../constants";
 function StagesList(props) {
     const { t } = useTranslation();
-    
     const [modaldisplayshow, setModaldisplayshow] = useState(false);
     const { Option } = Select;
     const { Panel } = Collapse;
@@ -59,7 +72,16 @@ function StagesList(props) {
                     console.log("no response in owner api");
                 } else {
                     // console.log("res", response)
-                    setOptions(response)
+                    // const uniqueIds = new Set();
+                    // const uniqueData = response.filter(item  => {
+                    //     if (!uniqueIds.has(item.id)) {
+                    //       uniqueIds.add(item.id);
+                    //       return true;
+                    //     }
+                    //     return false;
+                    //   });
+                    // setOptions(uniqueData);
+                    setOptions(response);
                 }
             },
             error: function (error) {
@@ -78,10 +100,9 @@ function StagesList(props) {
                     "Approvers": [],
                     "Header": ""
                 }
-                const newList = [...stageList]
+                const newList = JSON.parse(JSON.stringify(stageList));
                 newList[nodeIndex].FormGroup.push(newGroup)
                 setStageList(newList)
-
             }} />),
             dataIndex: '',
             width: '5%',
@@ -93,7 +114,8 @@ function StagesList(props) {
             dataIndex: 'Approvers',
             width: "40%",
             key: "2",
-            render: (text, record) => (<Select
+            render: (text, record) => (
+            <Select
                 mode="multiple"
                 allowClear
                 style={{
@@ -163,7 +185,7 @@ function StagesList(props) {
                     setCurrentStage(nodeIndex)
                     setcurrentFormGroup(record.id);
                     if (record.JsonForm.length != 0) {
-                            setUpForm("{\"action\":" + (record.JsonForm) + "}");
+                        setUpForm("{\"action\":" + (record.JsonForm) + "}");
                     }
                     else {
                         setUpForm([]);
@@ -177,7 +199,7 @@ function StagesList(props) {
             key: "5",
             render: (text, record, index) => (<img alt="delete" width={20} src="/assets/images/delete-black.svg"
                 onClick={(e) => {
-                    const newList = [...stageList]
+                    const newList = JSON.parse(JSON.stringify(stageList));
                     const formGroupList = newList[nodeIndex].FormGroup;
                     const FilterFormGrouplist = formGroupList.filter((item) => item.id != record.id);
                     newList[nodeIndex].FormGroup = FilterFormGrouplist;
@@ -271,7 +293,6 @@ function StagesList(props) {
 
             arr.map((item, index) => {
                 if (index == nodeIndex) {
-
                     stageList[nodeIndex][attr] = value
                 }
                 setStageList(arr)
@@ -288,7 +309,7 @@ function StagesList(props) {
         const indexVal = stage.stage.index;
         return (
             <Row className="stageFlexBetween-approval">
-                <Col style={{ fontWeight: "bold",color:"black" }}>
+                <Col style={{ fontWeight: "bold", color: "black" }}>
                     {t('Label_Stages')}: {stageVal.StageName}
                 </Col>
                 <Col>
@@ -296,7 +317,7 @@ function StagesList(props) {
                         // If you don't want click extra trigger collapse, you can prevent this:
                         event.stopPropagation();
                         checkChange(e.target.checked, 'IsMandatory')
-                    }}  defaultChecked={stageVal.IsMandatory} disabled={stageVal.IsMaster} style={{ fontWeight: "bold", color: "black" }}>{t('Label_IsThisStageMandatory')}</Checkbox>
+                    }} defaultChecked={stageVal.IsMandatory} disabled={stageVal.IsMaster} style={{ fontWeight: "bold", color: "black" }}>{t('Label_IsThisStageMandatory')}</Checkbox>
                     {/*<img width={20} src="/Images/redPin.png" className={stageVal.IsPinned ? "stageHeaderImg pinnedStage" : "stageHeaderImg"} onClick={(e) => {*/}
                     {/*    e.stopPropagation();*/}
                     {/*    checkChange(!stageVal.IsPinned, 'IsPinned')*/}
@@ -332,7 +353,6 @@ function StagesList(props) {
         let stageValue = stage.stage;
         return (
             <Fragment>
-
                 <Space direction="vertical" className="stageListContainer"
                     key={stage.index}
                     index={stage.index}
@@ -352,14 +372,15 @@ function StagesList(props) {
                                             inputChange(value, 'StageName')
 
                                         }} />
-                                </Col>  <Col style={{marginLeft:"4.9vw"}} >
+                                </Col>  <Col style={{ marginLeft: "4.9vw" }} >
                                     <Row>
                                         <label className="label-stages" style={{ fontWeight: "bold", color: "black", marginLeft: "0vh" }}>{t('Label_SelectAtLeastOneAction')} <i className="fa fa-circle asterisk-dot"></i></label>
-                                    </Row><Row>
+                                    </Row>
+                                    <Row>
                                         <Checkbox.Group
                                             style={{ fontWeight: "bold", fontColor: "black" }}
                                             options={actionList}
-                                            defaultValue={stageList[nodeIndex] ? (stageList[nodeIndex].Actions ? ([stageList[nodeIndex].Actions["_Abort"] == 1 ? 'abort' : '', 'approve', stageList[nodeIndex].Actions["_Need correction"] == 1 ? 'needs correction' : '']) :   '') : ''}
+                                            defaultValue={stageList[nodeIndex] ? (stageList[nodeIndex].Actions ? ([stageList[nodeIndex].Actions["_Abort"] == 1 ? 'abort' : '', 'approve', stageList[nodeIndex].Actions["_Need correction"] == 1 ? 'needs correction' : '']) : '') : ''}
                                             onChange={(e) => {
                                                 var abort = e.includes("abort");
                                                 var needCorr = e.includes("needs correction")
@@ -369,7 +390,7 @@ function StagesList(props) {
                                                     "_Need correction": needCorr ? 1 : 0
                                                 }
                                             }}
-                                        disabled={false}
+                                            disabled={false}
                                         />
                                     </Row>
                                 </Col>
@@ -383,12 +404,15 @@ function StagesList(props) {
                                     <label className="label-stages" style={{ fontWeight: "bold", color: "black" }}>{t('Label_Days')} </label>
                                 </Col>
                                 <Col>
-                                    <Checkbox className="approvalMandate" onChange={(e) => checkChange(e.target.checked, 'ApprovalMandatory')} defaultChecked={stageValue.ApprovalMandatory} style={{ fontWeight: "bold", color: "black",marginLeft:"13.3vw" }}>{t('Label_UnanimousApprovalMandatory')}</Checkbox>
+                                    <Checkbox className="approvalMandate" onChange={(e) => checkChange(e.target.checked, 'ApprovalMandatory')} defaultChecked={stageValue.ApprovalMandatory} style={{ fontWeight: "bold", color: "black", marginLeft: "13.3vw" }}>{t('Label_UnanimousApprovalMandatory')}</Checkbox>
                                 </Col>
                             </Row>
                             <Row>
-                                <Table style={{ fontWeight: "bold", fontColor: "black" }} columns={columns} dataSource={stageValue.FormGroup}
-                                    pagination={false} className="stageTable" scroll={{ y: "70vh" }} showSorterTooltip={false} rowKey="id"/>
+                                {console.log("StageValue",stageValue)}
+                                <Table style={
+                                    { fontWeight: "bold", fontColor: "black" }} columns={columns}
+                                    dataSource={stageValue.FormGroup.map((item,i)=>({...item, key:item.id || i,}))}
+                                    pagination={false} className="stageTable" scroll={{ y: "70vh" }} showSorterTooltip={false} rowKey="id" />
                             </Row>
                         </Panel>
                     </Collapse>

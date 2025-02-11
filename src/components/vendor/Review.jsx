@@ -31,7 +31,7 @@ function Review(props) {
       .then((response) => {
         if (response.statusCode == 200) {
           if (response.data) {
-            var stagesData = JSON.parse(response.data.stageJson);
+            let stagesData = JSON.parse(response.data.stageJson);
             stagesData.map((tempstage) => {
               // console.log(tempstage);
               tempstage.IsMaster = tempstage.IsMandatory;
@@ -86,6 +86,7 @@ function Review(props) {
         isReview={true}
         isReviewInViewMode={true}
       /> 
+      
     </Fragment>
     
   );

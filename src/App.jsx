@@ -8,6 +8,7 @@ import VendorEntry from './components/vendor/VendorEntry'
 import store from './store/Store'
 import Layout from './Layout/vendor/Layout'
 import { useEffect } from 'react'
+import ActionCentre from './Pages/ActionCentre'
 
 // const loadFormRendererDeps = () => {
 //   window.React = React;
@@ -25,7 +26,8 @@ function App() {
         <Provider store={store}>
           <Router>
             <Routes>
-              <Route path="/" element={<Vendor />} />
+              <Route path="/" element={<ActionCentre />} /> 
+              <Route path="/vendor" element={<Vendor />} />
               <Route path="/vendordetail" element={<VendorEntry />} />
             </Routes>
           </Router>

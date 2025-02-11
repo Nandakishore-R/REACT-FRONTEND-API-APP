@@ -39,7 +39,6 @@ function StagesMain(props) {
     /*React.useEffect(() => {
         props.setStages(stageList);
     }, [stageList]);*/
-    console.log("props2", props);
     return (
         <Fragment>
             <FormModal />
@@ -63,7 +62,6 @@ function StagesMain(props) {
                     <Col className="abcd">
                         <InputNumber size="large" defaultValue={0} min={0} onChange={(val) => {
                             if (val < props.numberOfApprovalStages) {
-                                console.log("in if");
                                 props.setNumberOfApprovalStages(val);
                                 props.setStageRequired(val == 0);
                                 let removeItems = props.numberOfApprovalStages - val;
@@ -75,7 +73,6 @@ function StagesMain(props) {
                             }
                             else {
                                 console.log(val);
-                                console.log("in else");
                                 const newStages = [...props.stages];
                                 newStages.push({
                                         "Actions": {
