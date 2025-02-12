@@ -1,31 +1,28 @@
-﻿function UserDisplayPanel(props) {
-    const { t, i18n } = useTranslation();
-    const Row = window["antd"].Row;
-    const Col = window["antd"].Col;
-    const Button = window["antd"].Button;
-    const Menu = window["antd"].Menu;
-    const Modal = window["antd"].Modal;
-    const Dropdown = window["antd"].Dropdown;
-    const Tooltip = window["antd"].Tooltip;
-    const [userDetails, setuserDetails] = React.useState("");
-    const [userDetailsID, setuserDetailsID] = React.useState("");
-    const [entityId, setEntityId] = React.useState([]);
-    const [roleId, setRoleId] = React.useState("");
-    const [showUserFormModel, setshowUserFormModel] = React.useState(false);
-    const [EntityOwnerID, setEntityOwnerID] = React.useState("");
-    const [EntityOwnerName, setEntityOwnerName] = React.useState("");
-    const [currentUser, setCurrentUser] = React.useState("");
-    const [makeownermodel, setMakeownermodel] = React.useState(false);
-    const [deleteusermodel, setDeleteusermodel] = React.useState(false);
-    const [activecheck, setActivecheck] = React.useState(true);
-    const [selectedUserCheckArr, setSelectedUserCheckArr] = React.useState([]);
+﻿import { useTranslation } from "react-i18next";
+import {useState, useEffect} from "react";
+import {Row, Col, Button, Menu, Modal, Dropdown, Tooltip} from 'antd';
 
-    React.useEffect(() => {
+function UserDisplayPanel(props) {
+    const { t, i18n } = useTranslation();
+    const [userDetails, setuserDetails] = useState("");
+    const [userDetailsID, setuserDetailsID] = useState("");
+    const [entityId, setEntityId] = useState([]);
+    const [roleId, setRoleId] = useState("");
+    const [showUserFormModel, setshowUserFormModel] = useState(false);
+    const [EntityOwnerID, setEntityOwnerID] = useState("");
+    const [EntityOwnerName, setEntityOwnerName] = useState("");
+    const [currentUser, setCurrentUser] = useState("");
+    const [makeownermodel, setMakeownermodel] = useState(false);
+    const [deleteusermodel, setDeleteusermodel] = useState(false);
+    const [activecheck, setActivecheck] = useState(true);
+    const [selectedUserCheckArr, setSelectedUserCheckArr] = useState([]);
+
+    useEffect(() => {
         if (props.userstatedata && props.userstatedata[0])
         setEntityId(props.userstatedata[0].entityId);
     }, [props.userstatedata])
 
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             cache: false,
@@ -428,3 +425,4 @@
 
     );
 }
+export default UserDisplayPanel;

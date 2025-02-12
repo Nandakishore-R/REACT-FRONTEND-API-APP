@@ -1,45 +1,43 @@
-﻿let newRiskIdContext = React.createContext(null);
-let newParentRiskIdContext = React.createContext(null);
-let newSidebarKey = React.createContext(null);
+﻿import { createContext } from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import $ from "jquery";
+import {Form, Input, InputNumber, Button, Radio, Switch, Divider, Row, Col, Select, Layout, Tooltip, Modal} from 'antd';
+
+export const NewRiskIdContext = createContext(null);
+export const NewParentRiskIdContext = createContext(null);
+export const NewSidebarKeyContext = createContext(null);
 function RiskForm(props) {
     const { t, i18n } = useTranslation();
-    const Form = window["antd"].Form;
     const [form] = Form.useForm();
-    const Input = window["antd"].Input;
-    const Select = window["antd"].Select;
-    const Button = window["antd"].Button;
-    const Row = window["antd"].Row;
-    const Col = window["antd"].Col;
-    const Tooltip = window["antd"].Tooltip;
-    const Modal = window["antd"].Modal;
     /*************************************************************************************************************/
     //For Risk Modal
-    const [linkRisk, setLinkRisk] = React.useState(false);
+    const [linkRisk, setLinkRisk] = useState(false);
     //stores the risk hierarchy administrator
-    const [selectedAdministrator, setSelectedAdministrator] = React.useState("00000000-0000-0000-0000-000000000000");
-    const [selectedItem, setSelectedItem] = React.useState([
+    const [selectedAdministrator, setSelectedAdministrator] = useState("00000000-0000-0000-0000-000000000000");
+    const [selectedItem, setSelectedItem] = useState([
         {
             Id: "",
             Name: "",
             ParentLevelName: ""
         }
     ]);
-    const [ParentLevelName, setParentLevelName] = React.useState("");
+    const [ParentLevelName, setParentLevelName] = useState("");
 
     /*Frequency Pattern*/
-    const [edit, setEdit] = React.useState(!props.calledFromPanel);
+    const [edit, setEdit] = useState(!props.calledFromPanel);
 
-    const [frequency, setFrequency] = React.useState("daily");
-    const [notify, setNotify] = React.useState("");
-    const [recur, setRecur] = React.useState("");
-    const [oneTimeRecur, setOneTimeRecur] = React.useState(false);
-    const [recurRange, setRecurRange] = React.useState("");
-    const [noend, setNoend] = React.useState(false);
-    const [weekValue, setWeekValue] = React.useState("");
-    const [daysValue, setDaysValue] = React.useState("");
-    const [monthNamesValue, setMonthNamesValue] = React.useState("");
-    const [elementAccessData, setElementAccessData] = React.useState();
-    const [disabledCond, setDisabledCond] = React.useState(false);
+    const [frequency, setFrequency] = useState("daily");
+    const [notify, setNotify] = useState("");
+    const [recur, setRecur] = useState("");
+    const [oneTimeRecur, setOneTimeRecur] = useState(false);
+    const [recurRange, setRecurRange] = useState("");
+    const [noend, setNoend] = useState(false);
+    const [weekValue, setWeekValue] = useState("");
+    const [daysValue, setDaysValue] = useState("");
+    const [monthNamesValue, setMonthNamesValue] = useState("");
+    const [elementAccessData, setElementAccessData] = useState();
+    const [disabledCond, setDisabledCond] = useState(false);
     const monthNames = [
         t('Label_January'),
         t('Label_February'),
@@ -55,56 +53,56 @@ function RiskForm(props) {
         t('Label_December')
     ];
     var daysOfMonth = [];
-    const [weekDays, setWeekDays] = React.useState([]);
-    const [nextReviewDate, setReviewDate] = React.useState("");
-    const [endAfter, setEndAfter] = React.useState("");
+    const [weekDays, setWeekDays] = useState([]);
+    const [nextReviewDate, setReviewDate] = useState("");
+    const [endAfter, setEndAfter] = useState("");
     /*---------------------------------------------------------------------------------------------------*/
     // Risk Form Field State
     //Name
-    const [name, setName] = React.useState("");
+    const [name, setName] = useState("");
     //Description
-    const [desc, setDesc] = React.useState("");
+    const [desc, setDesc] = useState("");
     //personalID
-    const [personalID, setpersonalID] = React.useState("");
+    const [personalID, setpersonalID] = useState("");
     //Parent Risk
-    const [parentRisk, setParentRisk] = React.useState("");
-    const [parentRiskName, setParentRiskName] = React.useState("");
+    const [parentRisk, setParentRisk] = useState("");
+    const [parentRiskName, setParentRiskName] = useState("");
     //is child
-    const [ifChild, setIfChild] = React.useState(false);
+    const [ifChild, setIfChild] = useState(false);
     //Risk Classification
-    const [riskClassification, setRiskClassification] = React.useState([]);
-    const [riskClassificationID, setRiskClassificationID] = React.useState("");
+    const [riskClassification, setRiskClassification] = useState([]);
+    const [riskClassificationID, setRiskClassificationID] = useState("");
     //Risk Sub Classification
-    const [riskSubClassification, setRiskSubClassification] = React.useState([]);
-    const [riskSubClassificationID, setRiskSubClassificationID] = React.useState(
+    const [riskSubClassification, setRiskSubClassification] = useState([]);
+    const [riskSubClassificationID, setRiskSubClassificationID] = useState(
         ""
     );
     //Risk Type
-    const [riskType, setRiskType] = React.useState([]);
-    const [riskTypeID, setRiskTypeID] = React.useState("");
+    const [riskType, setRiskType] = useState([]);
+    const [riskTypeID, setRiskTypeID] = useState("");
     //Approvers
-    const [approverOptions, setApproverOptions] = React.useState([]);
-    const [approverID, setApproverID] = React.useState("");
+    const [approverOptions, setApproverOptions] = useState([]);
+    const [approverID, setApproverID] = useState("");
     //Risk ID
-    const [riskID, setRiskID] = React.useState("");
+    const [riskID, setRiskID] = useState("");
     //To set panel
-    const [panel, setPanel] = React.useState(true);
+    const [panel, setPanel] = useState(true);
     // To handle button
     let allocNew= false;
-    const [riskApi, setRiskApi] = React.useState("CreateRiskHierarchyDetails");
-    const [checkUpd, setCheckUpd] = React.useState(false);
+    const [riskApi, setRiskApi] = useState("CreateRiskHierarchyDetails");
+    const [checkUpd, setCheckUpd] = useState(false);
     var btnApi = false;
     var tick = false;
     //To make the form editable
-    const [disableIcon, setDisableIcon] = React.useState(false);
-    const [administratorEntities, setAdministratorEntities] = React.useState({
+    const [disableIcon, setDisableIcon] = useState(false);
+    const [administratorEntities, setAdministratorEntities] = useState({
         Entities: [],
         IsCentralEntity: true
     });
 
 
     //To fetch the Risk administrators
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             url: "/AccessRightsManagement/GetAdministringEntities",
@@ -150,7 +148,7 @@ function RiskForm(props) {
 
     /*---------------------------------------------------------------------------------------------------- */
     //Risk Classification API CALL
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             cache: false,
@@ -184,8 +182,8 @@ function RiskForm(props) {
     /*---------------------------------------------------------------------------------------------------- */
     //Risk SubClassification API CALL
 
-    React.useEffect(() => {
-        newSidebarKey = React.createContext(props.keyAccess);
+    useEffect(() => {
+        newSidebarKey = createContext(props.keyAccess);
        
     }, []);
 
@@ -277,7 +275,7 @@ function RiskForm(props) {
     }
 
     
-    React.useEffect(
+    useEffect(
         () => {
             $.ajax({
                 type: "GET",
@@ -303,7 +301,7 @@ function RiskForm(props) {
 
     /*---------------------------------------------------------------------------------------------------- */
     // Risk Type API CAll
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             cache: false,
@@ -374,7 +372,7 @@ function RiskForm(props) {
         });
         setApproverID(data);
     }
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             cache: false,
@@ -428,7 +426,7 @@ function RiskForm(props) {
             )
         }
     }
-    React.useEffect(
+    useEffect(
         () => {
             if (props.riskGetDetails) {
                 setFrequency(
@@ -486,7 +484,7 @@ function RiskForm(props) {
                 setpersonalID(props.riskGetDetails.personalID);
                 setParentRisk(props.riskGetDetails.ParentRisk);
                 setParentRiskName(props.riskGetDetails.ParentRiskName);
-                newParentRiskIdContext = React.createContext(
+                newParentRiskIdContext = createContext(
                     props.riskGetDetails.ParentRisk
                 );
                 setRiskClassificationID(props.riskGetDetails.RiskClassificationID);
@@ -503,15 +501,15 @@ function RiskForm(props) {
                 console.log("Risk Form Selected Id" + props.selectedId.Id)
                 if (props.selectedId.Id == "") {
                     setParentRisk("");
-                    newParentRiskIdContext = React.createContext("");
+                    newParentRiskIdContext = createContext("");
                     setIfChild(false);
                 } else if (props.selectedId.Id !== 0) {
                     setParentRisk(props.selectedId.Id);
-                    newParentRiskIdContext = React.createContext(props.selectedId.Id);
+                    newParentRiskIdContext = createContext(props.selectedId.Id);
                     setIfChild(true);
                 } else {
                     setParentRisk(props.selectedId.Id);
-                    newParentRiskIdContext = React.createContext(props.selectedId.Id);
+                    newParentRiskIdContext = createContext(props.selectedId.Id);
                     setIfChild(true);
                 }
                 setRiskID("");
@@ -541,7 +539,7 @@ function RiskForm(props) {
         },
         [props.riskGetDetails]
     );
-    React.useEffect(
+    useEffect(
         () => {
             if (props.FrequencyData == true) {
                 setEndAfter("");
@@ -566,7 +564,7 @@ function RiskForm(props) {
         });
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         
         props.setParentriskid(selectedItem[0].Id);
             props.setParentriskname(selectedItem[0].Name);
@@ -579,7 +577,7 @@ function RiskForm(props) {
     }, [selectedItem])
 
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.riskGetDetails.RiskHierarchyMaster) {
             setSelectedItem([{
                 Id: props.riskGetDetails.ParentRisk,
@@ -681,7 +679,7 @@ function RiskForm(props) {
                         if (response.Message != "Success") {
 
                             risk_ID = response.Message;
-                            newRiskIdContext = React.createContext(risk_ID);
+                            newRiskIdContext = createContext(risk_ID);
                             setRiskID(risk_ID);
                         }
 
@@ -737,7 +735,7 @@ function RiskForm(props) {
     }
     /*---------------------------------------------------------------------------------------------------- */
 
-    const [check, setCheck] = React.useState(false);
+    const [check, setCheck] = useState(false);
     function OnCross() {
         setFrequency(
             JSON.parse(props.riskGetDetails.FrequencyPattern).frequencytype
@@ -792,7 +790,7 @@ function RiskForm(props) {
         setDesc(props.riskGetDetails.Description);
         setpersonalID(props.riskGetDetails.personalID);
         setParentRisk(props.riskGetDetails.ParentRisk);
-        newParentRiskIdContext = React.createContext(
+        newParentRiskIdContext = createContext(
             props.riskGetDetails.ParentRisk
         );
         setRiskClassificationID(props.riskGetDetails.RiskClassificationID);
@@ -845,7 +843,7 @@ function RiskForm(props) {
         });
     }
     //To close the delete modal
-    const [deletemodal, setDeleteModel] = React.useState(false);
+    const [deletemodal, setDeleteModel] = useState(false);
     function onclickdelete(deletemodal) {
         setDeleteModel(deletemodal);
     }
@@ -979,7 +977,7 @@ function RiskForm(props) {
                         )}
                     </Col>
                     {props.riskGetDetails && (
-                        <React.Fragment>
+                        <Fragment>
                             <Col span={2}>
                                 {props.disable && (
                                     <img
@@ -1055,10 +1053,10 @@ function RiskForm(props) {
                                     />
                                 )}
                             </Col>
-                        </React.Fragment>
+                        </Fragment>
                     )}
                     {!props.riskGetDetails && (
-                        <React.Fragment>
+                        <Fragment>
                             <Col span={2}>
                                 <img
                                     src="/Views/Risk/icons/CloseIcon.svg"
@@ -1094,7 +1092,7 @@ function RiskForm(props) {
                                     />{" "}
                                 </Button>
                             </Col>
-                        </React.Fragment>
+                        </Fragment>
                     )}
                 </Row>
             </div>
@@ -1422,7 +1420,7 @@ function RiskForm(props) {
                         }}
                     />
                     {!props.disable && (
-                        <React.Fragment>
+                        <Fragment>
                             <Button
                                 type="primary"
                                 key="submit"
@@ -1451,10 +1449,10 @@ function RiskForm(props) {
                             >
                                 {t('Label_AllocateEntityAndAccess')}{" "}
                             </Button>
-                        </React.Fragment>
+                        </Fragment>
                     )}
                     {props.disable && (
-                        <React.Fragment>
+                        <Fragment>
                             <Button
                                 type="primary"
                                 htmlType="submit"
@@ -1468,7 +1466,7 @@ function RiskForm(props) {
                             >
                                 {t('Label_ViewEntiyAndAccess')}
               </Button>
-                        </React.Fragment>
+                        </Fragment>
                     )}
 
                     <br />
@@ -1540,3 +1538,4 @@ function RiskForm(props) {
         </div>
     );
 }
+export default RiskForm;

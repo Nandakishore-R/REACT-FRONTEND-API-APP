@@ -1,40 +1,32 @@
-﻿const useTranslation = window["ReactI18next"].useTranslation;
+﻿import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+import {Form, Input, InputPassword, Select, Row, Col, Button, Modal, Switch, Tooltip} from 'antd';
 function UserformRU(props) {
     const { t, i18n } = useTranslation();
-    const Form = window["antd"].Form;
     const [form] = Form.useForm();
-    const Input = window["antd"].Input;
-    const InputPassword = window["antd"].Input.Password;
-    const Select = window["antd"].Select;
-    const Row = window["antd"].Row;
-    const Col = window["antd"].Col;
-    const Button = window["antd"].Button;
-    const Modal = window["antd"].Modal;
-    const Switch = window['antd'].Switch;
-    const Tooltip = window['antd'].Tooltip;
-    const [supervisorentity, setsupervisorEntity] = React.useState("");
-    const [supervisorrole, setsupervisorRole] = React.useState("");
-    const [supervisoruser, setsupervisorUser] = React.useState("");
+    const [supervisorentity, setsupervisorEntity] = useState("");
+    const [supervisorrole, setsupervisorRole] = useState("");
+    const [supervisoruser, setsupervisorUser] = useState("");
     //const isUserAssessmentAllowed = props.isUserAssessmentAllowed //don't add this otherwise functionality breaks to be revisted
     //Users form field State
-    const [firstName, setfirstName] = React.useState("");
-    const [lastName, setlastName] = React.useState("");
-    const [userName, setUserName] = React.useState("");
-    const [entityOwner, setentityOwner] = React.useState(false);
-    const [designation, setDesignation] = React.useState("");
-    const [location, setLocation] = React.useState("");
-    const [email, setemail] = React.useState("");
-    const [phone, setPhone] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [confirmpassword, setConfirmPassword] = React.useState("");
-    const [supervisorID, setSupervisorID] = React.useState("");
-    const [userApi, setUserApi] = React.useState("CreateUser");
-    const [userId, setUserId] = React.useState("00000000-0000-0000-0000-000000000000");
-    const [supervisor, setSupervisor] = React.useState([]);
-    const [activetab, setActivetab] = React.useState(true);
+    const [firstName, setfirstName] = useState("");
+    const [lastName, setlastName] = useState("");
+    const [userName, setUserName] = useState("");
+    const [entityOwner, setentityOwner] = useState(false);
+    const [designation, setDesignation] = useState("");
+    const [location, setLocation] = useState("");
+    const [email, setemail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmpassword, setConfirmPassword] = useState("");
+    const [supervisorID, setSupervisorID] = useState("");
+    const [userApi, setUserApi] = useState("CreateUser");
+    const [userId, setUserId] = useState("00000000-0000-0000-0000-000000000000");
+    const [supervisor, setSupervisor] = useState([]);
+    const [activetab, setActivetab] = useState(true);
 
     //state management
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.userDetails) {
             setUserId(props.userDetails.Id);
             setfirstName(props.userDetails.FirstName);
@@ -116,7 +108,7 @@ function UserformRU(props) {
         });
 
     }
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             url: "/User/SupervisorUsers",
@@ -353,12 +345,12 @@ function UserformRU(props) {
                                 }} />
                         </button>
                       {isUserAssessmentAllowed == "True" ?
-                            <React.Fragment>
+                            <Fragment>
                        {props.createcheck == true ? `${t('Label_NewUser')}` : `${t('Label_UpdateUser')}`}
                        <button className="ua-add-btn-create" onClick={() => { createFunc() }}>
                             {props.createcheck == true ? `${t('Label_Create')}` : `${t('Label_Update')}`}
                             </button>
-                            </React.Fragment>
+                            </Fragment>
                             :
                        `${t('Label_ViewUser')}`
                       }

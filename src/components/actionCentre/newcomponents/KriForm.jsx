@@ -1,51 +1,42 @@
-﻿function KriForm(props) {
+﻿import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {Form, Input, InputNumber, Button, Radio, Switch, Divider, Row, Col, Select, Layout, Tooltip, Modal} from 'antd';
+
+function KriForm(props) {
     const { t, i18n } = useTranslation();
-    const Form = window["antd"].Form;
-    const Input = window["antd"].Input;
-    const InputNumber = window["antd"].InputNumber;
-    const Button = window["antd"].Button;
-    const Radio = window["antd"].Radio;
-    const Switch = window["antd"].Switch;
-    const Divider = window["antd"].Divider;
-    const Row = window["antd"].Row;
-    const Col = window["antd"].Col;
-    const Select = window["antd"].Select;
     const { Option } = Select;
-    const Layout = window["antd"].Layout;
-    const Tooltip = window["antd"].Tooltip;
-    const Modal = window["antd"].Modal;
     const [form] = Form.useForm();
-    const [image, setImage] = React.useState(true);
-    const [unitOfMeasurement, setUnitOfMeasurement] = React.useState();
-    const [owner, setOwner] = React.useState([]);
-    const [date, setDate] = React.useState("");
-    const [KriActive, setKriActive] = React.useState(true);
-    const [kriId, setKriId] = React.useState("");
-    const [name, setName] = React.useState("");
-    const [personalID, setpersonalID] = React.useState("");
-    const [edit, setEdit] = React.useState(!props.calledFromPanel);
-    const [openNotificationModal, setOpenNotificationModal] = React.useState(false);
-    const [NotificationRulecheck, setNotificationRulecheck] = React.useState(
+    const [image, setImage] = useState(true);
+    const [unitOfMeasurement, setUnitOfMeasurement] = useState();
+    const [owner, setOwner] = useState([]);
+    const [date, setDate] = useState("");
+    const [KriActive, setKriActive] = useState(true);
+    const [kriId, setKriId] = useState("");
+    const [name, setName] = useState("");
+    const [personalID, setpersonalID] = useState("");
+    const [edit, setEdit] = useState(!props.calledFromPanel);
+    const [openNotificationModal, setOpenNotificationModal] = useState(false);
+    const [NotificationRulecheck, setNotificationRulecheck] = useState(
         false
     );
-    const [notificationViewMode, setNotificationViewMode] = React.useState(false);
+    const [notificationViewMode, setNotificationViewMode] = useState(false);
 
     //when called by edit , set it to the value received
     /*Frequency Pattern*/
-    const [frequency, setFrequency] = React.useState("daily");
-    const [notify, setNotify] = React.useState("");
-    const [recur, setRecur] = React.useState("");
-    const [weekValue, setWeekValue] = React.useState("");
+    const [frequency, setFrequency] = useState("daily");
+    const [notify, setNotify] = useState("");
+    const [recur, setRecur] = useState("");
+    const [weekValue, setWeekValue] = useState("");
 
     //To set the next review date
-    const [nextReviewDate, setReviewDate] = React.useState("");
-    const [endAfter, setEndAfter] = React.useState("");
-    const [noend, setNoend] = React.useState(false);
+    const [nextReviewDate, setReviewDate] = useState("");
+    const [endAfter, setEndAfter] = useState("");
+    const [noend, setNoend] = useState(false);
     //To set the range of recur date
-    const [daysValue, setDaysValue] = React.useState("");
-    const [monthNamesValue, setMonthNamesValue] = React.useState("");
-    const [weekDays, setWeekDays] = React.useState([]);
-    const [thresholdcheck, setThresholdcheck] = React.useState(false);
+    const [daysValue, setDaysValue] = useState("");
+    const [monthNamesValue, setMonthNamesValue] = useState("");
+    const [weekDays, setWeekDays] = useState([]);
+    const [thresholdcheck, setThresholdcheck] = useState(false);
 
     const monthNames = [
          t('Label_January'),
@@ -62,8 +53,8 @@
         t('Label_December')
     ];
     var daysOfMonth = [];
-    const [oneTimeRecur, setOneTimeRecur] = React.useState(false);
-    const [recurRange, setRecurRange] = React.useState("");
+    const [oneTimeRecur, setOneTimeRecur] = useState(false);
+    const [recurRange, setRecurRange] = useState("");
     const labelTo = `${t('Label_Currency')}`;
     /*End Frequency Pattern*/
 
@@ -71,37 +62,37 @@
     var currentDate = new Date();
     //To disable current date
     currentDate.setDate(currentDate.getDate() + 1);
-    const [countAbove, setCountAbove] = React.useState();
-    const [countBelow, setCountBelow] = React.useState();
-    const [countButtonCLicked, setCountButtonClicked] = React.useState(0);
-    const [ownerentity, setOwnerEntity] = React.useState("");
-    const [ownerrole, setOwnerRole] = React.useState("");
-    const [owneruser, setOwnerUser] = React.useState("");
-    const [approverentity, setApproverEntity] = React.useState("");
-    const [approverrole, setApproverRole] = React.useState("");
-    const [approveruser, setApproverUser] = React.useState("");
-    const [KPICaptureMethods, setKPICaptureMethods] = React.useState([]);
+    const [countAbove, setCountAbove] = useState();
+    const [countBelow, setCountBelow] = useState();
+    const [countButtonCLicked, setCountButtonClicked] = useState(0);
+    const [ownerentity, setOwnerEntity] = useState("");
+    const [ownerrole, setOwnerRole] = useState("");
+    const [owneruser, setOwnerUser] = useState("");
+    const [approverentity, setApproverEntity] = useState("");
+    const [approverrole, setApproverRole] = useState("");
+    const [approveruser, setApproverUser] = useState("");
+    const [KPICaptureMethods, setKPICaptureMethods] = useState([]);
     const [
         unitOfMeasurementOptions,
         setUnitOfMeasurementOptions
-    ] = React.useState([]);
+    ] = useState([]);
     
     const [
         BaselLossTypeOptions,
         setBaselLossTypeOptions
-    ] = React.useState([]);
+    ] = useState([]);
     const [
         BaselBusinessLineOptions,
         setBaselBusinessLineOptions
-    ] = React.useState([]);
+    ] = useState([]);
     const [
         BaselLossType,
         setBaselLossType
-    ] = React.useState([]);
+    ] = useState([]);
     const [
         BaselBusinessLine,
         setBaselBusinessLine
-    ] = React.useState([]);
+    ] = useState([]);
     const ownerapi = '/User/FetchUsersAndRoles';
 
     const ownerclick = event => {
@@ -161,7 +152,7 @@
     }
     let KRIDetailsList = props.kriDetails;
     let KRIDetailsID = KRIDetailsList.KRIDetailsID;
-    const [deleteModal, setDeleteModal] = React.useState(false);
+    const [deleteModal, setDeleteModal] = useState(false);
     function onclickdelete(deletemodal) {
         setDeleteModal(deletemodal);
     }
@@ -172,7 +163,7 @@
         return checkdate;
     }
 
-    React.useEffect(
+    useEffect(
         () => {
             if (props.kriDetails != "" && !thresholdcheck) {
                 setCountAbove(props.kriDetails.TresholdAbove);
@@ -253,7 +244,7 @@
       form.setFieldsValue(KRIDetailsList);
     }
   };
-  React.useEffect(populateFormFromProps, [
+  useEffect(populateFormFromProps, [
     props.calledFromPanel,
     KRIDetailsList
   ]);
@@ -263,7 +254,7 @@
     entityKeyAccess: entityKeyAccess
   } = props;
 
-    React.useEffect(() => {
+    useEffect(() => {
         $.ajax({
             type: "GET",
             url: '/BalanceScorecard/GetKPICaptureMethod',
@@ -658,7 +649,7 @@
         props.setShowKriForm(false);
     }
   const OccurenceComponent = () => (
-    <React.Fragment>
+    <Fragment>
       {unitOfMeasurement &&
               unitOfMeasurement.label == `${t('Label_Currency')}` && <p className="units">INR</p>}
       {unitOfMeasurement &&
@@ -677,7 +668,7 @@
               unitOfMeasurement.label == "Minutes" && <p className="units">Min</p>}
       {unitOfMeasurement &&
               unitOfMeasurement.label == `${t('Label_Amount')}` && <p className="units">{t('Label_Amount')}</p>}
-    </React.Fragment>
+    </Fragment>
   );
   return (
     <div>
@@ -1128,7 +1119,7 @@
                     className="kri-form-divider"
                 />
                 {(unitOfMeasurement || !edit || props.calledFromPanel) && (
-                    <React.Fragment>
+                    <Fragment>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <span className="kpi-label-th">
                               {t('Label_Threshold')} <i className="fa fa-circle asterisk-dot"></i>
@@ -1299,7 +1290,7 @@
                                 {t('Label_SetRAG')}
               </p>
                         </Form.Item>
-                    </React.Fragment>
+                    </Fragment>
                 )}
               <Form.Item onClick={form.submit}>
                 {edit == true ? <Button
@@ -1438,3 +1429,4 @@
         </div>
     );
 }
+export default KriForm;

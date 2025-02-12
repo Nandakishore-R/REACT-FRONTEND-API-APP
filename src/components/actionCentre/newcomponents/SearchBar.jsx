@@ -1,15 +1,15 @@
-﻿function SearchBar(props) {
+﻿import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+import { Input, Select, Tooltip } from "antd";
+function SearchBar(props) {
     const { t, i18n } = useTranslation();
-    const Input = window["antd"].Input;
-    const Select = window["antd"].Select;
-    const Tooltip = window["antd"].Tooltip;
     const { Search } = Input;
     const { Option } = Select;
-    const [debouncedTerm, setDebouncedTerm] = React.useState(term);
+    const [debouncedTerm, setDebouncedTerm] = useState(term);
     const { term, setTerm, onSearchSubmit, clearResults, keyAccess, searchTypeList, getEntity, selectedItems, setSelectedItems, setSortType, sortType } = props;
 
     // update 'term' value after 1 second from the last update of 'debouncedTerm'
-    React.useEffect(() => {
+    useEffect(() => {
         const timer = setTimeout(() => {
             setTerm(debouncedTerm);
             if (debouncedTerm === '' && searchTypeList) {
@@ -20,7 +20,7 @@
     }, [debouncedTerm])
 
     // submit a new search
-    React.useEffect(() => {
+    useEffect(() => {
         if (term !== '' && term) {
             onSearchSubmit(term.trim());
         }
@@ -88,3 +88,4 @@
         </div>
     )
 }
+export default SearchBar;

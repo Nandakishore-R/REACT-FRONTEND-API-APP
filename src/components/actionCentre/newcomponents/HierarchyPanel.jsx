@@ -1,11 +1,9 @@
-﻿function HierarchyPanel(props) {
+﻿import { useTranslation } from "react-i18next";
+import {Row, Col, Tooltip, Popover} from 'antd';
+function HierarchyPanel(props) {
     const { t, i18n } = useTranslation();
-    const Row = window["antd"].Row;
-    const Col = window["antd"].Col;
-    const Tooltip = window["antd"].Tooltip;
-    const Popover = window["antd"].Popover;
-    const [childhoverData, setchildhoverData] = React.useState([]);
-    const [parenthoverData, setparenthoverData] = React.useState([]);;
+    const [childhoverData, setchildhoverData] = useState([]);
+    const [parenthoverData, setparenthoverData] = useState([]);;
 
 
     var singleSelect = (props.selectionType).toLowerCase() == "single";
@@ -986,7 +984,7 @@
 
 
     return (
-        <React.Fragment>
+        <Fragment>
             {
                 //On search if no result found or if the filter of the types checked does'nt maatch
                 ((props.itemList && props.itemList[0] && props.itemList[0] === "NO_RESULT_FOUND") || (customFilterSort.length == 0)) ?
@@ -1021,6 +1019,7 @@
                     })
 
             }
-        </React.Fragment>
+        </Fragment>
     )
 }
+export default HierarchyPanel;

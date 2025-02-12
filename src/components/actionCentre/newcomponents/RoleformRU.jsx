@@ -1,23 +1,21 @@
-﻿function RoleFormRU(props) {
+﻿import { useEffect, useState } from "react";
+import { Input, Form, Switch, Row, Col, Button, Modal } from "antd";
+import { useTranslation } from "react-i18next";
+import toastr from "toastr";
+import $ from "jquery";
+function RoleFormRU(props) {
     const { t, i18n } = useTranslation();
-    const Input = window["antd"].Input;
-    const Form = window['antd'].Form;
-    const Switch = window['antd'].Switch;
-    const Row = window['antd'].Row;
-    const Col = window['antd'].Col;
-    const Button = window['antd'].Button;
-    const Modal = window['antd'].Modal;
     const { TextArea } = Input;    
     //To set Status in the API call
     //Role form value State
-    const [roleName, setroleName] = React.useState("");
-    const [roleDescription, setroleDescription] = React.useState("");
-    const [IsActive, setIsActive] = React.useState(true);
-    const [RoleId, setRoleId] = React.useState("00000000-0000-0000-0000-000000000000");
-    const [updateApiFlag, setUpdateApiFlag] = React.useState(false);
-    const [apiState, setApiState] = React.useState("CreateRole");
+    const [roleName, setroleName] = useState("");
+    const [roleDescription, setroleDescription] = useState("");
+    const [IsActive, setIsActive] = useState(true);
+    const [RoleId, setRoleId] = useState("00000000-0000-0000-0000-000000000000");
+    const [updateApiFlag, setUpdateApiFlag] = useState(false);
+    const [apiState, setApiState] = useState("CreateRole");
     //state management
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.roleDetails) {
             setRoleId(props.roleDetails.Id);
             setroleName(props.roleDetails.Name);
@@ -175,7 +173,7 @@
         props.disable ? props.setDisable(false) : props.setDisable(true);
     }
 
-    const [deletemodal, setDeleteModel] = React.useState(false);
+    const [deletemodal, setDeleteModel] = useState(false);
     function onclickdelete(deletemodal) {
         setDeleteModel(deletemodal)
     }
@@ -197,7 +195,7 @@
                         {props.roleDetails && <b>{props.roleDetails.Name}</b>}
                     </Col>
                     {props.component == "Roles" && props.roleDetails &&
-                        <React.Fragment>
+                        <Fragment>
                             <Col span={2}>
                                 {props.disable &&
                                     <img src="\Views\Risk\icons\Action_Edit.svg" onClick={toggleEdit} className="entity-edit-icon" />
@@ -220,18 +218,18 @@
 
                             </Col>
 
-                        </React.Fragment>
+                        </Fragment>
                     }
 
                     {props.component == "Roles" && !props.roleDetails &&
-                        <React.Fragment>
+                        <Fragment>
                             <Col span={2}>
                                 <img src="/Views/Risk/icons/CloseIcon.svg" onClick={closeForm} className="entity-del-cross-icon" />
                             </Col>
                             <Col span={2} >
                                 <img src="/Views/Risk/icons/Misc_Check.svg" onClick={Addroles} className="entity-check-icon" />
                             </Col>
-                        </React.Fragment>
+                        </Fragment>
                     }
 
 
@@ -312,3 +310,4 @@
 
 
 }
+export default RoleformRU;
