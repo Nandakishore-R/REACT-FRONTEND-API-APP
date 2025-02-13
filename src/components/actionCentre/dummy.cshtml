@@ -1,0 +1,2468 @@
+@using DigitalCockpit.Web.Resources
+@using DigitalCockpit.Web.ViewModel
+@using DigitalCockpit.Common
+@using DigitalCockpit.Common.Resources
+@using DigitalCockpit.Web.Utils
+@using DigitalCockpit.Web.Utils.RazorExtensions
+@model DigitalCockpit.Web.ViewModel.ActionCentreViewModel
+@{
+    ViewBag.ActiveTab = "ActionCentre";
+    ViewBag.Title = Resources_Messages.Label_ActionCenterTasks;
+    Layout = "~/Views/Shared/_NewThemeLayouttwo.cshtml";
+}
+@{
+    string permissionMask;
+    string moduleMask;
+    SessionManager.TryGet(StateManagement.SessionManagement.PermissionMask, out permissionMask);
+    var effectivePermission = (PermissionMask)Enum.Parse(typeof(PermissionMask), permissionMask);
+
+    SessionManager.TryGet(StateManagement.SessionManagement.ModuleMask, out moduleMask);
+    var licensedModules = (ModuleMask)Enum.Parse(typeof(ModuleMask), moduleMask);
+}
+
+@section Styles
+{
+    <link href='https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css' rel="stylesheet" />
+    <link href='@Url.Content("~/Styles/new-design/components/containers.css")' rel="stylesheet" />
+    <link href='@Url.Content("~/Styles/new-design/components/base-table.css")' rel="stylesheet" />
+    <link rel="stylesheet" href='@Url.Content("~/Styles/new-design/components/edit-form.css")' />
+    <link rel="stylesheet" href="~/Views/ActionCentre/ManageV2.css" />
+    <link rel="stylesheet" media="print" href="~/Views/ActionCentre/ManageV2Print.css" />
+    <link rel="stylesheet" href="~/Styles/app/MembershipPage.css" />
+    <link rel="stylesheet" href="~/Views/Workflow/Memberships.css" />
+    <link rel="stylesheet" href="~/Styles/SharedComponentsStyle/sharedcomponents_style.css" />
+    <link href="~/Styles/libraries/antd.css" rel="stylesheet" />
+    <link href="~/Styles/EntityHierarchyStyle/entityhierarchy_style.css" rel="stylesheet" />
+    <link href="~/Styles/BSC_style/bsc_style.css" rel="stylesheet" />
+    <link href="~/Styles/app/RiskFrequencyPattern.css" rel="stylesheet" />
+    <link href="~/Styles/SearchSort/SearchSort_style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Styles/SharedComponentsStyle/StageList.css" />
+
+}
+
+@section Header {
+    <div class="action-centre-nav">
+        <ul class="nav nav-tabs action-tabs">
+            <li class="active">
+                <a id="dueId" class="" data-toggle="tab" href="#DueTable"><span class="tab-num"></span><br />@Resources_Messages.Label_Due</a>
+            </li>
+            <li>
+                <a id="overdueId" class="" data-toggle="tab" href="#OverdueTable"><span class="tab-num"></span><br />@Resources_Messages.Label_Overdue</a>
+            </li>
+            <li>
+                <a id="upcomingId" class="" data-toggle="tab" href="#Upcoming"><span class="tab-num"></span><br />@Resources_Messages.Label_Upcoming</a>
+            </li>
+            <li>
+                <a id="inprogressId" class="" data-toggle="tab" href="#Inprogress"><span class="tab-num"></span><br />@Resources_Messages.Label_InProgress</a>
+            </li>
+            <li>
+                <a id="completedId" class="" data-toggle="tab" href="#Completed"><span class="tab-num"></span><br />@Resources_Messages.Label_Completed</a>
+            </li>
+            @*<li>
+                <a id="draftId" class="" data-toggle="tab" href="#Draft"><span class="tab-num"></span><br />@Resources_Messages.Label_Draft</a>
+            </li>*@
+        </ul>
+
+    </div>
+}
+
+@section Center {
+
+
+    
+
+    <div id="myModal" class="quickview-wrapper fullWidth" style="margin-top: 8.2vh;">
+        <div id="root">
+        </div>
+        <div class="LayoutPage" data-bind="with: gm.actioncentre.selectedRow()">
+            <div class="LayoutPageHeader">
+            </div>
+            <div class="LayoutPageBody">
+
+                <div class="LayoutPageThumbnails">
+                    <div>
+                        <div id="thumbnailFirst" class="activeThumbnail"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageFirst');">
+                            <span>1</span>
+                        </div>
+                        <div id="thumbnailThirdLast"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageThirdLast');">
+                            <span>2</span>
+                        </div>
+                        <div id="thumbnailSecondLast"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageSecondLast');">
+                            <span>3</span>
+                        </div>
+                        <div id="thumbnailLast"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageLast');">
+                            <span>4</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="LayoutPages">
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="controlsListModal" class="quickview-wrapper fullWidth" style="margin-top: 8vh; ">
+        @*<div class="nav tabHead action-header">
+                <li class="pull-left" style="font-size:1.3em;">
+                    <i class="fa fa-times quickview-toggle"
+                       onclick="gm.actioncentre.closeRightPane(this)"></i>
+                </li>
+                <li class="col-md-12 text-center">
+                    <h4 id="wfHeader">Workflow SUMMARY</h4>
+                </li>
+            </div>*@
+
+        <div class="LayoutPage" data-bind="with: gm.actioncentre.selectedRow()">
+            
+            <div class="LayoutPageBody form-tab">
+                <div class="LayoutPageThumbnails">
+                    <div>
+                        <div id="thumbnailFirstDraft" class="activeThumbnail"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageFirstDraft', true);">
+                            <span>1</span>
+                        </div>
+                        <div id="thumbnailLastDraft"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageLastDraft', true);">
+                            <span>2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="LayoutPages">
+                    <div>
+                        <div id="pageFirstDraft" class="fixedPage modal-body fixedPageContent">
+                            <div class="form-group">
+                                <label>
+                                    @Resources_Messages.Label_Name
+                                </label>
+                                <span class="show" id="controlNamePreview" />
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    @Resources_Messages.Label_Description
+                                </label>
+                                <span class="show" id="controlDescriptionPreview" style="min-height:6.2vh;" />
+                            </div>
+
+                            <div class="form-group">
+                                <label id="selfAttestationLabelDraft">
+                                    @Resources_Messages.Label_SelfAttestation
+                                </label>
+                                <span class="show" id="selfAttestationPreviewDraft" />
+                            </div>
+
+                            <div class="form-group">
+                                <label id="lblTitle">@Resources_Messages.Label_Title</label>
+                                <input id="taskTitle" name="taskTitle" disabled placeholder="@Resources_Messages.Label_TitleWillBeAutoGenerated" style="width:100% !important;" type="text"
+                                       class="form-control" />
+                            </div>
+
+                            <div class="form-group" id="divSelfAttestationDraft">
+                                <label id="lblSelfAttestationDraft">@Resources_Messages.Label_SelectCertificate</label>
+                                <select id="selfAttestationListDraft" name="selfAttestationListDraft" style="width:100% !important;"
+                                        class="form-control" data-placeholder="@Resources_Messages.Label_SelectCertificate"></select>
+                            </div>
+
+                            @*<div class="form-group">
+                                    <label id="lblControl">Select</label>
+                                    <select id="controlList" name="controlList" style="width:100% !important;"
+                                            class="form-control" data-placeholder="Select"></select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label id="lblControlDescription">Control Description :</label>
+                                    <p id="controlDescription"></p>
+                                </div>*@
+                            <div class="modal-body checkbox-radios" id="radioGroupsforcontrol">
+                                <div class="radio">
+
+
+                                    <label id="controls"
+                                           style="cursor:not-allowed;color:rgba(0, 0, 0, 0.26)!important;">
+                                        @Resources_Messages.Label_Control
+                                        <input id="radioCon" type="radio" value="con"
+                                               name="typecontrol" disabled />
+                                    </label>
+                                    <label id="risks"
+                                           style="cursor:not-allowed;color:rgba(0, 0, 0, 0.26)!important;">
+                                        @Resources_Messages.Label_Risk
+                                        <input id="radioRisk" type="radio" value="risk"
+                                               name="typecontrol" disabled />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal-body form-group">
+                                <label id="lblControl">@Resources_Messages.Label_Select</label><span class="text-danger">*</span>
+                                <select id="controlList" name="controlList"
+                                        style="width:100% !important;"
+                                        class="form-control" data-placeholder=@Resources_Messages.Label_Select></select>
+                            </div>
+                            <div class="checkbox-radios" id="radioGroups" style="position:relative; left:1vw;">
+                                <div class="radio">
+                                    <label id="itSystems" style="cursor:not-allowed;color:rgba(0, 0, 0, 0.26)!important;">
+                                        @Resources_Messages.Label_ITSystems
+                                        <input id="radioIts" type="radio" value="its" name="type" disabled />
+                                    </label>
+                                    <label id="policies" style="cursor:not-allowed;color:rgba(0, 0, 0, 0.26)!important;">
+                                        @Resources_Messages.Label_Policies
+                                        <input id="radioPol" type="radio" value="pol" name="type" disabled />
+                                    </label>
+                                    <label id="processes" style="cursor:not-allowed;color:rgba(0, 0, 0, 0.26)!important;">
+                                        @Resources_Messages.Label_Processes
+                                        <input id="radioPro" type="radio" value="pro" name="type" disabled />
+                                    </label>
+
+                                </div>
+                            </div>
+
+                            @*<div class="modal-body form-group">
+                                    <label id="lblReference">Select</label>
+                                    <select id="referenceList" name="referenceList"
+                                            class="form-control" data-placeholder="Select" style="width:100% !important;"></select>
+                                </div>*@
+                            <div class="modal-body form-group">
+                                <label id="lblReference">@Resources_Messages.Label_Select</label>
+                                <label>
+                                    <span class="text-danger"></span>
+                                </label>
+                                <select id="referenceList" name="referenceList"
+                                        class="form-control" data-placeholder=@Resources_Messages.Label_Select
+                                        style="width:100% !important;"></select>
+                            </div><br />
+
+                            <div class="form-group">
+                                <a target="_blank" id="processUrl" href="#">@Resources_Messages.Label_ViewProcess</a>
+                                <br />
+                                <label>@Resources_Messages.Label_Status:</label>
+                                <label></label>
+                            </div>
+
+
+
+
+
+                        </div>
+                        <div id="pageLastDraft" class="fixedPage">
+                            <div class=" form-group">
+                                <label>
+                                    @Resources_Messages.Label_TargetDateToCloseTask
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="datepicker form-control" placeholder="@Resources_Messages.Label_EnterTargetDateToCloseTheTask" id="taskTargetDate" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stages-tab" id="stage_container" style="display:none;">
+                <div class="card min-height-500">
+                    <div class="edit-form new-design-theme workflow-acess-rights-content">
+                        <div class="noStagesAddedDiv" style="display: none;">
+                            <h2>@Resources_Messages.Label_NoStagesAreAdded</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="modalComment modal fade" id="divCommentPopUp" tabindex="-1"
+         role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog-background" data-dismiss="modal"></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="history_Div" style="background-color: #eee;">
+                <div class="modal-header" id="history_Divheader">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <img className="request-navbar-cross" style="height:3vh" src="\Views\Risk\icons\CloseIcon.svg" />
+                    </button>
+                    <h4 class="modal-title">
+                        @Resources_Messages.Label_FieldHistory
+                    </h4>
+                </div>
+                <div class="modal-body" id="actionFormCommentHistory" style="">
+
+                </div>
+                <div class="modal-body">
+                    <input rows="1" class="form-control" type="text"
+                           value="" id="CommentTextArea" />
+                    <button type="button" id="SaveCommentBtn">
+                        <svg viewBox="0 0 16 22">
+                            <use xlink:href="#action-save-comment" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="approvalHistoryModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <svg width="25" height="25" viewBox="0 0 25 20"><use xlink:href="#close-modal" /></svg>
+                        </button>
+                        <h4 class="modal-title">@Resources_Messages.Label_ApprovalHistory</h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div id="no-stages-wrapper"></div>
+                    <div class="row">
+                        <div class="col-md-3 modal-stages-wrapper">
+                            <div id="stages-list-icons"></div>
+                            <div id="stages-list-stage-names"></div>
+                        </div>
+                        <div class="col-md-9" id="stages-details"></div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    
+    <div id="amendment_popup">
+
+        <div id="top_menu">
+            <div class="center-cell">
+                <div id="tab" class="btn-group" data-toggle="buttons">
+
+                    <a href="#form" id="show_form" class="btn active" data-toggle="tab">
+                        <input type="radio" />@Resources_Messages.Label_Form.ToUpper()
+                    </a>
+                    <a href="#stages" id="show_stages" class="btn" data-toggle="tab">
+                        <input type="radio" />@Resources_Messages.Label_Stakeholders.ToUpper()
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="LayoutPage" data-bind="with: gm.actioncentre.selectedRow()">
+
+            <div class="LayoutPageBody">
+                <div class="LayoutPageThumbnails">
+                    <div>
+                        <div id="thumbnailFirst" class="activeThumbnail"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageFirst');">
+                            <span>1</span>
+                        </div>
+                        <div id="thumbnailLast"
+                             onclick="gm.actioncentre.pageThumbnailClick(this, 'pageLast');">
+                            <span>2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="LayoutPages">
+                    <div>
+                        <div id="pageFirst" class="fixedPage">
+
+                            <div id="actionBody" class="modal-body fixedPageContent">
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_Title
+                                    </label>
+                                    <span class="show" data-bind="text:title" />
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_Name
+                                    </label>
+                                    <span class="show" data-bind="text:name" />
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_ReferenceNumber
+                                    </label>
+                                    <span class="show" data-bind="text:referenceNumber" />
+                                </div>
+                                <div class="form-group hidden" id="originTaskDataArea">
+                                    <label>
+                                        @Resources_Messages.Label_OriginTask
+                                    </label>
+                                    <a class="show btn btn-info" href="#" style="width: 300px;"></a>
+                                </div>
+                                <div class="form-group hidden" id="amendmentTaskDataArea">
+                                    <label>
+                                        @Resources_Messages.Label_AmendmentTask
+                                    </label>
+                                    <a class="show btn btn-info" href="#" style="width: 300px;"></a>
+                                </div>
+
+                                <div class="form-group">
+                                    <label id="selfAttestationLabel">
+                                        @Resources_Messages.Label_SelfAttestation
+                                    </label>
+                                    <span class="show" id="selfAttestationPreview" />
+                                </div>
+
+                                <div class="form-group" id="divSelfAttestation">
+                                    <label id="lblSelfAttestation">@Resources_Messages.Label_Certificate</label>
+                                    <select id="selfAttestationList" name="selfAttestationList" style="width:100% !important;"
+                                            class="form-control"></select>
+                                </div>
+
+                                <!-- ko if: controlName() != null -->
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_ControlName
+                                    </label>
+                                    <span class="show" data-bind="text:controlName" />
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: riskName() != null -->
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_RiskName
+                                    </label>
+                                    <span class="show" data-bind="text:riskName"></span>
+                                    <div class="printTextBox" style="display: none;"
+                                         data-bind="text:riskName"></div>
+                                </div>
+                                <!-- ko if: controlDescription() != null -->
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_ControlDescription
+                                    </label>
+                                    <span class="show" data-bind="text:controlDescription" />
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: itSystemName() != null -->
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_ITSystemName
+                                    </label>
+                                    <span class="show" data-bind="text:itSystemName" />
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: processName() != null -->
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_ProcessName
+                                    </label>
+                                    <span class="show" data-bind="text:processName" />
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: policyName() != null -->
+                                <div class="form-group">
+                                    <label>
+                                        @Resources_Messages.Label_PolicyName
+                                    </label>
+                                    <span class="show" data-bind="text:policyName" />
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: url() != null -->
+                                <div class="form-group">
+                                    <a data-bind="attr: { href: url() }" target="_blank">@Resources_Messages.Label_ViewProcessImage</a>
+                                    <br />
+                                    <label>@Resources_Messages.Label_Status:</label>
+                                    <label data-bind="text: urlStatus"></label>
+                                </div>
+                                <!-- /ko -->
+                                <div id="rejectProcessRCSA" class="form-group" style="display: none; visibility:hidden;">
+                                    <label>
+                                        @Resources_Messages.Label_RejectProcess
+                                    </label>
+                                    <input type="checkbox" id="chkRejectProcess"
+                                           style="vertical-align: top; margin-top: 5px;" />
+                                    <div id="rejectProcessComment">
+                                        <label>
+                                            @Resources_Messages.Label_ProcessComment
+                                        </label>
+                                        <input id="rejectProcessCommentTb" placeholder="Enter Process Comment."
+                                               type="text" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div id="exceptionCountPreviewArea" class="material-datatables" style="display: none;">
+                                    <div class="table-responsive">
+                                        <table id="exceptionCountList" class="table table-striped table-no-bordered table-hover" style="width: 100% !important">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>@Resources_Messages.Label_Name</th>
+                                                    <th style="position:relative; left:0px;">@Resources_Messages.Label_Type</th>
+                                                    <th style="position:relative; right:20px;">@Resources_Messages.Label_Open</th>
+                                                    <th style="position:relative; right:20px;">@Resources_Messages.Label_Closed</th>
+                                                    <th style="position:relative; right:20px;">@Resources_Messages.Label_Total</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="pageLast" class="fixedPage edit-form">
+                            <div class="form-group" id="divAction">                                
+                                <div class="row">
+                                    <div class="radioGroup col-md-6">
+                                        <label style="display: block">@Resources_Messages.Label_Action:</label>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="radioAction2" id="radioApprove2" value="NEXT">@Resources_Messages.Label_Approve
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="radioAction2" id="radioReject2" value="ZERO">@Resources_Messages.Label_Reject
+                                            </label>
+                                        </div>
+                                        @*<div class="radio">
+                                                <label>
+                                                    <input type="radio" name="radioAction" id="radioAbort" value="END">Abort
+                                                </label>
+                                            </div>*@
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                </div>
+                                @*<div class="row">
+                                        <div class="form-group col-md-6 required" id="remarksText">
+                                            <label>Remarks</label>
+                                            <input type="text" data-bind="value:comment" class="form-control actionsRemarks" id="txtComment" />
+                                        </div>
+                                        <div class="col-md-6"></div>
+                                    </div>*@
+                                <div class="form-group row" id="divReject">
+                                    <label>@Resources_Messages.Label_RejectTo</label>
+                                    <div class="radioGroup">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="radioReject" id="radioInitiator" value="Initiator" checked="checked">@Resources_Messages.Label_Initiator
+                                            </label>
+                                        </div>
+                                        <div class="radio radioStage">
+                                            <label>
+                                                <input type="radio" name="radioReject" id="radioStage" value="PreviousStage">@Resources_Messages.Label_PreviousStage
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divPreviousStage">
+                                    <div class="row">
+                                        <div class="form-group col-md-6 required">
+                                            <label>@Resources_Messages.Label_SelectStage</label>
+                                            <select class="form-control" id="lstStages" style="width: 100%;" name="lstStages"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="assignedUserFormStagesWrapper">
+                                        <div id="assignedUserFormStages">
+                                            <div>
+                                                <div></div>
+                                                <div></div>
+                                                <div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group required col-md-6" id="divAssignUsers">
+                                        <label>@Resources_Messages.Label_AssignNewUsers</label>
+                                        <select id="referBackUser" name="referBackUser" multiple style="width:100%;" data-placeholder="@Resources_Messages.Label_StartTypingUsername"></select>
+                                    </div>
+
+                                    <div class="form-group required col-md-6" id="divSelectForm">
+                                        <label>@Resources_Messages.Label_SelectForm:</label>
+                                        <select id="referBackUserForm" name="referBackUserForm" style="width:100%;" data-placeholder="@Resources_Messages.Label_AssignAForm"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-6" id="divAssignUserBtn">
+                                        <button type="button" class="btn btn-block"
+                                                data-bind="click:gm.actioncentre.assignUserForm"
+                                                id="assignUserForm" tabindex="8">
+                                            @Resources_Messages.Label_AddNewUser
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#DueList_Task').DataTable({
+                "columns":
+                    [
+                        { "data": "title", "title": "@Resources_Messages.Label_Title" },
+                        { "data": "referenceNumber", "title": "@Resources_Messages.Label_ReferenceID" },
+                        { "data": "businessControlTypeName", "title":"@Resources_Messages.Label_Type" },
+                        { "data": "dueDate", "title":"@Resources_Messages.Label_TargetDate"},
+                        { "data": "actionType", "title":"@Resources_Messages.Label_Action" },
+                        { "data": "actionType", "title": "@Resources_Messages.Label_Status" },
+                    ]
+            });
+        });
+
+        $(document).ready(function() {
+            $('#OverdueList_Task').DataTable({
+                "columns":
+                    [
+                        { "data": "title", "title": "@Resources_Messages.Label_Title" },
+                        { "data": "referenceNumber", "title": "@Resources_Messages.Label_ReferenceID" },
+                        { "data": "businessControlTypeName", "title":"@Resources_Messages.Label_Type" },
+                        { "data": "dueDate", "title":"@Resources_Messages.Label_TargetDate"},
+                        { "data": "actionType", "title":"@Resources_Messages.Label_Action" },
+                        { "data": "actionType", "title": "@Resources_Messages.Label_Status" },
+                    ]
+            });
+        });
+
+        $(document).ready(function () {
+            $('#UpcomingList_Task').DataTable({
+                "columns":
+                    [
+                        { "data": "title","title": "@Resources_Messages.Label_Title" },
+                        { "data": "referenceNumber","title": "@Resources_Messages.Label_ReferenceID" },
+                        { "data": "businessControlTypeName","title":"@Resources_Messages.Label_Type" },
+                        { "data": "dueDate","title":"@Resources_Messages.Label_TargetDate"},
+                        { "data": "actionType","title":"@Resources_Messages.Label_Action" },
+                        { "data": "actionType", "title": "@Resources_Messages.Label_Status" },
+                    ]
+            });
+        });
+
+
+        $(document).ready(function() {
+            $('#InprogressList_Task').DataTable({
+                "columns":
+                    [
+                        { "data": "title", "title": "@Resources_Messages.Label_Title"},
+                        { "data": "referenceNumber", "title": "@Resources_Messages.Label_ReferenceID"},
+                        { "data": "businessControlTypeName",  "title":"@Resources_Messages.Label_Type" },
+                        { "data": "dueDate",  "title":"@Resources_Messages.Label_TargetDate"},
+                        { "data": "actionType", "title": "@Resources_Messages.Label_Status" },
+                    ]
+            });
+        });
+
+        $(document).ready(function() {
+            $('#CompletedList_Task').DataTable({
+                "columns":
+                    [
+                        { "data": "title", "title": "@Resources_Messages.Label_Title" },
+                        { "data": "referenceNumber","title": "@Resources_Messages.Label_ReferenceID" },
+                        { "data": "businessControlTypeName","title":"@Resources_Messages.Label_Type" },
+                        { "data": "completedDate","title":"@Resources_Messages.Label_SubmittedDate"},
+                        { "data": "actionType", "title": "@Resources_Messages.Label_Status" },
+                    ]
+            });
+        });
+
+        $(document).ready(function() {
+            $('#DraftList_Task').DataTable({
+                "columns":
+                    [
+                        { "data": "name","title": "@Resources_Messages.Label_Name" },
+                        { "data": "businessControlTypeName","title": "@Resources_Messages.Label_Type" },
+                        { "data": "dueDate","title":"@Resources_Messages.Label_CreatedDate" },
+                        { "data": "actionType", "title": "@Resources_Messages.Label_Action" },
+                    ]
+            });
+        });
+
+
+        function showAmendmentPopup() {
+            $("#amendment_popup").show(1000);
+        }
+
+        var fmData = "{\"action\":[{\"type\":\"checkbox-group\",\"label\":\"Checkbox Group\",\"name\":\"checkbox-group-1575888589489\",\"url\":\" \",\"values\":[{\"label\":\"Option 1\",\"value\":\"option-1\",\"selected\":true}],\"hidden\":false},{\"type\":\"layout\",\"elements\":[{\"type\":\"page\",\"label\":\"Page\",\"name\":\"page-1\",\"pageHeight\":\"842\",\"pageNumbers\":\"7\",\"pages\":[{\"elements\":[{\"name\":\"checkbox-group-1575888589489\"}]},{\"elements\":[]}]}]}]}";
+
+
+        // var reaRef;
+        //if (fmData == null) {
+        //    fmData = fmData;
+        //}
+        //reaRef = ReactDOM.render(React.createElement(FormRender,
+        //        {
+        //            data: JSON.parse(fmData)
+        //        }),
+        //    document.getElementById("amendment_form_container"));
+
+    </script>
+
+
+
+    <svg style="display: none">
+        <symbol width="25" height="25" viewBox="0 0 25 25" id="action-open-view">
+            <g id="Group_4225" data-name="Group 4225" transform="translate(-1676.34 -958.973)">
+                <path id="Path_1306" data-name="Path 1306" d="M1696.335,958.972h-14.969a.992.992,0,0,0-1.025.954v17.1a.992.992,0,0,0,1.025.954h3.084V964.075l11.885-4.026v17.1l-2.457.832h2.457a.992.992,0,0,0,1.025-.954v-17sav.1A.992.992,0,0,0,1696.335,958.972Z" transform="translate(0 0)" />
+                <path id="Path_1307" data-name="Path 1307" d="M1689.172,983.972a1.184,1.184,0,0,1-.672-.209,1.152,1.152,0,0,1-.5-.947V964.451a1.157,1.157,0,0,1,.771-1.086l12.049-4.324a1.186,1.186,0,0,1,1.073.14,1.151,1.151,0,0,1,.5.947v18.365a1.157,1.157,0,0,1-.771,1.086l-12.049,4.324A1.18,1.18,0,0,1,1689.172,983.972Zm1.172-18.711v15.9l9.7-3.482v-15.9Zm10.877,13.232h0Z" transform="translate(-4.912 0)" />
+            </g>
+        </symbol>
+
+        <symbol width="25" height="25" viewBox="0 0 25 25" id="action-save">
+            <g id="Action_Save" clip-path="url(#clip-Action_Save)">
+                <path id="DISKETTE" d="M237,2476.047a1.172,1.172,0,0,1-1.172,1.172H213.172a1.172,1.172,0,0,1-1.172-1.172v-21.875a1.172,1.172,0,0,1,1.172-1.171h3.516v1.563h0v4.3h0v3.516a2.344,2.344,0,0,0,2.288,2.344h10.269a2.343,2.343,0,0,0,2.287-2.344v-3.516h0v-4.3h0V2453h.781a1.166,1.166,0,0,1,.829.343h0l3.516,3.516h0a1.168,1.168,0,0,1,.343.829Zm-6.641-13.672a1.173,1.173,0,0,1-1.172,1.175h-1.563v0h-7.031v0h-1.562a1.173,1.173,0,0,1-1.172-1.175v-2.344h0V2453h12.5v7.031h0Zm-2.344-7.812H224.5v7.422h3.516Z" transform="translate(-211.777 -2452)" fill-rule="evenodd" />
+            </g>
+        </symbol>
+
+        <symbol width="25" height="25" viewBox="0 0 25 25" id="action-submit">
+            <g id="Action_Submit" clip-path="url(#clip-Action_Submit)">
+                <path id="DOCUMENT__x2F__UPLOAD_1_" d="M20.565,19.355a1.1,1.1,0,0,1-.847-.363l-.766-.766V23.79a1.21,1.21,0,0,1-2.419,0V18.226l-.766.766a1.1,1.1,0,0,1-.847.363,1.188,1.188,0,0,1-1.21-1.21,1.1,1.1,0,0,1,.363-.847L16.9,14.476a1.257,1.257,0,0,1,.847-.363,1.1,1.1,0,0,1,.847.363L21.411,17.3a1.257,1.257,0,0,1,.363.847A1.188,1.188,0,0,1,20.565,19.355Zm-7.339-2.9a2.276,2.276,0,0,0-.726,1.694,2.426,2.426,0,0,0,2.419,2.419,1.372,1.372,0,0,0,.4-.04v2.863H1.21A1.188,1.188,0,0,1,0,22.177V1.21A1.188,1.188,0,0,1,1.21,0H7.661V6.855a2.426,2.426,0,0,0,2.419,2.419h7.661V12.9a2.276,2.276,0,0,0-1.694.726ZM10.081,8.065a1.188,1.188,0,0,1-1.21-1.21V0h0l8.871,8.065H10.081Z" transform="translate(2)" fill-rule="evenodd" />
+            </g>
+        </symbol>
+
+        <symbol width="25" height="25" viewBox="0 0 25 25" id="action-review">
+            <g id="Action_Review" clip-path="url(#clip-Action_Review)">
+                <path id="BOOK" d="M1023.259,1136h-1.293v-25h1.293a1.293,1.293,0,0,1,1.293,1.293v22.414A1.293,1.293,0,0,1,1023.259,1136Zm-17.672-1.293v-1.293h2.155a2.586,2.586,0,0,0,0-5.173h-2.155v-2.155h2.155a2.586,2.586,0,0,0,0-5.172h-2.155v-2.155h2.155a2.586,2.586,0,1,0,0-5.172h-2.155v-1.293a1.293,1.293,0,0,1,1.293-1.293h13.793v25h-13.793A1.293,1.293,0,0,1,1005.586,1134.707Zm3.448-18.534a1.293,1.293,0,0,1-1.293,1.293h-3.448a1.293,1.293,0,1,1,0-2.586h3.448A1.293,1.293,0,0,1,1009.034,1116.173Zm-4.741,6.034h3.448a1.293,1.293,0,0,1,0,2.586h-3.448a1.293,1.293,0,0,1,0-2.586Zm0,7.328h3.448a1.293,1.293,0,1,1,0,2.586h-3.448a1.293,1.293,0,1,1,0-2.586Z" transform="translate(-1001 -1111)" fill-rule="evenodd" />
+            </g>
+        </symbol>
+    </svg>
+
+    <svg style="display:none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+        <symbol width="25" height="25" viewBox="0 0 25 25" id="close-modal" fill="#ffffff">
+            <g id="Misc_Close" clip-path="url(#clip-Misc_Close)">
+                <rect id="Rectangle_664" data-name="Rectangle 664" width="3" height="23" transform="translate(0.999 3.12) rotate(-45)" />
+                <rect id="Rectangle_665" data-name="Rectangle 665" width="3" height="23" transform="translate(17.264 1) rotate(45)" />
+            </g>
+        </symbol>
+    </svg>
+
+    <svg style="display:none" xmlns="http://www.w3.org/2000/svg"
+         xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 22">
+        <symbol width="16" height="22" viewBox="0 0 16 22" id="action-save-comment">
+            <g>
+                <path d="M1,1 15,11.5 1,21Z" stroke="#4D94FF" stroke-width="2" fill="transparent" />
+            </g>
+        </symbol>
+    </svg>
+
+    <div class="modal fade" id="printDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-header-title">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title">@Resources_Messages.Label_Print</h5>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="printModal.toggleComments()" checked id="toggleComments">
+                        <label class="form-check-label" for="toggleComments">
+                            @Resources_Messages.Label_IncludeSummaryOfComments
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="printModal.toggleSummary()" checked id="toggleSummary">
+                        <label class="form-check-label" for="toggleSummary">
+                            @Resources_Messages.Label_IncludeSummaryOfChanges
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="printModal.toggleApproval()" checked id="toggleApproval">
+                        <label class="form-check-label" for="toggleApproval">
+                            @Resources_Messages.Label_IncludeApprovalHistory
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="printModal.print()">@Resources_Messages.Label_Print</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@Resources_Messages.Label_Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+}
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/formbuilder")
+    @Scripts.Render("~/bundles/formrenderlibrarieswithoutreact")
+    @Scripts.Render("~/bundles/formrendercomponents")
+    @Scripts.Render("~/bundles/SharedComponents/Stages")
+    @Scripts.Render("~/bundles/ManageV2");
+ 
+    <script src="~/Styles/libraries/babel.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/lib/pageBreak/pageBreak.js"></script>
+    <script src="~/Scripts/lib/handlebars.min.js"></script>
+    <script src="~/Scripts/app/gieom.web.actioncentre.js"></script>
+    <script type="text/javascript" src="~/Scripts/underscore.min.js"></script>
+    <script src="~/Styles/libraries/antd.min.js"></script>
+    <script src="~/Styles/libraries/react-i18next.js"></script>
+    <script src="~/Styles/libraries/i18next.js"></script>
+    <script src="~/Styles/libraries/i18next-browser-languagedetector.js"></script>
+    <script src="~/Scripts/lib/EntityHierarchy_components/i18n.js"></script>
+    <script src="~/Styles/libraries/redux.min.js"></script>
+    <script src="~/Styles/libraries/reactredux.min.js"></script>
+
+    <script type="text/javascript">
+        var SystemParameters = JSON.parse('@Html.Raw(ViewBag.SystemParameters)');
+        $("#HeaderFilterSearch").css("top", "-24px");
+
+        function stageNameChanged(element) {
+            $(element).parent().parent().parent().parent().parent().find(".stage_name_text").html($(element).val());
+        }
+        function toCamel(o) {
+            var newO, origKey, newKey, value
+            if (o instanceof Array) {
+                return o.map(function (value) {
+                    if (typeof value === "object") {
+                        value = toCamel(value)
+                    }
+                    return value
+                })
+            } else {
+                newO = {}
+                for (origKey in o) {
+                    if (o.hasOwnProperty(origKey)) {
+                        newKey = (origKey.charAt(0).toUpperCase() + origKey.slice(1) || origKey).toString()
+                        value = o[origKey]
+                        if (value instanceof Array || (value !== null && value.constructor === Object)) {
+                            value = toCamel(value)
+                        }
+                        newO[newKey] = value
+                    }
+                }
+            }
+            return newO
+        }
+
+                    var stageSubtractNumber = 0;
+
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev,element) {
+
+
+            if ($(element).attr("draggable")) {
+                ev.dataTransfer.setData("text", ev.target.id);
+            }
+            else {
+                toastr.error("@Resources_Messages.Label_ThisStageIsFixedAndCannotBeMoved");
+            }
+
+
+        }
+
+
+
+                    var dropDownArrowClick = function (e) {
+                        var arrow_button = e.currentTarget;
+                        var options_header = arrow_button.parentNode;
+                        var options = $(e.currentTarget.parentNode.parentNode).find("ul");
+                        if (options.css('display') === 'none') {
+                            options.show();
+                            arrow_button.classList.add('glyphicon-chevron-up');
+                            arrow_button.classList.remove('glyphicon-chevron-down');
+                            options_header.classList.add('opened');
+                            options_header.classList.remove('closed');
+                        } else {
+                            options.hide();
+                            arrow_button.classList.add('glyphicon-chevron-down');
+                            arrow_button.classList.remove('glyphicon-chevron-up');
+                            options_header.classList.add('closed');
+                            options_header.classList.remove('opened');
+                        }
+                    };
+
+
+
+                    function addStageMethod(stageType) {
+
+                        var emptyStage = {
+                            "Actions": {},
+                            "StageName": "",
+                            "isVisible": false,
+                            "ApprovalMandatory": false,
+                            "ReviewBy": "",
+                            "IsMandatory": false,
+                            "IsPinned": false,
+                            "SamplingSize": 100,
+                            "StageNumber": gm.stage.addedStageList().length + 1,
+                            "JsonForm": "[]",
+                            "StageType": stageType,
+                            "FormGroup": ko.observableArray()
+                        };
+
+
+
+                        if (stageType == "") {
+                            if (gm.stage.addedStageList().length > 0) {
+                                var lastElementPosition = $(".list-item-header").length - 1;
+                                var firstElementPosition = 0;
+
+
+                                if ($(".list-item-header")[firstElementPosition].querySelector(".fixed") && gm.stage.addedStageList()[firstElementPosition].IsPinned) {
+
+                                    gm.stage.addedStageList().splice((firstElementPosition + 1), 0, emptyStage);
+                                    $($(".list-item")[firstElementPosition + 1]).find("*").attr('disabled', false);
+                                    $($(".list-item")[firstElementPosition + 1]).find("*").css('pointer-events', 'all');
+
+                                } else {
+
+
+                                    if ($(".list-item-header")[lastElementPosition].querySelector(".fixed") && gm.stage.addedStageList()[lastElementPosition].IsPinned) {
+
+                                        var buffer = gm.stage.addedStageList()[lastElementPosition];
+                                        gm.stage.addedStageList()[lastElementPosition] = emptyStage;
+                                        gm.stage.addedStageList.push(buffer);
+                                        $($(".list-item")[lastElementPosition]).find("*").attr('disabled', false);
+                                        $($(".list-item")[lastElementPosition]).find("*").css('pointer-events', 'all');
+                                    }
+                                    else {
+                                        gm.stage.addedStageList.push(emptyStage);
+                                        $($(".list-item")[lastElementPosition + 1]).find("*").attr('disabled', false);
+                                        $($(".list-item")[lastElementPosition + 1]).find("*").css('pointer-events', 'all');
+                                    }
+                                }
+
+                            } else {
+                                gm.stage.addedStageList.push(emptyStage);
+                            }
+                        } else if (stageType == "first") {
+                            gm.stage.addedStageList().splice(0, 0, emptyStage);
+                        } else if (stageType == "last") {
+                            gm.stage.addedStageList().push(emptyStage);
+                        }
+                          var hideStage = gm.stage.addedStageList().length - 1;
+
+                        $("#stageFormGroup_" + hideStage + " .Hideclass").hide();
+
+
+                        $("#numberOfStages").val(gm.stage.addedStageList().length - stageSubtractNumber > 0 ? gm.stage.addedStageList().length - stageSubtractNumber : 0);
+
+                        gm.stage.addedStageList.valueHasMutated();
+
+                        $("#approvalNotNeeded").prop("checked", false);
+                        gm.stage.approvalNotNeeded(false);
+                        //Re-trigger events applied to stage tiles
+
+                        gm.actionSelect.init();
+
+                        $(".dropDownArrow").off('click').on("click", dropDownArrowClick);
+
+                        $(".delete").off('click').on("click",
+                            function (e) {
+                                var stageNumber = e.currentTarget.id.split('_')[1] - 1;
+
+                                gm.stage.addedStageList().splice(stageNumber, 1);
+
+                                gm.stage.addedStageList.valueHasMutated();
+
+
+                                gm.stage.numberOfStages = gm.stage.addedStageList().length;
+                                $("#numberOfStages").val(gm.stage.addedStageList().length - stageSubtractNumber > 0 ? gm.stage.addedStageList().length - stageSubtractNumber : 0);
+                                if ($(".list-item").length > gm.stage.numberOfStages) {
+
+                                    stageNumber++;
+                                    $("#stagedrag_" + stageNumber).remove();
+
+                                }
+                                reorder();
+
+
+                            });
+
+                        $('.approvalCheck').off('click').on('click',
+                            function (e) {
+                                gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                                    .ApprovalMandatory =
+                                    !(gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                                        .ApprovalMandatory);
+                            });
+                        $('.mandatoryCheck').off('click').on('click',
+                            function (e) {
+
+                                gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                                    .IsMandatory =
+                                    !(gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                                        .IsMandatory);
+
+                                if (gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                                    .IsMandatory) {
+                                    $(this).parent().parent().find(".delete").hide();
+                                } else {
+                                    $(this).parent().parent().find(".delete").show();
+                                }
+                            });
+
+                        reorder();
+                    }
+
+
+
+
+
+
+        function dragend(ev) {
+            $(".drop-div").removeClass("drop-active");
+
+
+        }
+
+        function dragenter(ev, thiselement) {
+
+            $(thiselement).addClass("drop-active");
+
+        }
+
+
+        function dragleave(ev, thiselement) {
+
+            $(thiselement).removeClass("drop-active");
+
+        }
+
+
+        function disableDrop() {
+
+            $(".drop-div .list-item").unwrap();
+            var dropdiv = document.querySelector(".drop-div");
+            var ref = document.getElementsByClassName("list-item");
+            var cln = dropdiv.cloneNode();
+            $(".drop-div").remove();
+            for (var i = 0; i < ref.length; i++) {
+                if ($(ref[i]).attr("draggable") == "false") {
+                    if (i == 0) {
+
+                        insertAfter(cln.cloneNode(), ref[i]);
+                    }
+                    if (i == (ref.length - 1)) {
+
+                        insertBefore(cln.cloneNode(), ref[i]);
+                    }
+                }
+                else {
+
+                    insertAfter(cln.cloneNode(), ref[i]);
+                    insertBefore(cln.cloneNode(), ref[i]);
+                }
+
+            }
+
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            if (ev.target.nodeName == "DIV") {
+                ev.target.appendChild(document.getElementById(data));
+
+                toastr.success("@Resources_Messages.Alert_StageSwitched");
+                reorder();
+                setTimeout(function () { reorder(); }, 1000);
+
+
+            }
+            else
+            {
+                toastr.error("Please Drop Inside A Grey Box");
+            }
+
+
+
+        }
+
+
+        var gm = gm || {};
+        gm.clearStageData = function () {
+            gm.stage.addedStageList = ko.observableArray();
+            gm.stage.numberOfStages = ko.observable(0);
+            gm.stage.addedActionList = ko.observableArray();
+            gm.stage.editedStageNumber = ko.observable(0);
+            gm.stage.editedFormGroupIndex = ko.observable(0);
+            gm.stage.approvalNotNeeded = ko.observable(true);
+            gm.stage.supervisorApproval = ko.observable(false);
+        }
+        gm.stage = function () {
+                var addedStageList = ko.observableArray(),
+                numberOfStages = ko.observable(0),
+                addedActionList = ko.observableArray(),
+                editedStageNumber = ko.observable(0),
+                editedFormGroupIndex = ko.observable(0),
+                approvalNotNeeded = ko.observable(true),
+                supervisorApproval = ko.observable(false),
+                reloadFormStagesDropdown = function() {
+
+                      if($("#numberOfStages").length > 0) {
+ $("#numberOfStages").val(gm.stage.addedStageList().length);
+}
+
+                    $(".formStagesUsers").empty();
+                    for (i = 0; i < gm.stage.addedStageList().length; i++) {
+                        for (j = 0; j < gm.stage.addedStageList()[i].FormGroup().length; j++) {
+                            var approverArray = [];
+                            $.each(gm.stage.addedStageList()[i].FormGroup()[j].Approvers,
+                                function(index, item) {
+                                    approverArray.push(item.id);
+                                    //'stageForm_'+$parentContext.$index()+'_' +  ($index())
+                                    $("#stageForm_" + i + "_" + j + " .formStagesUsers")
+                                        .append('<option value="' + item.id + '">' + item.label + '</option>');
+                                });
+                            $("#stageForm_" + i + "_" + j + " .formStagesUsers").select2().val(approverArray)
+                                .trigger("change");
+                        }
+                    }
+
+                    $(".formStagesUsers").select2({
+                        ajax: {
+                            url: "@Url.Action("FetchUsersAndRoles", "Workflow")",
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    q: params.term, // search term
+                                    page: params.page
+                                };
+                            },
+                            processResults: function(data, page) {
+
+                                return {
+                                    results: data
+                                };
+                            },
+                            cache: false
+                        },
+                        placeholder: "@Resources_Messages.Label_ClickToAssignUser",
+                        escapeMarkup: function(markup) { return markup; }, // let our custom formatter work
+                        minimumInputLength: 0,
+                        theme: 'material',
+                        templateResult: function(data) {
+
+                            if (data.loading) return data.text; //Show loading text
+                            var markup = '';
+                            if (data.isUser) {
+                                markup = '<option value="' +
+                                    data.id +
+                                    '">' +
+                                    data.user.memberships[0].entity +
+                                    "/" +
+                                    data.user.memberships[0].department +
+                                    "/" +
+                                    data.user.memberships[0].role +
+                                    "/" +
+                                    data.user.profile.displayName +
+                                    " : " +
+                                    data.user.userName +
+                                    '</option>';
+                            } else {
+                                markup = '<option value="' + data.id + '">' + data.label + '</option>';
+                            }
+                            return markup;
+                        },
+                        templateSelection: function(data) {
+                            return data.label || data.text;
+                        }
+                    });
+
+
+                        $('.formStagesUsers').unbind('select2:select');
+                        $(".formStagesUsers").on("select2:select", function (e) {
+                            gm.stage.addedStageList()[
+                                    e.currentTarget.parentNode.parentNode.attributes["data-stageNumber"].value]
+                                .FormGroup()[e.currentTarget.parentNode.parentNode.attributes["data-formIndex"].value]
+                                .Approvers.push({
+                                    "id": e.params.data.id,
+                                    "label": e.params.data.label,
+                                    "isUser": e.params.data.isUser
+                                });
+                        });
+
+                        $('.formStagesUsers').unbind('select2:unselect');
+                        $(".formStagesUsers").on("select2:unselect", function (e) {
+                            var currentFormApprovers =
+                                gm.stage.addedStageList()[
+                                        e.currentTarget.parentNode.parentNode.attributes["data-stageNumber"].value]
+                                    .FormGroup()[e.currentTarget.parentNode.parentNode.attributes["data-formIndex"]
+                                        .value]
+                                    .Approvers;
+                            //removing selected object from array
+                            for (var i = 0; i < currentFormApprovers.length; i++) {
+                                if (currentFormApprovers[i].id == e.params.data.id) {
+                                    currentFormApprovers.splice(i, 1);
+                                    break;
+                                }
+                            }
+                        });
+
+                },
+                editStageForm = function(stageData, childIndex) {
+                    const $modal = $("#formStagesModal");
+                    const data = stageData.FormGroup()[childIndex()];
+
+                    $('.formTitle', $modal).text(data.Header);
+                    $modal.modal("show");
+                    fb.actions.setData(data.JsonForm);
+
+                    $("#formDesignerArea").addClass("disabledTab");
+                    editedStageNumber(stageData.StageNumber);
+                    editedFormGroupIndex(childIndex());
+                },
+                removeStageForm = function(stageData, selectedForm) {
+                    gm.stage.addedStageList()[stageData.StageNumber - 1].FormGroup.remove(selectedForm);
+
+                },
+                addFormGroup = function(stageData) {
+                    stageData.FormGroup.push({ "JsonForm": "[]", "Approvers": [], "Header": "" });
+                    reloadFormStagesDropdown();
+                    setFixed();
+                    var hideStage = gm.stage.addedStageList().length - 1;
+                        $("#stageFormGroup_" + hideStage + " .Hideclass").hide();
+                };
+
+
+            //Method for loading previously assigned stages from server
+             loadStages = function() {
+
+                 var objectArray = Model;
+
+
+                 if (objectArray.FormStages) {
+                     var stageArray = JSON.parse(objectArray.FormStages);
+                 } else {
+                      var stageArray = JSON.parse(objectArray.Stages);
+                 }
+
+                 supervisorApproval(objectArray.SupervisorApproval);
+                 //gm.stage.addedStageList().length = 0;
+                    if (stageArray) {
+                        for (var i = 0; i < stageArray.length; i++) {
+                            //stageArray[i].StageNumber=i+1;
+                            if (i > 0)
+                                stageArray[i].isVisible = false;
+                            else
+                                stageArray[i].isVisible = true;
+                            stageArray[i].FormGroup = ko.observableArray(stageArray[i].FormGroup);
+                            gm.stage.addedStageList.push(stageArray[i]);
+
+                        }
+                    }
+
+                 if (gm.stage.addedStageList().length > 0)
+                        approvalNotNeeded(false);
+                    gm.stage.addedStageList.valueHasMutated();
+
+                    gm.actionSelect.init();
+
+
+
+
+            };
+            return {
+                loadStages: loadStages,
+                addedStageList: addedStageList,
+                numberOfStages: numberOfStages,
+                approvalNotNeeded: approvalNotNeeded,
+                supervisorApproval: supervisorApproval,
+                editStageForm: editStageForm,
+                editedStageNumber: editedStageNumber,
+                editedFormGroupIndex: editedFormGroupIndex,
+                addFormGroup: addFormGroup,
+                removeStageForm: removeStageForm,
+                reloadFormStagesDropdown: reloadFormStagesDropdown
+            };
+        }();
+
+        function docReady() {
+            gm.stage.loadStages();
+            $(".stage_name_input").attr("disabled", false);
+            $("[id^=Reject]").attr('disabled', true);
+            if (gm.stage.addedStageList().length > 0) {
+                $(".noStagesAddedDiv").hide();
+                if (gm.stage.addedStageList()[0].StageType == "first") {
+                    stageSubtractNumber++;
+                }
+                if (gm.stage.addedStageList()[gm.stage.addedStageList().length - 1].StageType == "last") {
+                    stageSubtractNumber++;
+                }
+            }
+            else {
+                $("#saveActionCenterBtn").hide();
+                $(".noStagesAddedDiv").show();
+            }
+            gm.stage.numberOfStages = gm.stage.addedStageList().length - stageSubtractNumber;
+            ko.cleanNode(stageWrapper);
+            ko.applyBindings(gm.stage, stageWrapper);
+            gm.stage.reloadFormStagesDropdown();
+
+            manageFixed();
+
+
+            var dropDownArrowClick = function(e) {
+                var arrow_button = e.currentTarget;
+                var options_header = arrow_button.parentNode;
+                var options = $(e.currentTarget.parentNode.parentNode).find("ul");
+                if (options.css('display') === 'none') {
+                    options.show();
+                    arrow_button.classList.add('glyphicon-chevron-up');
+                    arrow_button.classList.remove('glyphicon-chevron-down');
+                    options_header.classList.add('opened');
+                    options_header.classList.remove('closed');
+                } else {
+                    options.hide();
+                    arrow_button.classList.add('glyphicon-chevron-down');
+                    arrow_button.classList.remove('glyphicon-chevron-up');
+                    options_header.classList.add('closed');
+                    options_header.classList.remove('opened');
+                }
+
+                if (gm.stage.addedStageList().length > 0) {
+                    if (gm.stage.addedStageList()[0].StageType == "first") {
+                       // $("#stagedrag_1 *").attr("disabled", true);
+                       // $("#stagedrag_1 .select2-selection__choice__remove").hide();
+                       // $("#stagedrag_1 .fa.fa-close.cursor").hide();
+                        $("#formStagesModal > div > div > div.modal-header > div:nth-child(1) > button").on('click', function () {
+                            $("#btnAddtoFormStage").show();
+                        });
+
+                        $("#stagedrag_1 .glyphicon.glyphicon-pencil").on('click', function () {
+                            $("#btnAddtoFormStage").hide();
+                        });
+
+
+
+
+                    }
+
+                    if (gm.stage.addedStageList()[gm.stage.addedStageList().length - 1].StageType == "last") {
+                      //  $("#stagedrag_" + gm.stage.addedStageList().length + " *").attr("disabled", true);
+                      //  $("#stagedrag_" + gm.stage.addedStageList().length + " .select2-selection__choice__remove").hide();
+                      //  $("#stagedrag_" + gm.stage.addedStageList().length + " .fa.fa-close.cursor").hide();
+
+                        $("#formStagesModal > div > div > div.modal-header > div:nth-child(1) > button").on('click', function () {
+                            $("#btnAddtoFormStage").show();
+                        });
+
+                        $("#stagedrag_" + gm.stage.addedStageList().length + " .glyphicon.glyphicon-pencil").on('click', function () {
+                            $("#btnAddtoFormStage").hide();
+                        });
+                    }
+                }
+
+                //if ($("ul.options")[0].style.display != "none" && gm.stage.addedStageList()[0].StageType =='first') {
+                //    var heightoful = $($("ul.options")[0]).height();
+                //    $("#stageWrapper > div > div.new-design-theme.workflow-stages-card")[0].style.top = "calc(15vh + " + heightoful + "px)";
+                //}
+
+                //if ($("ul.options")[0].style.display == "none" && gm.stage.addedStageList()[0].StageType == 'first') {
+                //    $("#stageWrapper > div > div.new-design-theme.workflow-stages-card")[0].style.top = "15vh";
+                //}
+            };
+
+            $('.approvalCheck').on('click',
+                function(e) {
+                    gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                        .ApprovalMandatory =
+                        !(gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                            .ApprovalMandatory);
+                });
+
+            $('.mandatoryCheck').on('click',
+                function (e) {
+
+                    gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                        .IsMandatory =
+                        !(gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                            .IsMandatory);
+
+                    if (gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+                        .IsMandatory) {
+                        $(this).parent().parent().find(".delete").hide();
+                    } else {
+                        $(this).parent().parent().find(".delete").show();
+                    }
+                });
+
+            //Not allowing keyboard changes for editing number
+            $("#numberOfStages").keypress(function(evt) {
+                evt.preventDefault();
+                toastr.error("@Resources_Messages.Alert_PleaseUseTheNumberCounterToAddRemoveStages");
+            });
+
+            //Save method
+            $("#saveForm").click(function(e) {
+                e.preventDefault();
+                var proceedFlag = "OK";
+                $.each(gm.stage.addedStageList(),
+                    function(index, item) {
+                        if (!item.StageName) {
+                            proceedFlag = "Stage Name_" + (index + 1);
+                        } else if (item.ReviewBy != "" && isNaN(item.ReviewBy)) {
+                            proceedFlag = "Review By " + (index + 1);
+                        } else if (Object.keys(item.Actions).length === 0 && item.Actions.constructor === Object) {
+                            proceedFlag = "Actions_" + (index + 1);
+                        }
+                        //else if (item.FormGroup().length >0  && (!item.FormGroup()[0].Approvers || item.FormGroup()[0].Approvers.length == 0)) {
+                        //    proceedFlag = "Approvers_" + (index + 1);
+                        //}
+                        else {
+                            if (item.ReviewBy == "") {
+                                item.ReviewBy = 0;
+                            }
+                        }
+                    });
+
+                if (proceedFlag == "OK") {
+                    $(this).prop('disabled', true);
+                    var endPointUrl = "@Url.Action("UpdateStages", "Workflow")?objectId="+Model.Id;
+                    var stageData = new FormData();
+                    stageData.append("Stages", ko.toJSON(gm.stage.addedStageList()));
+                    stageData.append("SupervisorApproval", $('#supervisorApproval').prop('checked'));
+
+                    $.ajax({
+                        url: endPointUrl,
+                        type: 'POST',
+                        cache: false,
+                        async: false,
+                        dataType: 'json',
+                        contentType: false,
+                        processData: false,
+                        data: stageData,
+                        success: function(data) {
+                            toastr.options = {
+                                "onHidden": function() {
+                                    window.location.href =
+                                        "@Url.Action("Attestations", "Workflow")?workflowId="+Model.Id
+                                },
+                                "timeOut": 1000
+                            };
+                            toastr.success("@Resources_Messages.Alert_StagesDetailsSaved");
+                        },
+                        error: function(error) {
+                            JL().error(error);
+                            console.log("error2");
+                            toastr.error("@Resources_Messages.Error_InternalErrorRequestNotCompleted");
+                            $(this).prop('disabled', false);
+                        }
+                    });
+                } else {
+                    var errorString = "@Resources_Messages.FormFieldEmpty";
+                    toastr.error(errorString.replace("{0}", "@Resources_Messages.Label_Stage")
+                        .replace("{1}", proceedFlag.split('_')[1]).replace("{2}", proceedFlag.split('_')[0]));
+                }
+            });
+
+            $("#saveClick").click(function(e) {
+                e.preventDefault();
+                var proceedFlag = "OK";
+                $.each(gm.stage.addedStageList(),
+                    function(index, item) {
+                        if (!item.StageName) {
+                            proceedFlag = "Stage Name_" + (index + 1);
+                        } else if (item.ReviewBy != "" && isNaN(item.ReviewBy)) {
+                            proceedFlag = "Review By " + (index + 1);
+                        } else if (Object.keys(item.Actions).length === 0 && item.Actions.constructor === Object) {
+                            proceedFlag = "Actions_" + (index + 1);
+                        }
+                        //else if (item.FormGroup().length == 0 || !item.FormGroup()[0].Approvers || item.FormGroup[0].Approvers.length==0) {
+                        //    proceedFlag="Approvers_"+(index+1);
+                      //}
+                        else {
+                            if (item.ReviewBy == "") {
+                                item.ReviewBy = 0;
+                            }
+                        }
+           });
+
+                if (proceedFlag == "OK") {
+                    $(this).prop('disabled', true);
+                    var endPointUrl = "@Url.Action("UpdateStages", "Workflow")?objectId="+Model.Id;
+                    var stageData = new FormData();
+                    stageData.append("Stages", ko.toJSON(gm.stage.addedStageList()));
+                    stageData.append("SupervisResources_MessagesrError_FormFieldEmptyError_FormFieldEmptyError_FormFieldEmptypproval", $('#supervisorApproval').prop('checked'));
+                    $.ajax({
+                        url: endPointUrl,
+                        type: 'POST',
+                        cache: false,
+                        async: false,
+                        dataType: 'json',
+                        contentType: false,
+                        processData: false,
+                        data: stageData,
+                        success: function(data) {
+                            toastr.options = {
+                                "onHidden": function() {
+                                    window.location.href = "@ViewBag.CancelUrl"
+                                },
+                                "timeOut": 4000
+                            };
+                            toastr.success("@Resources_Messages.Alert_StagesDetailsSaved");
+                        },
+                        error: function(error) {
+                            JL().error(error);
+                            console.log("error2");
+                            toastr.error("@Resources_Messages.Error_InternalErrorRequestNotCompleted");
+                            $(this).prop('disabled', false);
+                        }
+                    });
+                } else {
+                    var errorString = "@Resources_Messages.FormFieldEmpty";
+                    toastr.error(errorString.replace("{0}", "@Resources_Messages.Label_Stage")
+                        .replace("{1}", proceedFlag.split('_')[1]).replace("{2}", proceedFlag.split('_')[0]));
+                }
+            });
+
+
+
+
+
+
+
+            $("#plus").click(function () {
+                addStageMethod("");
+
+            });
+
+
+
+
+            //$("#plus").click(function() {
+            //    var emptyStage = {
+            //        "Actions": {},
+            //        "StageName": "",
+            //        "isVisible": false,
+            //        "ApprovalMandatory": false,
+            //        "ReviewBy": "",
+            //        "IsMandatory": false,
+            //        "IsPinned": false,
+            //        "SamplingSize": 100,
+            //        "StageNumber": gm.stage.addedStageList().length + 1,
+            //        "JsonForm": "[]",
+            //        "FormGroup": ko.observableArray()
+            //    };
+
+
+            //    if (gm.stage.addedStageList().length > 0) {
+            //        var lastElementPosition = $(".list-item-header").length - 1;
+            //        if ($(".list-item-header")[lastElementPosition].querySelector(".fixed")) {
+
+            //            var buffer = gm.stage.addedStageList()[lastElementPosition];
+            //            gm.stage.addedStageList()[lastElementPosition] = emptyStage;
+            //            gm.stage.addedStageList.push(buffer);
+            //        }
+            //        else {
+            //            gm.stage.addedStageList.push(emptyStage);
+            //        }
+            //    } else {
+            //        gm.stage.addedStageList.push(emptyStage);
+            //    }
+
+            //    $("#numberOfStages").val(gm.stage.addedStageList().length - stageSubtractNumber);
+
+            //    gm.stage.addedStageList.valueHasMutated();
+
+            //    $("#approvalNotNeeded").prop("checked", false);
+            //    gm.stage.approvalNotNeeded(false);
+            //    //Re-trigger events applied to stage tiles
+
+            //    gm.actionSelect.init();
+
+            //    $(".dropDownArrow").off('click').on("click", dropDownArrowClick);
+
+            //    $(".delete").off('click').on("click",
+            //        function(e) {
+            //            var stageNumber = e.currentTarget.id.split('_')[1] - 1;
+
+            //            gm.stage.addedStageList().splice(stageNumber, 1);
+
+            //            gm.stage.addedStageList.valueHasMutated();
+
+
+            //            gm.stage.numberOfStages = gm.stage.addedStageList().length;
+            //            $("#numberOfStages").val(gm.stage.numberOfStages - stageSubtractNumber);
+            //            if ($(".list-item").length > gm.stage.numberOfStages) {
+
+            //                stageNumber++;
+            //                $("#stagedrag_" + stageNumber).remove();
+
+            //            }
+            //            reorder();
+
+
+            //        });
+
+            //    $('.approvalCheck').off('click').on('click',
+            //        function(e) {
+            //            gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+            //                .ApprovalMandatory =
+            //                !(gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+            //                    .ApprovalMandatory);
+            //        });
+
+            //    $('.mandatoryCheck').off('click').on('click',
+            //        function (e) {
+
+            //            gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+            //                .IsMandatory =
+            //                !(gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+            //                    .IsMandatory);
+
+            //            if (gm.stage.addedStageList()[e.currentTarget.attributes["id"].value.split('_')[1] - 1]
+            //                .IsMandatory) {
+            //                $(this).parent().parent().find(".delete").hide();
+            //            } else {
+            //                $(this).parent().parent().find(".delete").show();
+            //            }
+            //        });
+
+            //    reorder();
+
+            //});
+
+            $("#minus").click(function() {
+                if ($("#numberOfStages").val() >= 1) {
+                    if (gm.stage.addedStageList()[gm.stage.addedStageList().length - 1].IsPinned) {
+                        gm.stage.addedStageList.remove(gm.stage.addedStageList()[gm.stage.addedStageList().length - 2]);
+                    } else {
+                       gm.stage.addedStageList.remove(gm.stage.addedStageList()[gm.stage.addedStageList().length - 1]);
+                    }
+
+                    $("#numberOfStages").val(gm.stage.addedStageList().length - stageSubtractNumber);
+                    gm.stage.addedStageList.valueHasMutated();
+                    if (gm.stage.addedStageList().length == 0) gm.stage.approvalNotNeeded(true);
+
+
+                    reorder();
+                }
+            });
+
+            $("#approvalNotNeeded").change(function () {
+                while (gm.stage.addedStageList().length > stageSubtractNumber)
+                    gm.stage.addedStageList.remove(gm.stage.addedStageList()[1]);
+                $("#numberOfStages").val(gm.stage.addedStageList().length - stageSubtractNumber > 0 ? gm.stage.addedStageList().length - stageSubtractNumber : 0);
+                gm.stage.addedStageList.valueHasMutated();
+            });
+
+            $(".dropDownArrow").on("click", dropDownArrowClick);
+
+            $(".delete").on("click",
+                function (e) {
+
+                    var stageNumber = e.currentTarget.id.split('_')[1] - 1;
+
+                    gm.stage.addedStageList().splice(stageNumber, 1);
+
+                    gm.stage.addedStageList.valueHasMutated();
+
+
+                    gm.stage.numberOfStages = gm.stage.addedStageList().length;
+                    $("#numberOfStages").val(gm.stage.numberOfStages - stageSubtractNumber);
+                    if ($(".list-item").length > gm.stage.numberOfStages) {
+
+                        stageNumber++;
+                        $("#stagedrag_" + stageNumber).remove();
+
+                    }
+                    reorder();
+
+
+                });
+            setFixed();
+
+
+            if (gm.stage.addedStageList().length > 0) {
+                if (gm.stage.addedStageList()[0].StageType == "first") {
+                    //$("#stagedrag_1 *").attr("disabled", true);
+                    //$("#stagedrag_1 .select2-selection__choice__remove").hide();
+                    //$("#stagedrag_1 .fa.fa-close.cursor").hide();
+
+
+                }
+
+                if (gm.stage.addedStageList()[gm.stage.addedStageList().length - 1].StageType == "last") {
+                    //$("#stagedrag_" + gm.stage.addedStageList().length + " *").attr("disabled", true);
+                    //$("#stagedrag_" + gm.stage.addedStageList().length + " .select2-selection__choice__remove").hide();
+                    //$("#stagedrag_" + gm.stage.addedStageList().length + " .fa.fa-close.cursor").hide();
+
+
+                }
+            }
+            if ($("#supervisorApproval").prop("checked") == false) {
+
+                $("#stageWrapper > div > div.workflow-stages-card.supervisor").hide();
+            }
+
+        }
+
+        function save(redirectTo, showToast) {
+            var proceedFlag = "OK";
+            $.each(gm.stage.addedStageList(),
+                function(index, item) {
+                    if (!item.StageName) {
+                        proceedFlag = "Stage Name_" + (index + 1);
+                    } else if (item.ReviewBy != "" && isNaN(item.ReviewBy)) {
+                        proceedFlag = "Review By " + (index + 1);
+                    } else if (Object.keys(item.Actions).length === 0 && item.Actions.constructor === Object) {
+                        proceedFlag = "Actions_" + (index + 1);
+                    }
+                    //else if (item.FormGroup().length >0  && (!item.FormGroup()[0].Approvers || item.FormGroup()[0].Approvers.length == 0)) {
+                    //    proceedFlag = "Approvers_" + (index + 1);
+                    //}
+                    else {
+                        if (item.ReviewBy == "") {
+                            item.ReviewBy = 0;
+                        }
+                    }
+                });
+
+            if (proceedFlag == "OK") {
+                $(this).prop('disabled', true);
+                var endPointUrl = "@Url.Action("UpdateStages", "Workflow")?objectId="+Model.Id;
+                var stageData = new FormData();
+                stageData.append("Stages", ko.toJSON(gm.stage.addedStageList()));
+                stageData.append("SupervisorApproval", $('#supervisorApproval').prop('checked'));
+                $.ajax({
+                    url: endPointUrl,
+                    type: 'POST',
+                    cache: false,
+                    async: false,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    data: stageData,
+                    success: function(data) {
+                        if (!showToast) {
+                            window.location.href = redirectTo;
+                        }
+                        else {
+                            toastr.options = {
+                                "onHidden": function() {
+                                    window.location.href = redirectTo
+                                },
+                                "timeOut": 1000
+                            };
+
+                            toastr.success("@Resources_Messages.Alert_StagesDetailsSaved");
+                        }
+
+                    },
+                    error: function(error) {
+                        JL().error(error);
+                        toastr.error("@Resources_Messages.Error_InternalErrorRequestNotCompleted");
+                        $(this).prop('disabled', false);
+                    }
+                });
+            } else {
+                var errorString = "@Resources_Messages.FormFieldEmpty";
+                toastr.error(errorString.replace("{0}", "@Resources_Messages.Label_Stage")
+                    .replace("{1}", proceedFlag.split('_')[1]).replace("{2}", proceedFlag.split('_')[0]));
+            }
+        }
+
+
+        //reordering stages
+
+        function reorder() {
+
+            var dropDownArrowClick = function (e) {
+                var arrow_button = e.currentTarget;
+                var options_header = arrow_button.parentNode;
+                var options = $(e.currentTarget.parentNode.parentNode).find("ul");
+                if (options.css('display') === 'none') {
+                    options.show();
+                    arrow_button.classList.add('glyphicon-chevron-up');
+                    arrow_button.classList.remove('glyphicon-chevron-down');
+                    options_header.classList.add('opened');
+                    options_header.classList.remove('closed');
+                } else {
+                    options.hide();
+                    arrow_button.classList.add('glyphicon-chevron-down');
+                    arrow_button.classList.remove('glyphicon-chevron-up');
+                    options_header.classList.add('closed');
+                    options_header.classList.remove('opened');
+                }
+                if (gm.stage.addedStageList().length > 0) {
+                    if (gm.stage.addedStageList()[0].StageType == "first") {
+                       // $("#stagedrag_1 *").attr("disabled", true);
+                        //$("#stagedrag_1 .select2-selection__choice__remove").hide();
+                        //$("#stagedrag_1 .fa.fa-close.cursor").hide();
+
+
+                    }
+
+                    if (gm.stage.addedStageList()[gm.stage.addedStageList().length - 1].StageType == "last") {
+                       // $("#stagedrag_" + gm.stage.addedStageList().length + " *").attr("disabled", true);
+                       // $("#stagedrag_" + gm.stage.addedStageList().length + " .select2-selection__choice__remove").hide();
+                       // $("#stagedrag_" + gm.stage.addedStageList().length + " .fa.fa-close.cursor").hide();
+
+
+                    }
+                }
+                //if ($("ul.options")[0].style.display != "none" && gm.stage.addedStageList()[0].StageType == 'first') {
+                //    var heightoful = $($("ul.options")[0]).height();
+                //    $("#stageWrapper > div > div.new-design-theme.workflow-stages-card")[0].style.top = "calc(15vh + " + heightoful + "px)";
+                //}
+
+                //if ($("ul.options")[0].style.display == "none" && gm.stage.addedStageList()[0].StageType == 'first') {
+                //    $("#stageWrapper > div > div.new-design-theme.workflow-stages-card")[0].style.top = "15vh";
+                //}
+            };
+
+
+            var bufferArray = [];
+            var listitem = $(".list-item");
+            for (var i = 0; i < listitem.length; i++) {
+                bufferArray[i] = gm.stage.addedStageList()[i] ;
+
+            }
+
+            for (var i = 0; i < listitem.length; i++) {
+                gm.stage.addedStageList()[i] = bufferArray[listitem[i].attributes["id"].value.split('_')[1] - 1];
+
+
+            }
+
+            for (var i = 0; i < listitem.length; i++) {
+                gm.stage.addedStageList()[i].StageNumber = i + 1;
+
+            }
+
+
+           // #stagedrag_2 list-item-header div span.highlight.bold.stageTitleElement
+
+
+            //call these in the end
+            gm.stage.addedStageList.valueHasMutated();
+            $(".dropDownArrow").off('click').on("click", dropDownArrowClick);
+            disableDrop();
+            manageFixed();
+        }
+
+        function manageFixed() {
+
+            for (var i = 1; i < $(".list-item .fix").length - 1; i++) {
+
+                $(".list-item .fix")[i].style.display = "none";
+                $(".list-item .mandatoryCheck")[i].style.visibility = "hidden";
+                $(".list-item .mandatoryCheck_label")[i].style.visibility = "hidden";
+            }
+
+            if (gm.stage.addedStageList().length > 0) {
+
+                if (gm.stage.addedStageList()[0].StageType != 'first') {
+                    $(".list-item .mandatoryCheck_label")[0].style.visibility = "hidden";
+                    $("#stagedrag_1").css({ "position": "static" });
+                }
+
+                if (gm.stage.addedStageList()[gm.stage.addedStageList().length - 1].StageType != 'last') {
+                    $(".list-item .mandatoryCheck_label")[$(".list-item .fix").length - 1].style.visibility = "hidden";
+                }
+
+            }
+            var lastElementPosition = $(".list-item-header").length - 1;
+
+            if ($(".list-item-header")[0]) {
+                $(".list-item-header")[0].querySelector(".fix").style.display = "block";
+            }
+
+            if ($(".list-item-header")[lastElementPosition]) {
+                $(".list-item-header")[lastElementPosition].querySelector(".fix").style.display = "block";
+                }
+
+        }
+
+        function setFixed() {
+
+
+
+            for (let i = 0; i < gm.stage.addedStageList().length; i++) {
+                if (gm.stage.addedStageList()[i].IsPinned) {
+                    $("#stageAllIsPinned_" + (i + 1)).click();
+                    $("#stageAllIsPinned_" + (i + 1)).addClass("fixStable");
+
+                }
+                if (gm.stage.addedStageList()[i].IsMandatory) {
+                    $($(".list-item")[i]).find(".select2-selection__choice__remove").hide();
+                    $($(".list-item")[i]).find(".select2-search__field").remove();
+
+                    $("#deleteStage_" + (i + 1)).hide();
+
+
+                }
+            }
+        }
+
+
+        function fixClick(element) {
+
+
+            if ($(element).hasClass("fixStable") == true) {
+                return false;
+            }
+
+            $(element).toggleClass("fixed");
+            $(".fix").parent().parent().attr("draggable", "true");
+            $(".fixed").parent().parent().attr("draggable", "false");
+            if ($(element).hasClass("fixed")) {
+                gm.stage.addedStageList()[element.id.split("_")[1] - 1]
+                    .IsPinned = true;
+
+                //check mandatorybox
+                $(element).parent().find('.mandatoryCheck').prop("checked", true);
+                //disabled mandatory box
+                $(element).parent().find('.mandatoryCheck').prop("disabled", true);
+                gm.stage.addedStageList()[element.id.split("_")[1] - 1]
+                    .IsMandatory = true;
+
+
+                //hide delete button
+                $(element).parent().find('.delete').hide();
+            } else {
+                gm.stage.addedStageList()[element.id.split("_")[1] - 1]
+                    .IsPinned = false;
+                //enable mandatory box
+                $(element).parent().find('.mandatoryCheck').prop("disabled", false);
+                $(element).parent().find('.mandatoryCheck').prop("checked", false);
+                gm.stage.addedStageList()[element.id.split("_")[1] - 1]
+                    .IsMandatory = false;
+
+                //show delete button
+               // $(element).parent().find('.delete').show();
+
+            }
+            disableDrop();
+        }
+
+        function insertAfter(el, referenceNode) {
+            referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
+        }
+
+
+        function insertBefore(el, referenceNode) {
+            referenceNode.parentNode.insertBefore(el, referenceNode);
+        }
+
+
+
+
+
+
+            //reordering stages
+
+        $.material.checkbox = function(selector) {
+            // Add fake-checkbox to material checkboxes
+            $((selector) ? selector : this.options.checkboxElements)
+                .filter(":notmdproc")
+                .filter(function() { //added this filter to skip checkboxes that were already initialized
+                    return $(this).parent().find(".check").length === 0;
+                })
+                .data("mdproc", true)
+                .after("<span class='checkbox-material'><span class='check'></span></span>");
+        };
+
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.tabs-list > ul > li:first-child").addClass("active");
+    $("#myModal > div > div.LayoutPageHeader > div > div.tabs-list > ul > li:first-child").addClass("active");
+           
+    $("#selfAttestationList").parent().hide();
+    $(".edashboard-nav-caption").css("min-width", "");
+    $("#btn_left").prop("disabled", true);
+    var Model;
+    var UrlSettings = {
+    stageEnduser: '@Url.Action("GetDraftTaskById", "ActionCentre")',
+    stageEnduser2: '@Url.Action("StagesEndUser", "Workflow")',
+    saveSubmitUrl: '@Url.Action("SaveSubmitForm", "ActionCentre")',
+    createTaskFromWorkflowsList: '@Url.Action("CreateTaskFromWorkflowsList", "ActionCentre")',
+    amendmentHistory: '@Url.Action("GetAmendmentsHistory", "ActionCentre")'
+    };
+    var stagedatahtml = $("#stage_container").html();
+    $("#stage_container").html("");
+
+    function tabswitchStages() {
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.control-panel > a:nth-child(3)").attr("disabled",false);
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.control-panel > a:nth-child(4)").attr("disabled", true);
+    $(".form-tab").hide();
+    $(".stages-tab").show();
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.tabs-list > ul > li:nth-child(2)").addClass("active");
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.tabs-list > ul > li:nth-child(1)").removeClass("active");
+    if (allowAddingStages) {
+    $(".new-design-theme.workflow-stages-card").removeClass("hidden");
+    } else {
+    $(".new-design-theme.workflow-stages-card").addClass("hidden");
+    }
+    }
+
+    function tabswitchForm() {
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.control-panel > a:nth-child(3)").attr("disabled", true);
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.control-panel > a:nth-child(4)").attr("disabled", false);
+    $(".form-tab").show();
+    $(".stages-tab").hide();
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.tabs-list > ul > li:nth-child(1)").addClass("active");
+    $("#controlsListModal > div > div.LayoutPageHeader > div > div.tabs-list > ul > li:nth-child(2)").removeClass("active");
+    }
+
+
+
+    function setImageUrl(selectedValue) {
+
+    $.ajax({
+    type: "GET",
+    cache: false,
+    url:"@Url.Action("GetProcessMapPublish", "Workflow")" + "?processId=" + selectedValue,
+    contentType: 'application/json',
+    success: function (response) {
+
+    $("#processUrl").parent().show();
+
+    var url = response.url;
+    $("#processUrl").attr("href", url);
+    $("#processUrl").parent().children().last().text(response.status+"("+response.version+")");
+
+    //$("<b />", { text: response.version }).appendTo("#version");
+
+    //$("#versionNumber").html(response.version);
+    },
+    error: function (error) {
+
+    toastr.error("@Resources_Messages.Error_ErrorLoadingData");
+    }
+    });
+        }
+        function ActionValues() {
+    $.ajax({
+        data: { 'taskId': gm.actioncentre.selectedRow().taskId() },
+        url: '@Url.Action("GetActionLinkedDetails", "MetricsLibrary")',
+        type: 'GET',
+        async: true,
+        success: function (Response) {
+            var DivlinkedActionDetails = document.getElementById('ActionValue');
+            var NewActionValues = document.querySelectorAll('.NewActionValue');
+
+            NewActionValues.forEach(function (div) {
+                div.style.display = 'none';
+            });
+
+            if (DivlinkedActionDetails != null) {
+                DivlinkedActionDetails.innerHTML = "";
+
+                if (Response) {
+                    if (Response.Item1 && Array.isArray(Response.Item1)) {
+                        Response.Item1.forEach(function (subItem) {
+                            for (var key in subItem) {
+                                if (subItem.hasOwnProperty(key)) {
+                                    var itemKey = key;
+                                    var itemValue = subItem[key];
+
+                                    DivlinkedActionDetails.innerHTML +=
+                                        '<div class="form-group"><label>' + itemKey +
+                                        ':</label><span class="show amendmentFeild">' +
+                                        itemValue + '</span> <div class="printTextBox" style="display: none;">' +
+                                        itemValue + '</div></div>';
+                                }
+                            }
+                        });
+                    }
+
+
+                    if (Response.Item2 && Array.isArray(Response.Item2) && Response.Item2.length > 0) {
+                        var fileItemsHTML = Response.Item2.map(function (fileItem) {
+                            var fileDownloadUrl = 'ActionCentre/DownloadPdf/?fileId=' + fileItem.fileId;
+                            return '<tr>' +
+                                '<td>' + fileItem.file_name + '</td>' +
+                                '<td class="cursor">' +
+                                '<a href="' + fileDownloadUrl + '" download="' + fileItem.file_name + '" title="Download">' +
+                                '<span class="glyphicon glyphicon-download-alt" style="font-size: 10px;"></span>' +
+                                '</a>' +
+                                '</td>' +
+                                '</tr>';
+                        }).join('');
+
+                        DivlinkedActionDetails.innerHTML +=
+                            '<div class="form-group">' +
+                            '<label>Supporting Document(s)</label>' +
+                            '<table class="table table-striped table-no-bordered table-hover table-scroll-tbody">' +
+                            '<tbody style="display: block; max-height: 185px; overflow-y: auto;">' +
+                            fileItemsHTML +
+                            '</tbody>' +
+                            '</table>' +
+                            '</div>';
+                    }
+
+                    DivlinkedActionDetails.style.display = 'inline-block';
+                } else {
+                    NewActionValues.forEach(function (div) {
+                        div.style.display = 'inline-block';
+                    });
+                }
+            }
+        },
+        error: function (error) {
+            JL().error(error);
+        }
+    });
+}
+
+        function loadFeildHistoryPage() {
+            var wfCat = gm.actioncentre.selectedRow().workflowCategory();
+            var newIsReview = wfCat == "VR" || wfCat == "BIR" || wfCat == "BCR" || wfCat=="VRR";
+            let type = newIsReview ? "GET" : "POST"
+            let payload = newIsReview ? ({ 'taskId': gm.actioncentre.selectedRow().taskId() })
+                          : ko.toJSON({ 'taskId': gm.actioncentre.selectedRow().taskId() });
+            let url = newIsReview ? '@Url.Action("GetHistoryByTaskId", "History")' : '@Url.Action("GetSummaryOfChanges", "ActionCentre")';
+            $.ajax({
+                  type:type,
+                  cache: false,
+                  data: payload,
+                  url:url,
+                  contentType: 'application/json',
+                  success: function (response) {
+
+                      for (let i = 0; i < response.length; i++) {
+
+                          //response[i].time = convertDateFormat(response[i].time.split("T")[0]) + " &nbsp;" + response[i].time.split("T")[1].split(".")[0];
+                          response[i].time = getISTDateTime(response[i].time);
+                          if (newIsReview) {
+                              document.getElementById("vendor_refferenceNumber").style.display = "table-cell"
+                              document.getElementById("vendor_tabName").style.display = "table-cell"
+                              if (response[i].oldValue == null) {
+                                  response[i].oldValue = "";
+                              }
+
+                              if (response[i].newValue == null) {
+                                  response[i].newValue = "";
+                              }
+                              if (response[i].userName == null) {
+                                  response[i].userName = "";
+                              }
+                              if (response[i].time == null) {
+                                  response[i].time = "";
+                              }
+                              if (response[i].label == null) {
+                                  response[i].label = "";
+                              }
+                              if (response[i].ReffrenceNo == null) {
+                                  response[i].ReffrenceNo = "";
+                              }
+
+                              $("#fieldhistorytable").
+                                  append("<tr><td>" + response[i].name + "</td><td>" +
+                                      response[i].oldValue + "</td><td>" +
+                                      response[i].newValue + "</td><td>" +
+                                      response[i].userName + "</td><td>" +
+                                      response[i].time + "</td><td>" +
+                                       response[i].label + "</td><td>" +
+                                      response[i].ReffrenceNo + "</td></tr>");
+
+                          }
+                          else {
+                              if (response[i].label != null) {
+                                  if (response[i].comment == null) {
+
+                                      if (response[i].oldValue == null) {
+                                          response[i].oldValue = "";
+                                      }
+
+                                      if (response[i].newValue == null) {
+                                          response[i].newValue = "";
+                                      }
+                                      if (response[i].userName == null) {
+                                          response[i].userName = "";
+                                      }
+                                      //if ((response[i].label == "Month" || response[i].label.includes("Date")) && response[i].newValue != "") {
+                                      //    response[i].newValue = convertDateFormat(response[i].newValue);
+                                      //}
+                                      //if ((response[i].label == "Month" || response[i].label.includes("Date")) && response[i].oldValue != "") {
+                                      //    response[i].oldValue = convertDateFormat(response[i].oldValue);
+                                      //}
+                                      $("#fieldhistorytable").append("<tr><td>" + response[i].label + "</td><td>" + response[i].oldValue + "</td><td>" + response[i].newValue + "</td><td>" + response[i].userName + "</td><td>" + response[i].time + "</td></tr>");
+                                  }
+                                  else {
+
+                                      if (response[i].userName == null) {
+                                          response[i].userName = "";
+                                      }
+
+                                      $("#fieldhistorytableComments").append("<tr><td>" + response[i].label + "</td><td>" + response[i].comment + "</td><td>" + response[i].userName + "</td><td>" + response[i].time + "</td></tr>");
+                                  }
+                              }
+                          }
+
+                      }
+
+
+    if ($("#fieldhistorytable").find("tr").length <= 1) {
+    $("#pageThirdLast").css({ "min-height": "0px", "height": "0px", "overflow": "hidden"});
+    $("#thumbnailThirdLast").hide();
+    } else {
+    $("#thumbnailThirdLast").show();
+    $("#pageThirdLast").show();
+    }
+
+    if ($("#fieldhistorytableComments").find("tr").length <= 1) {
+    $("#pageSecondLast").css({"min-height":"0px","height":"0px","overflow": "hidden"});
+    $("#thumbnailSecondLast").hide();
+    } else {
+    $("#pageSecondLast").show();
+    $("#thumbnailSecondLast").show();
+    }
+
+    },
+    error: function (error) {
+    toastr.error("@Resources_Messages.Error_ErrorLoadingData.");
+    }
+    });
+    }
+
+    function rcsaprocessname() {
+    $("#processUrl").parent().hide();
+
+    if (gm.actioncentre.selectedRow().workflowCategory() == null) {
+    return false;
+    }
+
+    if (gm.actioncentre.selectedRow().workflowCategory().trim() == "RCSAW" || gm.actioncentre.selectedRow().workflowCategory().trim() == "CRSA") {
+    $("#processUrl").parent().hide();
+
+
+    var processListUrl = "Workflow/GetRCSAProcessList";
+
+    $.ajax({
+    type: "GET",
+    cache: false,
+    url: processListUrl,
+    contentType: 'application/json',
+    success: function (response) {
+
+    if (response) {
+
+    var data = $.map(response,
+    function (obj) {
+    obj.id = obj.id || obj.value; // replace pk with your identifier
+    obj.text = obj.text || obj.label; // replace name with the property used for the text
+    return obj;
+    });
+    data.push({ value: gm.actioncentre.selectedRow().processId(), label: gm.actioncentre.selectedRow().processName(), id: gm.actioncentre.selectedRow().processId(), text: gm.actioncentre.selectedRow().processName() });
+
+
+    data.push({ value: " ", label: " ", id: " ", text: " " });
+    // $('#referencecListRCSA').empty();
+    $('#referencecListRCSA').select2({ data: data, theme: 'material' });
+
+    if ((gm.actioncentre.selectedRow().processId() != null) && (gm.actioncentre.selectedRow().processId() != " "))
+    {
+
+    if (target === "#Inprogress") {
+    $("#referencecListRCSA").prop('disabled', true);
+    }
+    if (target === "#Completed") {
+    $("#referencecListRCSA").prop('disabled', true);
+    }
+    $('#referencecListRCSA').val(gm.actioncentre.selectedRow().processId());
+    $('#referencecListRCSA').trigger("change");
+    //$('#referencecListRCSA').select2("val", gm.actioncentre.selectedRow().processId());
+    } else {
+    $('#referencecListRCSA').select2("val", " ");
+    }
+
+    $("#referencecListRCSA").change(function () {
+    $("#processurlReadonly").hide();
+    if ($('#referencecListRCSA').val() != " ") {
+
+    setImageUrl($('#referencecListRCSA').val());
+
+    }
+    });
+
+
+    //$("#referencecListRCSA").val(savedReferenceId).change();
+    }
+    },
+    error: function (error) {
+    toastr.error("@Resources_Messages.Error_ErrorLoadingData");
+    }
+    });
+
+        } @*else {
+
+    var processListUrl = "User/GetProcessesByUserMembership";
+
+    $.ajax({
+    type: "GET",
+    cache: false,
+    url: processListUrl,
+    contentType: 'application/json',
+    success: function (response) {
+    if (response) {
+
+    var data = $.map(response,
+    function (obj) {
+    obj.id = obj.id || obj.value; // replace pk with your identifier
+    obj.text = obj.text || obj.label; // replace name with the property used for the text
+    return obj;
+    });
+
+    data.push({ value: gm.actioncentre.selectedRow().processId(), label: gm.actioncentre.selectedRow().processName(), id: gm.actioncentre.selectedRow().processId(), text: gm.actioncentre.selectedRow().processName() });
+
+    // $('#referencecListRCSA').empty();
+
+    data.push({ value: " ", label: " ", id: " ", text: " " });
+
+    $('#referencecListRCSA').select2({ data: data, theme: 'material' });
+    $('#referencecListRCSA').attr('disabled', true);
+
+    if ((gm.actioncentre.selectedRow().processId() != null) && (gm.actioncentre.selectedRow().processId() != " ")) {
+    $('#referencecListRCSA').select2("val", gm.actioncentre.selectedRow().processId());
+    } else {
+    $('#referencecListRCSA').select2("val", " ");
+    }
+    //$("#referencecListRCSA").val(savedReferenceId).change();
+    }
+    },
+    error: function (error) {
+    toastr.error("@Resources_Messages.Error_ErrorLoadingData");
+    }
+    });
+    }*@
+    }
+
+    function PrintModal() {
+    const printDialog = $('#printDialog').modal({ show: false });
+
+    this.hide = function() {
+    printDialog.modal('hide');
+    };
+
+    this.toggle = function() {
+    printDialog.modal('toggle');
+    }
+
+    this.print = function() {
+    this.hide();
+    window.print();
+    }
+
+
+
+
+
+
+
+
+
+
+
+    const container = $('.main-container');
+
+    this.toggleSummary = function() {
+    container.toggleClass('hideSummary');
+    };
+
+    this.toggleComments = function() {
+    container.toggleClass('hideComments');
+    };
+
+    this.toggleApproval = function() {
+    container.toggleClass('hideApproval');
+    };
+    }
+
+    const printModal = new PrintModal();
+
+    function printForm() {
+    printModal.toggle();
+    }
+    //#AmendmentHistoryCode to close popup
+
+    function closeAmendmentHistory() {
+    $("#amendment_history_popup .history_content a").remove(); // clear data before closing
+    $("#amendment_history_popup").hide();
+        }
+
+    //#AmendmentHistoryCode to showpopup
+    function showAmendmentHistory() {
+    var endPointUrl = "@Url.Action("GetAmendmentsHistory", "ActionCentre")?taskId=" + gm.actioncentre.selectedRow().taskId();
+    $.ajax({
+    url: endPointUrl,
+    type: 'GET',
+    cache: false,
+    async: false,
+    dataType: 'json',
+    contentType: false,
+    processData: false,
+    success: function(data) {
+    $("#amendment_history_popup").show();
+    if (data.length > 0) {
+        for (let i = 0; i < data.length; i++) {
+            let widthPercentage = data[i].type == "@Resources_Messages.Label_BusinessImpactAnalysis" ? "28%":"33%";
+            let biaList = data[i].type == "@Resources_Messages.Label_BusinessImpactAnalysis" ? `<li style=width:16%><b>@Resources_Messages.Label_URN</b></br><span title=${data[i].urn}>${data[i].urn}</span></li>` : ''
+            $("#amendment_history_popup .amendment_history_popup_scrollableDiv").append("<a target='_blank' href='ActionCentre/Managev3?taskId=" + data[i].taskId + "'><ul class='history_data'>" + biaList + "<li style=width:" + widthPercentage + ">" + "<b>@Resources_Messages.Label_ReferenceID</b></br><span title=" + data[i].referenceNumber + ">" + data[i].referenceNumber + "</span></li><li style=width:" + widthPercentage + "><b>@Resources_Messages.Label_CreatedBy</b></br><span title="+data[i].createdBy+">" + data[i].createdBy + "</span></li><li style=width:" + widthPercentage +">" +"<b>@Resources_Messages.Label_CreatedDate</b></br><span title="+data[i].createdDate+">" + data[i].createdDate + "</span></li></ul></a>");
+    $("#amendment_popup_text").text("@Resources_Messages.Label_SelectVersionToOpen");
+    }
+    }
+    else {
+    $("#amendment_popup_text").text("@Resources_Messages.Label_NoAmendmentsFound");
+    }
+    },
+    error: function(error) {
+    JL().error(error);
+    toastr.error("@Resources_Messages.Error_InternalErrorRequestNotCompleted");
+    $("#amendment_history_popup").hide();
+    }
+    });
+        }
+
+        function convertDateFormat(dateString) {
+            //To discuss
+            //let dateObj = new Date(moment(dateString,"dd-mm-yyyy"));
+            let dateObj = new Date(dateString);
+
+            let day = String(dateObj.getDate()).padStart(2, '0');
+            let month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            let year = dateObj.getFullYear();
+
+            let formattedDate = `${day}/${month}/${year}`;
+            return formattedDate;
+        }
+
+        function getISTDateTime(utcDateString) {
+            // Parse the UTC date string
+            let utcDate = new Date(utcDateString);
+
+            // Convert UTC to IST (Asia/Kolkata)
+            let options = {
+                timeZone: 'Asia/Kolkata', // IST time zone
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true // 12-hour format with AM/PM
+            };
+
+            // Create formatters for date and time
+            let dateFormatter = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+
+            let timeFormatter = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+
+            // Format the date and time
+            let formattedDate = dateFormatter.format(utcDate);
+            let formattedTime = timeFormatter.format(utcDate);
+
+            // Construct the formatted string
+            let formattedIST = `${formattedDate} ${formattedTime}`;
+
+            return formattedIST;
+        }
+
+    </script>
+}

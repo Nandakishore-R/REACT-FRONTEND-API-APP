@@ -13296,7 +13296,8 @@ footer {
         .nav-tabs > li > a:focus {
             background-color: transparent;
             border: 0 !important;
-            color: #FFFFFF !important;
+            color: #FFFFFF;
+             /* !important; */
             font-weight: 500;
         }
 

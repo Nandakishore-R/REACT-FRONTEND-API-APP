@@ -1,0 +1,164 @@
+﻿@using BotDetect.Web
+@using DigitalCockpit.Web.Utils
+@using DigitalCockpit.Web.Utils.RazorExtensions
+@using JSNLog
+<!DOCTYPE html>
+
+<html class="no-js">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <title>@(ViewBag.Title != null ? ViewBag.Title : Html.MvcSiteMap().SiteMapTitle())</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" type="image/x-icon" href="~/Images/favicon.ico">
+
+    @Html.Raw(JavascriptLogging.Configure())
+    <!--[if lte IE 11]><!-->
+    <script src="~/Scripts/lib/FormBuilder/vendor.min.js"></script>
+    <!--<![endif]-->
+
+    @Scripts.Render("~/bundles/material")
+    @Scripts.Render("~/bundles/gieomutils")
+    @Scripts.Render("~/bundles/jsapplibs")
+
+    @RenderSection("Styles", false)
+    <link href="@CaptchaUrls.Absolute.LayoutStyleSheetUrl" rel="stylesheet" type="text/css" />
+
+    @if (TempData["Message"] != null)
+    {
+        <script type="text/javascript">
+            $(function() { toastr.success("@TempData["Message"]"); });
+
+        </script>
+    }
+
+    @*@Styles.Render("~/stylebundles/main")*@
+    @Styles.Render("~/stylebundles/material")
+    @*<link rel="stylesheet" href="~/Styles/select2/select2.css">*@
+    @*<link rel="stylesheet" href="~/Styles/new-design/components/media.css">*@
+    @*<link rel="stylesheet" href="~/Styles/new-design/workflow.css">*@
+
+    @RenderSection("head", false)
+</head>
+
+<body class="sidebar-mini new-design-theme">
+    <form method="post" action="#" id="_csrfToken">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <section id="datasection" data-hidden="true"
+             data-home="@Url.Action("Home", "Index")"
+             data-root="@Helpers.GetApplicationRootPath()"
+             data-vpath="@Helpers.ApplicationPath"
+             data-notifications="@Url.Action("UnReadCount", "Notification")"
+             data-unreadnotification="@Url.Action("MarkUnRead", "Notification")"
+             data-deletenotification="@Url.Action("MarkDelete", "Notification")"
+             data-quicksearch="@Url.Action("Query", "Search")"
+             data-searchlist="@Url.Action("List", "Search")"
+             data-contenttaxonomy="@Url.Action("Taxonomy", "BusinessCategory")"
+             data-details="@Url.Action("Index", "Content")"
+             data-clausedetails="@Url.Action("PreviewFavoriteClause", "Content")"
+             data-index="@Url.Action("Index", "Content")"
+             data-myhistory="@Url.Action("myhistory", "User")"
+             data-addhistory="@Url.Action("AddToHistory", "User")"
+             data-notifications="@Url.Action("UnReadCount", "Notification")"
+             data-unreadnotification="@Url.Action("MarkUnRead", "Notification")"
+             data-deletenotification="@Url.Action("MarkDelete", "Notification")"
+             data-audience="@Url.Action("AudienceDetailsForElement", "Audience")"
+             data-upload="@Url.Action("Upload", "FileUpload")"
+             data-dbstageupload="@Url.Action("UploadToStage", "FileUpload")"
+             data-imgfolder="@Url.Content("~/images/")"
+             data-businessentities="@Url.Action("BusinessEntities", "ContentHierarchy")"
+             data-departmentslist="@Url.Action("Fetch", "Department")"
+             data-savedepartment="@Url.Action("Save", "Department")"
+             data-deletedepartment="@Url.Action("Delete", "Department")"
+             data-controltypelist="@Url.Action("Fetch", "BusinessControlType")"
+             data-savecontroltype="@Url.Action("Create", "BusinessControlType")"
+             data-deletecontroltype="@Url.Action("Delete", "BusinessControlType")"
+             data-organizationrisklist="@Url.Action("Fetch", "OrganizationRisk")"
+             data-saveorganizationrisk="@Url.Action("Create", "OrganizationRisk")"
+             data-deleteorganizationrisk="@Url.Action("Delete", "OrganizationRisk")"
+             data-saverole="@Url.Action("Save", "Role")"
+             data-deleterole="@Url.Action("Delete", "Role")"
+             data-contenthierarchy="@Url.Action("TaxonomyForAdmin", "BusinessCategory")"
+             data-savecontenthierarchynode="@Url.Action("Save", "BusinessCategory")"
+             data-deletecontenthierarchynode="@Url.Action("DeleteNode", "BusinessCategory")"
+             data-loadassociatedbusinessentities="@Url.Action("BusinessEntities_withCategoryId", "BusinessCategory")"
+             data-hierarchy="@Url.Action("Hierarchy", "OrganizationHierarchy")"
+             data-saveorganizationhierarchy="@Url.Action("Save", "OrganizationHierarchy")"
+             data-deleteorganizationhierarchy="@Url.Action("Delete", "OrganizationHierarchy")"
+             data-getorganizationlogo="@Url.Action("OrganizationLogoById", "OrganizationHierarchy")"
+             data-favoriteelement="@Url.Action("FavoriteElement", "Favorite")"
+             data-contenttaxonomyelementassociations="@Url.Action("Associations", "BusinessCategory")"
+             data-contenttaxonomychildrenassociations="@Url.Action("Children", "BusinessCategory")"
+             data-contenttaxonomyselectedcontributors="@Url.Action("SelectedContributors", "BusinessCategory")"
+             data-contenttaxonomyselectedapprovers="@Url.Action("SelectedApprovers", "BusinessCategory")"
+             data-contenttaxonomyselectedreviewers="@Url.Action("SelectedReviewers", "BusinessCategory")"
+             data-organizationhierarchyuserassociations="@Url.Action("Associations", "OrganizationHierarchy")"
+             data-organizationhierarchychildrenassociations="@Url.Action("Children", "OrganizationHierarchy")"
+             data-getreportlist="@Url.Action("GetExistingReportsList", "GIEOMReports")"
+             data-gettestcategorieslist="@Url.Action("FetchTestCategoryList", "GIEOMReports")"
+             data-getreportsresults="@Url.Action("GetReportResult", "GIEOMReports")"
+             data-getreportcolumnlist="@Url.Action("DynamicReportBuilder", "GIEOMReports")"
+             data-deletereport="@Url.Action("DeleteReport", "GIEOMReports")"
+             data-renamereport="@Url.Action("RenameReport", "GIEOMReports")"
+             data-executereport="@Url.Action("ExecuteReport", "GIEOMReports")"
+             data-savereportquery="@Url.Action("SaveReportQuery", "GIEOMReports")"
+             data-getcolumnlist="@Url.Action("GetColumnList", "GIEOMReports")"
+             data-action="@Url.Action("AnalyzeElement", "OpsAnalyzer")"
+             data-ops-history="@Url.Action("History", "OpsAnalyzer")"
+             data-adminresource="@Url.Action("Admin", "Resource")"
+             data-ldapconfigurationlist="@Url.Action("BasicData", "LDAPConfiguration")"
+             data-businesscontroltype="@Url.Action("BusinessControlType", "ContentHierarchy")"
+             data-savecategory="@Url.Action("Save", "Category")"
+             data-categoryhierarchy="@Url.Action("TaxonomyForAdmin", "BusinessCategory")"
+             data-savecategoryhierarchynode="@Url.Action("Save", "BusinessCategory")"
+             data-deletecategoryhierarchynode="@Url.Action("DeleteNode", "BusinessCategory")"
+             data-categorytaxonomychildrenassociations="@Url.Action("Children", "BusinessCategory")"
+             data-categorytaxonomyelementassociations="@Url.Action("Associations", "BusinessCategory")"
+             data-loadassociatedbusinessentitiesforcategory="@Url.Action("BusinessEntities_withCategoryId", "BusinessCategory")"
+             data-categorytaxonomyselectedcontributors="@Url.Action("SelectedContributors", "BusinessCategory")"
+             data-categorytaxonomyselectedapprovers="@Url.Action("SelectedApprovers", "BusinessCategory")"
+             data-categorytaxonomyselectedreviewers="@Url.Action("SelectedReviewers", "BusinessCategory")"></section>
+
+    @{ Html.RenderPartial("_LeftPanel"); }
+    <div class="main-panel">
+        <div class="panel-header">
+            @{ Html.RenderPartial("_NewHeader"); }
+            @RenderSection("Header", false)
+        </div>
+        <div class="main-container">
+            @RenderSection("Center", true)
+            @{ Html.RenderPartial("_NewFooter"); }
+        </div>
+    </div>
+
+    @Html.Modals()
+
+    @{
+        var scripts = RenderSection("scripts", false);
+    }
+
+    @Html.Head()
+
+    @scripts
+    <script src="~/Scripts/app/polyfill.js"></script>
+    <script type="text/javascript">
+        ko.applyBindings(gm.layout, unreadNotifications);
+        $(document).ready(function () {
+            gm.layout.getUnreadNotificationCount();
+            if ($('html').hasClass('perfect-scrollbar-on')) {
+                $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar({
+                    wheelPropagation: true
+                });
+            }
+            var element = document.querySelector("div.panel-header");
+            if (window.getComputedStyle(element).getPropertyValue('position') == "fixed") {
+                $("div.main-container").css("margin-top", $("div.panel-header").height());
+            }
+        });
+    </script>
+</body>
+
+</html>
