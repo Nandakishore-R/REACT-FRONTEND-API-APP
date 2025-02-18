@@ -1,14 +1,11 @@
 import './App.css'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import { Provider } from "react-redux"
-import Vendor from './Pages/Vendor'
+import Vendor from './Pages/vendors/Vendor'
 import { BrowserRouter as Router,  Route, Routes } from 'react-router-dom'
 import VendorEntry from './components/vendor/VendorEntry'
 import store from './store/Store'
-import Layout from './Layout/vendor/Layout'
-import { useEffect } from 'react'
-import ActionCentre from './Pages/ActionCentre'
+import ActionCentre from './Pages/actionCenter/ActionCentre'
 
 // const loadFormRendererDeps = () => {
 //   window.React = React;
@@ -22,7 +19,6 @@ import ActionCentre from './Pages/ActionCentre'
 function App() {
   // useEffect(() => loadFormRendererDeps,[]);
   return (
-    <Layout>
         <Provider store={store}>
           <Router>
             <Routes>
@@ -32,7 +28,6 @@ function App() {
             </Routes>
           </Router>
         </Provider>
-      </Layout>
   )
 }
 

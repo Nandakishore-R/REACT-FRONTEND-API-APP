@@ -15,12 +15,12 @@ const ActionHeader = ({ activeTab, setActiveTab }) => {
             <li key={tab.id} className={activeTab === tab.target ? "active" : ""}>
               <a
                 id={tab.id}
+                data-toggle="tab"
                 onClick={(e) => {
                   e.preventDefault();
                   setActiveTab(tab.target);
                 }}
                 href={`#${tab.target}`}
-                style={{ color: "#000000" }}
               >
                 <span className="tab-num"></span>
                 <br />

@@ -1,13 +1,28 @@
-import React, { useState } from 'react';
-import './styles/Centre.css'
+import React, { useState, useEffect } from 'react';
+// import './styles/Centre.css'
+import './js/test.js'
+import $ from 'jquery';
+import  'datatables.net';
+import './DataTables/datatables.min.css'
+import './DataTables/datatables.css'
+import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css';
 import ActionHeader from './ActionHeader';
 function Centre() {
     const [checkedOptions, setCheckedOptions] = useState({ 'options-all': true }); // State for checked checkboxes
+    const [activeTab, setActiveTab] = useState('Due'); // State to track active tab
 
     const handleCheckboxChange = (event) => {
         const { id, checked } = event.target; // Get id and checked state
         setCheckedOptions({ ...checkedOptions, [id]: checked }); // Update state
     };
+
+    const tabs = [
+        { id: "Due", label: "Due", target: "DueTable" , table : "DueList_Task"},
+        { id: "Overdue", label: "Overdue", target: "OverdueTable", table : "OverdueList_Task" },
+        { id: "Upcoming", label: "Upcoming", target: "Upcoming", table : "UpcomingList_Task" },
+        { id: "Inprogress", label: "In Progress", target: "Inprogress", table : "InprogressList_Task" },
+        { id: "Completed", label: "Completed", target: "Completed", table : "CompletedList_Task" },
+    ];
 
     const workFlowTypes = [
         { Name: "Vendor Rating Review" },
@@ -21,13 +36,123 @@ function Centre() {
     const handleRowSelection = (row) => {
         setSelectedRow(row);
     };
+    console.log(activeTab);
+    // Function to initialize DataTables
+    const initializeDataTable = (columns) => {
+        const tabId = tabs.find(tab=>tab.id === activeTab).table;
+        
+        const tableElement = $(`#${tabId}`);
+        // console.log("Table Element:", tableElement);
+        tableElement.DataTable({
+            destroy : true,
+            columns,
+            // ajax : {
+            //     url : 'https://riskcentraltest.gieom.com/ActionCentre/Fetch?actionType=completed&selWorFlowTypeKeys=',
+            //     type : "POST",
+            // },
+        });
+    };
 
-    const getTabClass = (tab) =>
-        activeTab === tab ? "tab-pane fade in active" : "tab-pane fade";
-    const [activeTab, setActiveTab] = useState("DueTable");
+    useEffect(() => {
+        const columns = {
+            Due: [
+                { data: "title", title: "Title" },
+                { data: "referenceNumber", title: "REFERENCE ID" },
+                { data: "businessControlTypeName", title: "TYPE" },
+                { data: "dueDate", title: "TARGET DATE" },
+                { data: "actionType", title: "ACTION" },
+                { data: "actionType", title: "STATUS" },
+            ],
+            Overdue: [
+                { data: "title", title: "TITLE" },
+                { data: "referenceNumber", title: "REFERENCE ID" },
+                { data: "businessControlTypeName", title: "TYPE" },
+                { data: "dueDate", title: "TARGET DATE" },
+                { data: "actionType", title: "ACTION" },
+                { data: "actionType", title: "STATUS" },
+            ],
+            Upcoming: [
+                { data: "title", title: "TITLE" },
+                { data: "referenceNumber", title: "REFERENCE ID" },
+                { data: "businessControlTypeName", title: "TYPE" },
+                { data: "dueDate", title: "TARGET DATE" },
+                { data: "actionType", title: "ACTION" },
+                { data: "actionType", title: "STATUS" },
+            ],
+            Inprogress: [
+                { data: "title", title: "TITLE" },
+                { data: "referenceNumber", title: "REFERENCE ID" },
+                { data: "businessControlTypeName", title: "TYPE" },
+                { data: "dueDate", title: "TARGET DATE" },
+                { data: "actionType", title: "STATUS" },
+            ],
+            Completed: [
+                { data: "title", title: "Title" },
+                { data: "referenceNumber", title: "REFERENCE ID" },
+                { data: "businessControlTypeName", title: "TYPE" },
+                { data: "completedDate", title: "SUBMITTED DATE" },
+                { data: "actionType", title: "STATUS" },
+            ],
+            Draft: [
+                { data: "name", title: "NAME" },
+                { data: "businessControlTypeName", title: "Type" },
+                { data: "dueDate", title: "Created Date" },
+                { data: "actionType", title: "Action" },
+            ],
+        };
+
+        // Initialize DataTable for the active tab
+        initializeDataTable(columns[activeTab]);
+
+        // Cleanup function to destroy DataTable when the component unmounts or tab changes
+        return () => {
+            $(`#${activeTab}_Task`).DataTable().destroy();
+        };
+    }, [activeTab]);
+
     return (
         <>
-            <ActionHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="action-centre-nav">
+                <ul className="nav nav-tabs action-tabs">
+                    <li className="active">
+                        <a id="dueId" className="" data-toggle="tab" href="#DueTable"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab("Due");
+                            }}
+                        >
+                            <span className="tab-num"></span><br />Due</a>
+                    </li>
+                    <li>
+                        <a id="overdueId" className="" data-toggle="tab" href="#OverdueTable"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab("Overdue");
+                            }}><span className="tab-num"></span><br />Overdue</a>
+                    </li>
+                    <li>
+                        <a id="upcomingId" className="" data-toggle="tab" href="#Upcoming"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab("Upcoming");
+                            }}><span className="tab-num"></span><br />Upcoming</a>
+                    </li>
+                    <li>
+                        <a id="inprogressId" className="" data-toggle="tab" href="#Inprogress"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab("Inprogress");
+                            }}><span className="tab-num"></span><br />In Progress</a>
+                    </li>
+                    <li>
+                        <a id="completedId" className="" data-toggle="tab" href="#Completed"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab("Completed");
+                            }}><span className="tab-num"></span><br />Completed</a>
+                    </li>
+                </ul>
+            </div>
             <svg style={{ display: 'none' }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
                 xmlnsXlink="http://www.w3.org/1999/xlink">
                 <symbol id="action-open-sa" width="25" height="25" viewBox="0 0 25 25" fill="#FFC35E">
@@ -54,7 +179,9 @@ function Centre() {
                             <div className="head_container">
                                 <span
                                     // onClick="closeAmendmentHistory()"
-                                    style={{ cursor: 'pointer' }}>&#x2716;</span><strong style={{ paddingLeft: '13px' }}>@Resources_Messages.Label_AmendmentHistory</strong>
+                                    style={{ cursor: 'pointer' }}>&#x2716;</span><strong style={{ paddingLeft: '13px' }}>
+                                        {/* @Resources_Messages.Label_AmendmentHistory */}
+                                        </strong>
                             </div><br />
                             <div className="amendment_history_popup_scrollableDiv">
                                 <label id="amendment_popup_text" className="label-important" style={{ paddingLeft: '35px' }}></label>
@@ -99,113 +226,78 @@ function Centre() {
                         </div>
 
                     </div>
-                    <section className="content ManageTable col-md-10" id="actionsArea" style={{ margin: '0' }}>
-                        <div style={{ position: 'relative' }}>
+                    <section className="content ManageTable col-md-10" id="actionsArea">
+                        <div style={{ position: "relative" }}>
                             <div className="tab-content marginTop paddingLR paddingBottom10">
-                                <div
-                                    id="DueTable"
-                                    className={getTabClass("DueTable")}
-                                    style={{ display: activeTab === "DueTable" ? "" : "none" }}
-                                >
+                                <div id="DueTable" className="tab-pane fade in active">
                                     <div className="base-table">
                                         <div>
                                             <div className="material-datatables">
-                                                <table
-                                                    id="DueList_Task"
-                                                    className="table row-border order-column"
-                                                    style={{ width: "100%" }}
-                                                ></table>
+                                                <table id="DueList_Task" className="table row-border order-column"></table>
                                                 <div className="inner-tooltip"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div
-                                    id="OverdueTable"
-                                    className={getTabClass("OverdueTable")}
-                                    style={{ display: activeTab === "OverdueTable" ? "" : "none" }}
-                                >
+                                <div id="OverdueTable" className="tab-pane fade in">
                                     <div className="base-table">
                                         <div>
                                             <div className="material-datatables">
-                                                <table
-                                                    id="OverdueList_Task"
-                                                    className="table row-border order-column"
-                                                    style={{ width: "100%" }}
-                                                ></table>
+                                                <table id="OverdueList_Task" className="table row-border order-column"></table>
                                                 <div className="inner-tooltip"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div
-                                    id="Upcoming"
-                                    className={getTabClass("Upcoming")}
-                                    style={{ display: activeTab === "Upcoming" ? "" : "none" }}
-                                >
+                                <div id="Upcoming" className="tab-pane fade in">
                                     <div className="base-table">
                                         <div>
                                             <div className="material-datatables">
-                                                <table
-                                                    id="UpcomingList_Task"
-                                                    className="table row-border order-column"
-                                                    style={{ width: "100%" }}
-                                                ></table>
+                                                <table id="UpcomingList_Task" className="table row-border order-column"></table>
                                                 <div className="inner-tooltip"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div
-                                    id="Inprogress"
-                                    className={getTabClass("Inprogress")}
-                                    style={{ display: activeTab === "Inprogress" ? "" : "none" }}
-                                >
+                                <div id="Inprogress" className="tab-pane fade in">
                                     <div className="base-table">
                                         <div>
                                             <div className="material-datatables">
-                                                <table
-                                                    id="InprogressList_Task"
-                                                    className="table row-border order-column"
-                                                    style={{ width: "100%" }}
-                                                ></table>
+                                                <table id="InprogressList_Task" className="table row-border order-column"></table>
                                                 <div className="inner-tooltip"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div
-                                    id="Completed"
-                                    className={getTabClass("Completed")}
-                                    style={{ display: activeTab === "Completed" ? "" : "none" }}
-                                >
+                                <div id="Completed" className="tab-pane fade in">
                                     <>
-                                        hello
+                                        heloo
                                         <div className="base-table">
                                             <div>
                                                 <div className="material-datatables">
-                                                    <table
-                                                        id="CompletedList_Task"
-                                                        className="table row-border order-column"
-                                                        style={{ width: "100%" }}
-                                                    ></table>
+                                                    <table id="CompletedList_Task" className="table row-border order-column"></table>
                                                     <div className="inner-tooltip"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     </>
-                                </div >
-                            </div>
-                        </div >
+                                </div>
 
-                    </section >
-                    <div>
-                        <h1></h1>
-                    </div>
+                                <div id="Draft" className="tab-pane fade in">
+                                    <div className="base-table">
+                                        <div className="material-datatables">
+                                            <table id="DraftList_Task" className="table row-border order-column"></table>
+                                            <div className="inner-tooltip"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div >
             </div >
             <div id="myModal" className="quickview-wrapper fullWidth" style={{ marginTop: '8.2vh' }}>
