@@ -95,6 +95,7 @@ function VendorDetailsForm(props) {
             );
           } else {
             let dataCopy = props.getData(data);
+            console.log("here",dataCopy);
             dispatch(
               changeVendorDetailsForm({
                 FormData: dataCopy,
