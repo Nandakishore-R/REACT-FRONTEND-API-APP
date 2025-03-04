@@ -331,4 +331,33 @@ const summary = [
     }
 ];
 
-export default summary
+const columns = [
+    {
+        title: "Field Name",
+        dataIndex: "label",
+        key: "label",
+    },
+    {
+        title: "Previous Value",
+        dataIndex: "oldValue",
+        key: "oldValue",
+    },
+    {
+        title: "Changed Value",
+        dataIndex: "newValue",
+        key: "newValue",
+    },
+    {
+        title: "Changed By",
+        dataIndex: "userName",
+        key: "userName",
+    },
+    {
+        title: "Change Date",
+        dataIndex: "time",
+        key: "time",
+    },
+];
+const title ="Summary of Changes";
+
+export default {summary, columns, title};

@@ -1,0 +1,31 @@
+.detailsCard {
+    border: 0;
+    margin: 0;
+
+}
+
+.detailsCard .ant-card-body {
+    padding: 20px !important;
+}
+
+.detailsCard .ant-card-body>div {
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+    gap: 20px ;
+}
+
+.detailsCard .ant-card-body>div>div>h5 {
+    font-size: 0.83vw !important;
+}
+
+.detailsCard .detailsText {
+    display: block;
+    padding: calc(16* 100vh / 910) 1vw;
+    background: #F2F3FA;
+    border-radius: 5px;
+    text-indent: 1vw;
+    border-radius: 0.5vw;
+    font-size: 0.938vw;
+    font-family: 'Montserrat' !important;
+    /* font-size: 0.938vw; */
+}

@@ -590,6 +590,7 @@ export default class FormRenderNew extends Component {
   };
 
   generateControl(objclone, i, formRender) {
+    // console.log("objclone", objclone);
     let obj = objclone;
     let readOnly =
       formRender.props.readOnly === undefined
@@ -794,7 +795,7 @@ export default class FormRenderNew extends Component {
             {...obj}
             controlStyle={controlStyle}
           />
-          // <h1>Page</h1>
+          
         );
       case "table":
         return (
@@ -906,7 +907,7 @@ export default class FormRenderNew extends Component {
     let formRender = this;
 
     // let FormRender = JSON.parse(JSON.stringify(this));
-    // console.log("formRender", formRender);
+    console.log("formRender", formRender);
     // console.log("formRenderProp", formRenderProp);
 
     if (!formRender.state || !formRender.state.formData) return;
@@ -917,7 +918,7 @@ export default class FormRenderNew extends Component {
       layout = formRender.state.formData[j];
       break;
     }
-
+    console.log("layout",layout);
     if (layout && layout.elements) {
       return formRender.generateLayout(layout, formRender);
     } else{
@@ -965,7 +966,7 @@ export default class FormRenderNew extends Component {
     window.DcFormRenderTriggers = window.DcFormRenderTriggers || [];
 
     return (
-      <div>
+      <div className="pageGenerated">
         {/* {console.log("this.state.formData", this.state.formData)} */}
         <div>{this.generateForm()}</div>
         {this.state.filePreviewSource !== "" && (

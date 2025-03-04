@@ -4,11 +4,14 @@
 @import url("../../styles/actionCenter/ManageV2.css");
 @import url("../../styles/vendors/workflow.css");
 @import url("../../styles/vendors/Main.css");
-/* @import url("../../styles/vendors/newtheme.css"); */
+/* @import url("../../styles/vendors/newtheme.css");  */
 /* @import url("../../styles/vendors/material-dashboard.css"); */
 /* @import url("../../styles/actionCenter/ManageV2Print.css"); */
 /* @import url("../../styles/actionCenter/MembershipPage.css"); */
 
+
+@import url("../../styles/vendors/form-renderer-deps.css");
+@import url("../../styles/vendors/form-renderer-deps.overwrites.css");
 #amendment_popup {
   width: 95.7%;
   height: 100vh;

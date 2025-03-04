@@ -1,0 +1,35 @@
+.ant-card {
+    /* display: block !important; */
+    margin: 2vw;
+    border-radius: 10px !important;
+    border-color: grey !important;
+    /* font-weight: 300 !important; 
+    line-height: 1.5em; */
+}
+
+.ant-card .card2Div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    /* justify-content: space-evenly; */
+    /* display: inline-block; */
+    margin :calc(1.0989vh) calc(1.66667vw);
+}
+.ant-card .card2Div .card2DivItem{
+    min-width: 200px !important;
+    width: 31%;
+    /* margin: calc(1.0989vh) calc(1.66667vw); */
+}
+.ant-card .card2Div .card2DivItem>h5{
+    font-size: 0.83vw;
+}
+.ant-card .card2Div .card2DivItem>span{
+    font-size: calc(18*(50vh + 23.5vw) / 910);
+    font-weight: 300;
+    line-height: 1.5em;
+    font-family: 'Montserrat' !important;
+}
+
+
+
+/*  */

@@ -1,6 +1,8 @@
 import React from 'react'
-import summary from './summary'
+import data from './summary';
+import Table2 from '../../../common/Table2';
 import { useState, useEffect } from 'react';
+const { summary, columns, title } = data;
 function SummaryOfChanges() {
     const getISTDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -9,7 +11,6 @@ function SummaryOfChanges() {
     const [response, setResponse] = useState([]);
 
     useEffect(() => {
-
         const newsummary = summary;
         console.log("new", newsummary);
         let updatedResponse = newsummary.map((item) => {
@@ -21,53 +22,14 @@ function SummaryOfChanges() {
                 userName: item.userName ?? "",
             };
         });
-
-
         setResponse(updatedResponse);
-
     }, []);
 
-
+    const dataSource = response.filter((item) => item.comment == null);
     return (
-        <div id="pageThirdLast" className="fixedPage">
-            <div className="form-group" id="innerDivPageThird" style={{width: '100%',  margin: '0px'}}>
-                <div className="row">
-                    <div className="form-group col-md-6 ">
-                        <label>Summary of changes</label>
-                    </div>
-                </div>
-                <center>
-                    <table
-                        id="fieldhistorytable"
-                        style={{ tableLayout: "fixed" }}
-                        width="96%"
-                    >
-                        <thead>
-                            <tr>
-                                <th>FieldName</th>
-                                <th>Previous Value</th>
-                                <th>Changed Value</th>
-                                <th>Changed By</th>
-                                <th>Change Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {response
-                                .filter((item) => item.comment == null) // Only rows without comments
-                                .map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.label}</td>
-                                        <td>{item.oldValue}</td>
-                                        <td>{item.newValue}</td>
-                                        <td>{item.userName}</td>
-                                        <td>{item.time}</td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                </center>
-            </div>
-        </div>
+        <div style={{ padding: "16px" }}>
+            <Table2 dataSource={dataSource} columns={columns} title={title} />
+        </div >
     )
 }
 

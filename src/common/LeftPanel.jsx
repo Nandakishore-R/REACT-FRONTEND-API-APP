@@ -80,7 +80,7 @@ function LeftPanel() {
                       />
                     </g>
                   </svg>
-                  <p>Template Hub</p>
+                  <p>Templates Hub</p>
                 </a>
               </li>
               <li className=" ">
